@@ -1,0 +1,80 @@
+﻿@model IEnumerable<TapPaymentIntegration.Models.PaymentDTO.ChargeListDTO>
+@{
+    ViewData["Title"] = "GetAllCharges";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+<br />
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header" style="padding: 0.5rem 1.25rem;">
+                        <h4 class="text-center mb-0">Payment Received List</h4>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="example1" class="table table-bordered table-striped table-responsive-xl">
+                            <thead>
+                                <tr style="text-align:center!important">
+                                    <th>System UserID</th>
+                                    <th>Tap UserID</th>
+                                    <th>Full Name</th>
+                                    <th>GYM Name</th>
+                                    <th>Email</th>
+                                    <th>Country</th>
+                                    <th>City</th>
+                                    <th>Currency</th>
+                                    <th>Amount</th>
+                                    <th>Payment Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    if(Model != null)
+                                    {
+                                        @foreach (var user in Model)
+                                        {
+                                            <tr>
+                                                <td style="text-align:center!important">@user.UserId</td>
+                                                <td style="text-align:center!important">@user.Tap_CustomerID</td>
+                                                <td style="text-align:center!important">@user.FullName</td>
+                                                <td style="text-align:center!important">@user.GYMName</td>
+                                                <td style="text-align:center!important">@user.Email</td>
+                                                <td style="text-align:center!important">@user.Country</td>
+                                                <td style="text-align:center!important">@user.City</td>
+                                                <td style="text-align:center!important">@user.currency</td>
+                                                <td style="text-align:center!important">@user.amount</td>
+                                                <td style="text-align:center!important">
+                                                    @{
+                                                        DateTime dateTime = Convert.ToDateTime(user.PaymentDate);
+                                                        @dateTime.ToString("dd/MM/yyyy") @dateTime.ToShortTimeString();
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                        
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+</section>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#example1").DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    });
+</script>

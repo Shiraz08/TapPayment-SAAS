@@ -1,0 +1,42 @@
+﻿@model TapPaymentIntegration.Models.Roles.UpdateProfile
+@{
+    ViewData["Title"] = "ChangeProfile";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<br />
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-secondary">
+            <div class="card-header">
+                <h5 class="text-center mb-0" style="font-weight:700;color:white;">Update Profile</h5>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("ChangeProfile", "Accounts", FormMethod.Post))
+                {
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Email&nbsp;<span style="color:red!important"><b>*</b></span></label>
+                                <input asp-for="Email" class="form-control" autocomplete="current-password" aria-required="true" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Mobile Number&nbsp;<span style="color:red!important"><b>*</b></span></label>
+                                <input asp-for="PhoneNumber" class="form-control" autocomplete="current-password" aria-required="true" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div style="padding-top: 22px;">
+                                <button class="btn btn-success mt-2" type="submit" tabindex="6">Update Profile</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

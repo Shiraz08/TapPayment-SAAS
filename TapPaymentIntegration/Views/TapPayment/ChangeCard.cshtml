@@ -1,0 +1,160 @@
+﻿@model TapPaymentIntegration.Models.Subscription.Subscriptions
+@using Microsoft.AspNetCore.Identity
+@using TapPaymentIntegration.Areas.Identity.Data
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor Accessor
+@{
+    ViewData["Title"] = "ChangeCard";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    var user = await UserManager.GetUserAsync(User);
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.3.4/bluebird.min.js"></script>
+<script src="https://secure.gosell.io/js/sdk/tap.min.js"></script>
+<br />
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-secondary">
+            <div class="card-header">
+                <h5 class="text-center mb-0" style="font-weight:700;color:white;">Change Card</h5>
+            </div>
+            <div class="card-body">
+               <div class="row">
+                   <h3><b>You can use another card if you like by entering the following card details</b></h3><br /><br />
+                    @if (user.PaymentSource != null || user.PaymentSource != "")
+                   {
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Payment Method</label>
+                                    <input type="text" class="form-control" value="@user.PaymentSource" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Card First Six Digit</label>
+                                    <input type="text" class="form-control" value="@user.First_Six" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Card Last Four Digit</label>
+                                    <input type="text" class="form-control" value="@user.Last_Four" />
+                                </div>
+                            </div>
+                   }
+                   <br />
+                    <div class="col-md-12">
+                        <form id="form-container" method="post" action="/TapPayment/ChangeCard">
+                            <!-- Tap element will be here -->
+                            <div id="element-container"></div>
+                            <div id="error-handler" role="alert"></div>
+                            <div id="success" style=" display: none;position: relative;float: left;">
+                                Success! Your token is <span id="token"></span>
+                            </div>
+                            <div class="input-group mb-3 group-end" style="margin-top:25px!important">
+                                <button class="btn btn-success" type="submit">Update Card</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.js" integrity="sha512-8Z5++K1rB3U+USaLKG6oO8uWWBhdYsM3hmdirnOEWp8h2B1aOikj5zBzlXs8QOrvY9OxEnD2QDkbSKKpfqcIWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    var tap = Tapjsli('@user.PublicKey');
+
+    var elements = tap.elements({});
+    var style = {
+        base: {
+            color: '#535353',
+            lineHeight: '18px',
+            fontFamily: 'sans-serif',
+            fontSmoothing: 'antialiased',
+            fontSize: '16px',
+            '::placeholder': {
+                color: 'rgba(0, 0, 0, 0.26)',
+                fontSize: '15px'
+            }
+        },
+        invalid: {
+            color: 'red'
+        }
+    };
+    // input labels/placeholders
+    var labels = {
+        cardNumber: "Card Number",
+        expirationDate: "MM/YY",
+        cvv: "CVV",
+        cardHolder: "Card Holder Name"
+    };
+    //payment options
+    var paymentOptions = {
+        currencyCode: ["KWD", "USD", "SAR"],
+        labels: labels,
+        TextDirection: 'ltr'
+    }
+    //create element, pass style and payment options
+    var card = elements.create('card', { style: style }, paymentOptions);
+    //mount element
+    card.mount('#element-container');
+    //card change event listener
+    card.addEventListener('change', function (event) {
+        if (event.BIN) {
+            console.log(event.BIN)
+        }
+        if (event.loaded) {
+            console.log("UI loaded :" + event.loaded);
+            console.log("current currency is :" + card.getCurrency())
+        }
+        var displayError = document.getElementById('error-handler');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
+
+    // Handle form submission
+    var form = document.getElementById('form-container');
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        tap.createToken(card).then(function (result) {
+            console.log(result);
+            if (result.error) {
+                // Inform the user if there was an error
+                var errorElement = document.getElementById('error-handler');
+                errorElement.textContent = result.error.message;
+            } else {
+                var errorElement = document.getElementById('success');
+                errorElement.style.display = "block";
+                var tokenElement = document.getElementById('token');
+                tokenElement.textContent = result.id;
+                tapTokenHandler(result.id);
+            }
+        });
+    });
+
+    function tapTokenHandler(id) {
+        var formd = new FormData();
+        formd.append("Token", id);
+        $.ajax({
+            type: 'POST',
+            url: '/TapPayment/ChangeCard',
+            processData: false,
+            contentType: false,
+            data: formd,
+            success: function (response) {
+                window.location.href = response;
+            },
+            failure: function (response) {
+                $('#result').html(response);
+            }
+        });
+    }
+</script>

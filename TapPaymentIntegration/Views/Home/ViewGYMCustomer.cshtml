@@ -1,0 +1,116 @@
+﻿@model IEnumerable<TapPaymentIntegration.Models.UserDTO.UserInfoDTO>
+@{
+    ViewData["Title"] = "View GYM Customer";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<br />
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header" style="padding: 0.5rem 1.25rem;">
+                        <h4 class="text-center mb-0">Account Info</h4>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="example1" class="table table-bordered table-striped table-responsive-xl">
+                            <thead>
+                                <tr style="text-align:center!important">
+                                    <th>GYM Name</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Phone Number</th>
+                                    <th>Country</th>
+                                    <th>City</th>
+                                    <th>Currency</th>
+                                    <th>Subscription</th>
+                                    <th>Account Status</th>
+                                    <th>Payment Method</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model)
+                                {
+                                    <tr>
+                                        <td style="text-align:center!important">@user.GYMName</td>
+                                        <td style="text-align:center!important">@user.FullName</td>
+                                        <td style="text-align:center!important">@user.Email</td>
+                                        <td style="text-align:center!important">@user.PhoneNumber</td>
+                                        <td style="text-align:center!important">@user.Country</td>
+                                        <td style="text-align:center!important">@user.City</td>
+                                        <td style="text-align:center!important">@user.Currency</td>
+                                        <td style="text-align:center!important">
+                                            @{
+                                                if (user.SubscribeID == 0)
+                                                {
+                                                    <span style="color:red!important"> Not Selected Yet</span>
+                                                }
+                                                else
+                                                {
+                                                    @user.SubscribeName
+                                                }
+                                            }
+                                        </td>
+                                        <td style="text-align:center!important">
+                                            @{
+                                                if (user.Status == true)
+                                                {
+                                                    <span style="color:green">Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span style="color:red">In-Active</span>
+                                                }
+                                            }
+                                        </td>
+                                        <td style="text-align:center!important">@user.PaymentSource</td>
+                                        @if (user.UserType == "SuperAdmin")
+                                        {
+                                            <td style="text-align:center!important">
+                                                @{
+                                                    <a class="btn btn-primary" asp-controller="Home" asp-action="DeleteCustomer" asp-route-userId="@user.Id">Delete Customer</a>
+                                                    if (user.Status == true)
+                                                    {
+                                                        <a class="btn btn-danger" asp-controller="Home" asp-action="InActiveUser" asp-route-id="@user.Id">In-Active</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a class="btn btn-success" asp-controller="Home" asp-action="ActiveUser" asp-route-id="@user.Id">Active</a>
+                                                    }
+
+                                                }
+                                            </td>
+                                        } 
+                                        else
+                                        {
+                                            <td style="text-align:center!important">------</td>
+                                        }
+                                       
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+</section>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#example1").DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    });
+</script>
+

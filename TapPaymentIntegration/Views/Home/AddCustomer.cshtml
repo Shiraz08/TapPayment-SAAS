@@ -1,0 +1,180 @@
+﻿@model TapPaymentIntegration.Areas.Identity.Data.ApplicationUser
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration con;
+@{
+    string googleCaptchaKey = con.GetSection("GoogleCaptcha")["SiteKey"];
+    ViewData["Title"] = "AddCustomer";
+    Layout = "~/Views/Shared/_IdentityLayout.cshtml";
+}
+<div class="login-box">
+    <!-- /.login-logo -->
+    <div class="card card-outline card-primary">
+        <div class="card-header text-center">
+            <a href="#" class="h1"><b>Tamarran</b></a>
+        </div>
+        <div class="card-body">
+            <p class="login-box-msg">Sign up to Enter in Tamarran</p>
+            @using (Html.BeginForm("AddCustomer", "Home", FormMethod.Post, new { id = "AddCustomer" }))
+                {
+                    <div class="input-group mb-3">
+                    <input type="text" class="form-control" asp-for="GYMName" placeholder="Enter The GYM Name" required="required">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-users"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" asp-for="FullName" placeholder="Enter The Name" required="required">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-users"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="email" class="form-control" asp-for="UserName" placeholder="Enter The Email" required="required">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-envelope"></span>
+                        </div>
+                    </div>
+                </div>
+                <span style="color:red!important">Enter Phone Number Without Country Code</span>
+                <br />
+                <div class="input-group mb-3">
+                    <input type="number" class="form-control" asp-for="PhoneNumber" placeholder="Enter The Phone Number" required="required">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-phone"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <select name="Country" class="form-control" id="Country" asp-for="Country" required="required">
+                        <option value=" " label="Select a Country" selected="selected">Select a Country</option>
+                        <option value="Bahrain" label="Bahrain">Bahrain</option>
+                        <option value="KSA" label="KSA">KSA</option>
+                        <option value="Kuwait" label="Kuwait">Kuwait</option>
+                        <option value="UAE" label="UAE">UAE</option>
+                        <option value="Qatar" label="Qatar">Qatar</option>
+                        <option value="Oman" label="Oman">Oman</option>
+                        </select>
+                </div>
+                <div class="input-group mb-3">
+                    @Html.DropDownList("SubscribeID" ,(IEnumerable  <SelectListItem>)ViewBag.SubscriptionList, "Please Select Plan",new {  @class="form-control",@required="required",@onchange="fillfrequencyDropdown();"})
+                </div>
+                <div class="input-group mb-3">
+                    <select class="form-control" id="Frequency" name="Frequency" required="required">
+                        <option value="" label="Select a Frequency">Select a Frequency</option>
+                    </select>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" asp-for="City" placeholder="Enter The City" >
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-city"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <input id="password-field" type="password" class="form-control" asp-for="Password" placeholder="Enter The Password" required="required">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-eye toggle-password" toggle="#password-field"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="g-recaptcha" data-sitekey="@googleCaptchaKey"></div>
+                </div>
+                <input type="hidden" id="recaptchaResponse" name="token" asp-for="recaptchaToken" />
+                <div class="row">
+                    <div class="col-8">
+                        <div class="icheck-primary">
+                            <input type="checkbox" id="agreeTerms" name="terms" value="agree" required="required">
+                            <label for="agreeTerms">
+                                I agree to the <a href="https://www.tamarran.com/En/content/Terms">terms</a>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-4">
+                        <button type="submit" class="btn btn-primary btn-block" id="SignUp">Sign Up</button>
+                    </div>
+                    <!-- /.col -->
+                </div>
+            }
+            <p class="mb-1">
+                <div asp-validation-summary="All" class="text-danger"></div>
+            </p>
+        </div>
+        <!-- /.card-body -->
+    </div>
+    <!-- /.card -->
+</div>
+
+    <partial name="_ValidationScriptsPartial" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script>
+        $(".toggle-password").click(function () {
+
+            $(this).toggleClass("fa-eye fa-eye-slash");
+            if ($('#password-field').attr("type") == "password") {
+                $('#password-field').attr("type", "text");
+            }
+            else {
+                $('#password-field').attr("type", "password");
+            }
+        });
+
+        function fillfrequencyDropdown()
+        {
+            var val = $("#SubscribeID").val();
+            if (val != "") 
+            {
+                var formd = new FormData();
+                formd.append("Frequency", val);
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/getFrequency",
+                    processData: false,
+                    contentType: false,
+                    data: formd,
+                    success: function (data) {
+                        var dropdown = $('#Frequency');
+                        dropdown.empty();
+                        var result = data.Frequency;
+                        var array = result.split(",");
+                        debugger
+                        var dllist = $('#Frequency');
+
+                        $.each(array, function (i) {
+                            dllist.append(
+                                $('<option></option>').val(array[i]).html(array[i]));
+
+                        });
+                    }
+                });
+            }
+            else 
+            {
+            var dropdown = $('#Frequency');
+            dropdown.empty();
+            }
+
+    }
+
+    document.getElementById('AddCustomer').addEventListener('submit', function (event) {
+        var response = grecaptcha.getResponse();
+        if (response.length == 0) {
+            // reCAPTCHA not verified
+            event.preventDefault();
+            alert('Please verify reCAPTCHA');
+        } else {
+            // Set reCAPTCHA response in hidden input
+            document.getElementById('recaptchaResponse').value = response;
+        }
+    });
+    </script>

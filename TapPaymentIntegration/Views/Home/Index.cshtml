@@ -1,0 +1,459 @@
+﻿@model IEnumerable<TapPaymentIntegration.Models.Subscription.Subscriptions>
+@using Microsoft.AspNetCore.Identity
+@using TapPaymentIntegration.Areas.Identity.Data
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+	var user = await UserManager.GetUserAsync(User);
+	var msg = TempData["Message"];
+}
+
+<style>
+	.faq-accordian .card {
+		position: relative;
+		z-index: 1;
+		margin-bottom: 0.4rem!important;
+	}
+    .bg-light {
+        background-color: black!important;
+    }
+
+    .bg-dark {
+		background-color: #efd41c !important;
+    }
+
+    .owl-item
+    {
+        width:470px!important;
+        margin-right:12px!important;
+    }
+    @@media (min-width: 1200px)
+.container, .container-sm, .container-md, .container-lg, .container-xl {
+    max-width: 1418px;
+}
+</style>
+
+<style>
+	.pricing-content {
+		position: relative;
+	}
+
+	.pricing_design {
+		position: relative;
+		margin: 8px 15px;
+	}
+
+		.pricing_design .single-pricing {
+			background: #efd41c !important;
+			padding: 60px 40px;
+			border-radius: 30px;
+			box-shadow: 0 10px 40px -10px rgba(0,64,128,.2);
+			position: relative;
+			z-index: 1;
+		}
+
+			.pricing_design .single-pricing:before {
+				content: "";
+				background-color: #fff;
+				width: 100%;
+				height: 100%;
+				border-radius: 18px 18px 190px 18px;
+				border: 1px solid #eee;
+				position: absolute;
+				bottom: 0;
+				right: 0;
+				z-index: -1;
+			}
+
+	.price-head {
+	}
+
+		.price-head h2 {
+			margin-bottom: 20px;
+			font-size: 26px;
+			font-weight: 600;
+		}
+
+		.price-head h1 {
+			font-weight: 600;
+			margin-top: 30px;
+			margin-bottom: 5px;
+		}
+
+		.price-head span {
+		}
+
+	.single-pricing ul {
+		list-style: none;
+		margin-top: 30px;
+	}
+
+		.single-pricing ul li {
+			line-height: 36px;
+		}
+
+			.single-pricing ul li i {
+				background: black;
+				color: #fff;
+				width: 20px;
+				height: 20px;
+				border-radius: 30px;
+				font-size: 11px;
+				text-align: center;
+				line-height: 20px;
+				margin-right: 6px;
+			}
+
+	.pricing-price {
+	}
+
+	.price_btn {
+		background: #efd41c!important;
+		padding: 10px 30px;
+		color: #fff;
+		display: inline-block;
+		margin-top: 20px;
+		border-radius: 2px;
+		-webkit-transition: 0.3s;
+		transition: 0.3s;
+	}
+
+		.price_btn:hover {
+			background: #0aa1d6;
+		}
+
+	a {
+		text-decoration: none;
+	}
+
+	.section-title {
+		margin-bottom: 60px;
+	}
+
+	.text-center {
+		text-align: center !important;
+	}
+
+	.section-title h2 {
+		font-size: 45px;
+		font-weight: 600;
+		margin-top: 0;
+		position: relative;
+		text-transform: capitalize;
+	}
+	.section_padding_130 {
+    padding-top: 130px;
+    padding-bottom: 130px;
+}
+.faq_area {
+    position: relative;
+    z-index: 1;
+    background-color: #f5f5ff;
+}
+
+.faq-accordian {
+    position: relative;
+    z-index: 1;
+}
+.faq-accordian .card {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 1.5rem;
+}
+.faq-accordian .card:last-child {
+    margin-bottom: 0;
+}
+.faq-accordian .card .card-header {
+    background-color: #ffffff;
+    padding: 0;
+    border-bottom-color: #ebebeb;
+}
+.faq-accordian .card .card-header h6 {
+    cursor: pointer;
+    padding: 1.75rem 2rem;
+    color: #3f43fd;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    -ms-grid-row-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+.faq-accordian .card .card-header h6 span {
+    font-size: 1.5rem;
+}
+.faq-accordian .card .card-header h6.collapsed {
+    color: #070a57;
+}
+.faq-accordian .card .card-header h6.collapsed span {
+    -webkit-transform: rotate(-180deg);
+    transform: rotate(-180deg);
+}
+.faq-accordian .card .card-body {
+    padding: 1.75rem 2rem;
+}
+.faq-accordian .card .card-body p:last-child {
+    margin-bottom: 0;
+}
+
+@@media only screen and (max-width: 575px) {
+    .support-button p {
+        font-size: 14px;
+    }
+}
+
+.support-button i {
+    color: #3f43fd;
+    font-size: 1.25rem;
+}
+@@media only screen and (max-width: 575px) {
+    .support-button i {
+        font-size: 1rem;
+    }
+}
+
+.support-button a {
+    text-transform: capitalize;
+    color: #2ecc71;
+}
+@@media only screen and (max-width: 575px) {
+    .support-button a {
+        font-size: 13px;
+    }
+}
+</style>
+@if (msg != null)
+{
+	<center><h4><span class="error" style="color:red!important">@msg</span></h4></center>
+}
+<div class="container-fluid p-0 mb-5 pb-5">
+	<div id="header-carousel" class="carousel slide carousel-fade" data-ride="carousel">
+		<div class="carousel-inner">
+            <div class="carousel-item position-relative active" style="min-height:83vh;">
+				<img class="position-absolute w-100 h-100" src="~/website/img/whatsapp image 2023-09-22 at 6.33.41 pm (2).jpeg" style="object-fit: cover;"  />
+				<div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+					<div class="p-3" style="max-width: 900px;">
+						<h6 class="text-white text-uppercase mb-3 animate__animated animate__fadeInDown" style="letter-spacing: 3px;font-size:17px">
+							Your All-in-One Gym Management Software
+						</h6>
+						<h3 class="display-3 text-capitalize text-white mb-3">Tamarran</h3>
+						<p class="mx-md-5 px-5">
+							Say hello to streamlined operations, data-driven insights, and an elevated member experience
+						</p>
+						<a class="btn btn-outline-light py-3 px-4 mt-3 animate__animated animate__fadeInUp" href="#pricing">Get Started</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+@{
+	@if (SignInManager.IsSignedIn(User))
+	{
+		var subid = user.SubscribeID;
+		<section id="pricing" class="pricing-content section-padding">
+			<div class="container">
+				<div class="section-title text-center">
+					<h2>Pricing Plans</h2>
+					<p>Committed To People Committed To The Future,We Are Focus On Your Ultimate Goa.</p>
+				</div>
+				<div class="row text-center">
+					@foreach (var item in Model)
+					{
+						<div class="col-lg-4 col-sm-6 col-xs-12 wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.1s" data-wow-offset="0" style="visibility: visible; animation-duration: 1s; animation-delay: 0.1s; animation-name: fadeInUp;">
+							<div class="pricing_design">
+								<div class="single-pricing">
+									<div class="price-head" style="overflow:auto!important">
+										<h2>@item.Name</h2>
+										<h1>@item.Amount</h1>
+										<span>/@item.Frequency</span>
+									</div>
+									<ul>
+										<li><b>Currency:</b> @item.Currency</li>
+										<li><b>Country:</b>  @item.Countries</li>
+										<li><b>SetupFee:</b> @item.SetupFee</li>
+									</ul>
+									<div class="pricing-price">
+									</div>
+									@{
+										@if (SignInManager.IsSignedIn(User))
+										{
+											<a href="@Url.Action("Subscription","Home", new {id= item.SubscriptionId, userid = user.Id})" class="price_btn">Purchase Plan</a>
+										}
+										else
+										{
+											<a href="@Url.Action("AddGymCustomer","Home", new {id= item.SubscriptionId})" class="price_btn">Purchase Plan</a>
+										}
+									}
+								</div>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+		</section>
+	}
+	else
+	{
+		<section id="pricing" class="pricing-content section-padding">
+			<div class="container">
+				<div class="section-title text-center">
+					<h2>Pricing Plans</h2>
+				</div>
+				<div class="row text-center">
+					@foreach (var item in Model)
+					{
+						<div class="col-lg-4 col-sm-6 col-xs-12 wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.1s" data-wow-offset="0" style="visibility: visible; animation-duration: 1s; animation-delay: 0.1s; animation-name: fadeInUp;">
+							<div class="pricing_design">
+								<div class="single-pricing">
+									<div class="price-head">
+										<h2>@item.Name</h2>
+										<h1>@item.Amount</h1>
+										@{
+											var f = item.Frequency;
+											<span style="font-size: 19px;font-weight: bold;">/@System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(f.ToLower())</span>
+										}
+									</div>
+									<ul>
+										<li><b>Currency:</b> @item.Currency</li>
+										<li><b>Country:</b>  @item.Countries</li>
+										<li><b>Setup Fee:</b> @item.SetupFee</li>
+									</ul>
+									<div class="pricing-price">
+									</div>
+									<a href="@Url.Action("AddGymCustomer","Home", new {id= item.SubscriptionId})" class="price_btn">Purchase Plan</a>
+								</div>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+		</section>
+	}
+}
+<br />
+<br />
+<div class="faq_area section_padding_130" id="faq">
+	<div class="container">
+		<div class="row justify-content-center">
+			<div class="col-12 col-sm-8 col-lg-6">
+				<!-- Section Heading-->
+				<div class="section_heading text-center wow fadeInUp" data-wow-delay="0.2s" style="visibility: visible; animation-delay: 0.2s; animation-name: fadeInUp;">
+					<h3>Frequently Asked Questions</h3>
+					<div class="line"></div>
+				</div>
+			</div>
+		</div>
+		<div class="row justify-content-center">
+			<!-- FAQ Area-->
+			<div class="col-12 col-sm-10 col-lg-8">
+				<div class="accordion faq-accordian" id="faqAccordion">
+					<div class="card border-0 wow fadeInUp" data-wow-delay="0.2s" style="visibility: visible; animation-delay: 0.2s; animation-name: fadeInUp;">
+						<div class="card-header" id="headingOne">
+							<h6 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">How can I migrate my data?<span class="lni-chevron-up"></span></h6>
+						</div>
+						<div class="collapse" id="collapseOne" aria-labelledby="headingOne" data-parent="#faqAccordion">
+							<div class="card-body">
+								<p>Don't worry. We'll do it for you entirely and without any additional charges.</p>
+							</div>
+						</div>
+					</div>
+					<div class="card border-0 wow fadeInUp" data-wow-delay="0.3s" style="visibility: visible; animation-delay: 0.3s; animation-name: fadeInUp;">
+						<div class="card-header" id="headingTwo">
+							<h6 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">How is the support available?<span class="lni-chevron-up"></span></h6>
+						</div>
+						<div class="collapse" id="collapseTwo" aria-labelledby="headingTwo" data-parent="#faqAccordion">
+							<div class="card-body">
+								<p>We're available 24/7 to support you remotely via WhatsApp, Zoom, MS Teams & phone calls. Moreover, if push comes to shelve, we'll make sure to travel to you.</p>
+							</div>
+						</div>
+					</div>
+					<div class="card border-0 wow fadeInUp" data-wow-delay="0.4s" style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInUp;">
+						<div class="card-header" id="headingThree">
+							<h6 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">How fast can you setup my account??<span class="lni-chevron-up"></span></h6>
+						</div>
+						<div class="collapse" id="collapseThree" aria-labelledby="headingThree" data-parent="#faqAccordion">
+							<div class="card-body">
+								<p>1 week for normal subscriptions and 1.5 months for the branded app.</p>
+							</div>
+						</div>
+					</div>
+					<div class="card border-0 wow fadeInUp" data-wow-delay="0.5s" style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInUp;">
+						<div class="card-header" id="headingfive">
+							<h6 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapsefive" aria-expanded="true" aria-controls="collapsefive">Will I be entitled to get the updates?<span class="lni-chevron-up"></span></h6>
+						</div>
+						<div class="collapse" id="collapsefive" aria-labelledby="headingfive" data-parent="#faqAccordion">
+							<div class="card-body">
+								<p>Absolutely!</p>
+							</div>
+						</div>
+					</div>
+					<div class="card border-0 wow fadeInUp" data-wow-delay="0.6s" style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInUp;">
+						<div class="card-header" id="headingsix">
+							<h6 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapsesix" aria-expanded="true" aria-controls="collapsesix">How many users can I have?<span class="lni-chevron-up"></span></h6>
+						</div>
+						<div class="collapse" id="collapsesix" aria-labelledby="headingsix" data-parent="#faqAccordion">
+							<div class="card-body">
+								<p>Unlimited.</p>
+							</div>
+						</div>
+					</div>
+					<div class="card border-0 wow fadeInUp" data-wow-delay="0.7s" style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInUp;">
+						<div class="card-header" id="headingseven">
+							<h6 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseseven" aria-expanded="true" aria-controls="collapseseven">How many clients can use the apps?<span class="lni-chevron-up"></span></h6>
+						</div>
+						<div class="collapse" id="collapseseven" aria-labelledby="headingseven" data-parent="#faqAccordion">
+							<div class="card-body">
+								<p>Unlimited. Sky's the limit!</p>
+							</div>
+						</div>
+					</div>
+			        <div class="card border-0 wow fadeInUp" data-wow-delay="0.8s" style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInUp;">
+						<div class="card-header" id="headingeight">
+							<h6 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseeight" aria-expanded="true" aria-controls="collapseeight">Do you have Arabic speaking support team?<span class="lni-chevron-up"></span></h6>
+						</div>
+						<div class="collapse" id="collapseeight" aria-labelledby="headingeight" data-parent="#faqAccordion">
+							<div class="card-body">
+								<p>
+									Definitely, yes.
+								</p>
+							</div>
+						</div>
+					</div>
+					<div class="card border-0 wow fadeInUp" data-wow-delay="0.9s" style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInUp;">
+						<div class="card-header" id="headingnine">
+							<h6 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapsenine" aria-expanded="true" aria-controls="collapsenine">What if we want an additional feature?<span class="lni-chevron-up"></span></h6>
+						</div>
+						<div class="collapse" id="collapsenine" aria-labelledby="headingnine" data-parent="#faqAccordion">
+							<div class="card-body">
+								<p>We'll jump on a meeting to understand it, then we'll analyze it and revert back to you with a delivery plan.</p>
+							</div>
+						</div>
+					</div>
+					<div class="card border-0 wow fadeInUp" data-wow-delay="0.9s" style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInUp;">
+						<div class="card-header" id="headingninenine">
+							<h6 class="mb-0 collapsed" data-toggle="collapse" data-target="#collapseninenine" aria-expanded="true" aria-controls="collapseninenine">Do you provide training?<span class="lni-chevron-up"></span></h6>
+						</div>
+						<div class="collapse" id="collapseninenine" aria-labelledby="headingninenine" data-parent="#faqAccordion">
+							<div class="card-body">
+								<p>Of course! We train you as many times as you need until we make sure you and your team are 100% confident.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Support Button-->
+				<div class="support-button text-center d-flex align-items-center justify-content-center mt-4 wow fadeInUp" data-wow-delay="0.5s" style="visibility: visible; animation-delay: 0.5s; animation-name: fadeInUp;">
+					<i class="lni-emoji-sad"></i>
+					<p class="mb-0 px-2">Can't find your answers?</p>
+					<a href="https://api.whatsapp.com/send?phone=+97336021122&text=Hello"> Contact us</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

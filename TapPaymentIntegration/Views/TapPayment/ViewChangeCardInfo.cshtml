@@ -1,0 +1,82 @@
+﻿@model IEnumerable<TapPaymentIntegration.Models.Card.ChangeCardInfo>
+@{
+    ViewData["Title"] = "ViewChangeCardInfo";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    var UserList = ViewBag.Userinfo as IEnumerable<TapPaymentIntegration.Areas.Identity.Data.ApplicationUser>;
+}
+
+<br />
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header" style="padding: 0.5rem 1.25rem;">
+                        <h4 class="text-center mb-0">Card Change Info</h4>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="example1" class="table table-bordered table-striped table-responsive-xl">
+                            <thead>
+                                <tr style="text-align:center!important">
+                                    <th>GYM Name</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Country</th>
+                                    <th>Subscription Name</th>
+                                    <th>Old Payment Method</th>
+                                    <th>New Payment Method</th>
+                                    <th>Card Change Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model)
+                                {
+                                    <tr>
+                                        <td style="text-align:center!important">
+                                            @{
+                                                var gymname = UserList.Where(x => x.Email == user.Email).Select(x => x.GYMName).FirstOrDefault();
+                                                <span>@gymname</span>
+                                            }
+                                        </td>
+                                        <td style="text-align:center!important">@user.UserName</td>
+                                        <td style="text-align:center!important">@user.Email</td>
+                                        <td style="text-align:center!important">
+                                            @{
+                                                var countryname = UserList.Where(x => x.Email == user.Email).Select(x => x.Country).FirstOrDefault();
+                                                <span>@countryname</span>
+                                            }
+                                        </td>
+                                        <td style="text-align:center!important">@user.SubscriptionName</td>
+                                        <td style="text-align:center!important">@user.OldCardName - (Changed)</td>
+                                        <td style="text-align:center!important">@user.NewCardName - (Active)</td>
+                                        <td style="text-align:center!important">
+                                            @{
+                                                DateTime dateTime = Convert.ToDateTime(user.ChangeCardDate);
+                                                @dateTime.ToString("dd/MM/yyyy")
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+</section>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#example1").DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    });
+</script>

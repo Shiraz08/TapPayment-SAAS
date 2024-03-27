@@ -1,0 +1,224 @@
+﻿@model TapPaymentIntegration.Models.PaymentDTO.ChargeDetail
+@{
+    ViewData["Title"] = "ViewInvoice";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+@{
+    if(Model != null)
+    {
+        <section class="content canvas_div_pdf">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="callout callout-info">
+                            <h5><i class="fas fa-info"></i> Note:</h5>
+                            <span style="color:green">Your Payment has been received successfully. Thank you.</span>
+                        </div>
+
+
+                        <!-- Main content -->
+                        <div class="invoice p-3 mb-3">
+                            <!-- title row -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <h4>
+                                        <img src="~/adminpanel/dist/img/adminltelogo.png" style="height:75px!important" />
+                                        <small class="float-right">Date: @DateTime.UtcNow.ToString("dd/MM/yyyy")</small>
+                                    </h4>
+                                </div>
+                                <!-- /.col -->
+                            </div>
+                            <!-- info row -->
+                            <div class="row invoice-info">
+                                <div class="col-sm-4 invoice-col">
+                                    From
+                                    <address>
+                                        <strong>@Model.customer.first_name</strong><br>
+                                        ID: @Model.customer.id<br>
+                                        <b>Phone: @Model.customer.phone.country_code @Model.customer.phone.number</b><br>
+                                        <b>Email: @Model.customer.email</b>
+                                    </address>
+                                </div>
+                                <!-- /.col -->
+                                <div class="col-sm-4 invoice-col">
+                                    To
+                                    <address>
+                                        <strong>Tamarran</strong><br>
+                                        Building 123 Road 456, Block 78<br>
+                                        Phone: +973 36021122<br>
+                                        Email: Accounts@tamarran.com
+                                    </address>
+                                </div>
+                                <!-- /.col -->
+                                <div class="col-sm-4 invoice-col">
+                                    <b>Invoice No: Inv_@Model.InvoiceID</b><br>
+                                    <br>
+                                    <b>Order ID: @Model.reference.order</b><br>
+                                    <b>Transaction ID: @Model.reference.transaction</b><br>
+                                    @{
+                                        DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(Model.Created_date);
+                                        <b>Pay Date: @dateTimeOffset.DateTime.ToString("dd/MM/yyyy")</b>
+                                    }
+                                </div>
+                                <!-- /.col -->
+                            </div>
+                            <!-- /.row -->
+                            <!-- Table row -->
+                            <div class="row">
+                                <div class="col-12 table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Subscription Name</th>
+                                                <th>Subscription Currency</th>
+                                                <th>Subscription Fee</th>
+                                                <th>Subscription Frequency</th>
+                                                <th>Subscription Country</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>@Model.Subscriptions.Name</td>
+                                                <td>@Model.Subscriptions.Currency</td>
+                                                <td>@Model.Subscriptions.Amount</td>
+                                                <td>@Model.Frequency</td>
+                                                <td>@Model.Subscriptions.Countries</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- /.col -->
+                            </div>
+                            <!-- /.row -->
+
+                            <div class="row">
+                                <!-- accepted payments column -->
+                                <div class="col-6">
+                                    <p class="lead">Payment Methods:</p>
+                                    @{
+                                        if (Model.card != null)
+                                        {
+                                            if (Model.card.scheme == "VISA")
+                                            {
+                                                <img src="~/adminpanel/dist/img/credit/visa.png" alt="Visa">
+                                            }
+                                            else if (Model.card.scheme == "MASTERCARD")
+                                            {
+                                                <img src="~/adminpanel/dist/img/credit/mastercard.png" alt="Mastercard">
+                                            }
+                                            else if (Model.card.scheme == "MADA")
+                                            {
+                                                <img src="~/adminpanel/dist/img/credit/mada.png" alt="Mastercard" style="height: 44px;">
+                                            }
+                                        }
+                                        if (Model.Paymentname == "BENEFIT")
+                                        {
+                                            <img src="~/adminpanel/dist/img/credit/benefit.png" alt="Mastercard" style="height: 44px;">
+                                        }
+                                    }
+                                </div>
+                                <!-- /.col -->
+                                <div class="col-6">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <tr>
+                                                <th style="width:50%">Subtotal:</th>
+                                                @{
+                                                    var finalamount = decimal.Round(Convert.ToDecimal(@Model.finalamount), 2);
+                                                    <td style="text-align:center!important">@Model.Subscriptions.Currency @finalamount</td>
+                                                }
+
+                                            </tr>
+                                            <tr>
+                                                <th>VAT </th>
+                                                @{
+                                                    var vats = decimal.Round(Convert.ToDecimal(@Model.VAT), 2);
+                                                    <td style="text-align:center!important">@Model.Subscriptions.Currency @vats</td>
+                                                }
+                                            </tr>
+                                            <tr>
+                                                <th>Setup Fee:</th>
+                                                <td style="text-align:center!important">@Model.Subscriptions.Currency @Model.Subscriptions.SetupFee <br /><span style="color:red!important">This fee is charged once only.</span></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Total:</th>
+                                                @{
+                                                    var total = decimal.Round(Convert.ToDecimal(Model.amount), 2);
+                                                    <td style="text-align:center!important">@Model.Subscriptions.Currency @total</td>
+                                                }
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <!-- /.col -->
+                            </div>
+                            <!-- /.row -->
+                            <!-- this row will not appear when printing -->
+                            <div class="row no-print">
+                                <div class="col-12">
+                                    <a href="javascript void(0)" rel="noopener" target="_blank" class="btn btn-default" onclick="printAssessment();"><i class="fas fa-print"></i> Print</a>
+                                    <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;" onclick="getPDF();">
+                                        <i class="fas fa-download"></i> Generate PDF
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.invoice -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+            </div><!-- /.container-fluid -->
+        </section>
+    }
+    else
+    {
+         <section class="content canvas_div_pdf">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="callout callout-info">
+                            <h5><i class="fas fa-info"></i> Note:</h5>
+                            <span style="color:red">Authorization Required</span>
+                        </div>
+                        <!-- /.invoice -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+            </div><!-- /.container-fluid -->
+        </section>
+    }
+}
+
+<script>
+    function printAssessment() {
+        //alert("Print the little page");
+        window.print();
+    }
+    function getPDF() {
+        var HTML_Width = $(".canvas_div_pdf").width();
+        var HTML_Height = $(".canvas_div_pdf").height();
+        var top_left_margin = 15;
+        var PDF_Width = HTML_Width + (top_left_margin * 2);
+        var PDF_Height = (PDF_Width * 1.0) + (top_left_margin * 2);
+        var canvas_image_width = HTML_Width;
+        var canvas_image_height = HTML_Height;
+        var totalPDFPages = Math.ceil(HTML_Height / PDF_Height) - 1;
+        html2canvas($(".canvas_div_pdf")[0], { allowTaint: true, scale: 2 }).then(function (canvas) {
+            canvas.getContext('2d');
+            var imgData = canvas.toDataURL("image/jpeg", 1.0);
+            var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
+            pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
+
+
+            for (var i = 1; i <= totalPDFPages; i++) {
+                pdf.addPage(PDF_Width, PDF_Height);
+                pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height * i) + (top_left_margin * 4), canvas_image_width, canvas_image_height);
+            }
+
+            pdf.save("Invoice.pdf");
+        });
+    };
+</script>
+
+

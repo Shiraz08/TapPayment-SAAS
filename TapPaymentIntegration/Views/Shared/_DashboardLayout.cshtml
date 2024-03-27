@@ -1,0 +1,457 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using TapPaymentIntegration.Areas.Identity.Data
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor Accessor
+@{
+    string displayName = "";
+    var UserType = "";
+    var user = await UserManager.GetUserAsync(User);
+    if (user == null)
+    {
+        displayName = User.Identity.Name;
+        UserType = "Customer";
+    }
+    else
+    {
+        UserType = user.UserType;
+        displayName = user.GYMName;
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin - Tap Integration</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="~/AdminPanel/plugins/fontawesome-free/css/all.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- Tempusdominus Bootstrap 4 -->
+  <link rel="stylesheet" href="~/AdminPanel/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="~/AdminPanel/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- JQVMap -->
+  <link rel="stylesheet" href="~/AdminPanel/plugins/jqvmap/jqvmap.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="~/AdminPanel/dist/css/adminlte.min.css">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="~/AdminPanel/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+  <!-- Daterange picker -->
+  <link rel="stylesheet" href="~/AdminPanel/plugins/daterangepicker/daterangepicker.css">
+  <!-- summernote -->
+  <link rel="stylesheet" href="~/AdminPanel/plugins/summernote/summernote-bs4.min.css">
+      <!-- DataTables -->
+    <link rel="stylesheet" href="~/AdminPanel/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/AdminPanel/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/AdminPanel/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/AdminPanel/plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="~/AdminPanel/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <link rel="stylesheet" href="~/AdminPanel/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <link rel="stylesheet" href="~/AdminPanel/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <link rel="stylesheet" href="~/AdminPanel/plugins/toastr/toastr.min.css">
+  <style>
+        .brand-link .brand-image {
+            float: left;
+            line-height: 1.8;
+            margin-left: -0.2rem;
+            margin-right: 0.5rem;
+            margin-top: -10px;
+            max-height: 49px;
+            width: 240px;
+            border-radius: 6px;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: forestgreen;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+            cursor: default;
+            float: left;
+            margin-right: 5px;
+            margin-top: 5px;
+            padding: 0 5px;
+            color: white;
+        }
+    </style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <!-- Preloader -->
+  <div class="preloader flex-column justify-content-center align-items-center">
+    <img class="animation__shake" src="~/AdminPanel/dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="75" width="140">
+  </div>
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+         <a href="@Url.Action("Index","Home")" class="nav-link">Go to Website</a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="@Url.Action("Logout","Home")" class="nav-link">Logout</a>
+      </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+          <i class="fas fa-expand-arrows-alt"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+                    <a class="nav-link"  href="#" >
+                        Welcome &nbsp; [<span style="font-weight: bold;"> @displayName</span>]
+                    </a>
+          
+      </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+            <a href="@Url.Action("Dashboard","Home")" class="brand-link">
+                <img src="~/adminpanel/dist/img/adminltelogo.png" style="height: 49px;width: 232px; border-radius: 7px;margin-bottom: -13px;margin-top: -16px;" />
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            @if (UserType == "SuperAdmin")
+            {
+                 <li class="nav-item">
+                     <a href="#" class="nav-link">
+                         <i class="nav-icon fas fa-user"></i>
+                         <p>
+                             Customer
+                             <i class="fas fa-angle-left right"></i>
+                         </p>
+                     </a>
+                     <ul class="nav nav-treeview">
+                         <li class="nav-item">
+                             <a href="@Url.Action("ViewCustomer","Home")" class="nav-link">
+                                 <i class="far fa-circle nav-icon"></i>
+                                 <p>View Customer</p>
+                             </a>
+                         </li>
+                         <li class="nav-item">
+                                        <a href="@Url.Action("AddCustomer","Home")" class="nav-link">
+                                 <i class="far fa-circle nav-icon"></i>
+                                  <p>Add Customer</p>
+                             </a>
+                         </li>
+                     </ul>
+                 </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-address-card"></i>
+                                    <p>
+                                        Subscription
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("Viewsubscription","Home")" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>View Subscriptions</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("Addsubscription","Home")" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Add Subscription</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-credit-card"></i>
+                                    <p>
+                                        Payment
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("GetAllCharges","Home")" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>View Payments</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-credit-card"></i>
+                                    <p>
+                                        Card Change
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("ViewChangeCardInfo","TapPayment")" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>View Card Change</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-credit-card"></i>
+                                    <p>
+                                        Invoice
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("ShowInvoice","Home", new {PaymentStatus = "All"})" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>All Invoice</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("ShowInvoice","Home", new {PaymentStatus = "Payment Captured"})" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Paid Invoice</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("ShowInvoice","Home", new {PaymentStatus = "Un-Paid"})" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Unpaid Invoice</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-user"></i>
+                                    <p>
+                                        Manage Account
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("ChangePassword","Accounts")" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Change Password</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("ChangeProfile","Accounts")" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Update Profile</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+             }
+            else
+            {
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-credit-card"></i>
+                                    <p>
+                                        Invoice
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("ShowInvoice","Home", new {PaymentStatus = "All"})" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>All Invoice</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("ShowInvoice","Home", new {PaymentStatus = "Payment Captured"})" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Paid Invoice</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("ShowInvoice","Home", new {PaymentStatus = "Un-Paid"})" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Unpaid Invoice</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-info-circle"></i>
+                                    <p>
+                                        Account
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("ViewGYMCustomer","Home", new { id=user.Id })" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>View Account Info</p> 
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-address-card"></i>
+                                    <p>
+                                        Subscription
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("ViewSubinfo","Home", new { id = user.Id })" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i> 
+                                            <p>View Subscription Info</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-credit-card"></i>
+                                    <p>
+                                        Payment Card
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("ChangeCard","TapPayment", new { id=user.Id })" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Change Card</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-user"></i>
+                                    <p>
+                                        Manage Account
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("ChangePassword","Accounts")" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Change Password</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("ChangeProfile","Accounts")" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Update Profile</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+            }
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+                    @RenderBody()
+  </div>
+
+  <footer class="main-footer">
+    <strong>Copyright &copy; 2022-2023 <a href="#">Tap Integration</a>.</strong>
+    All rights reserved.
+    <div class="float-right d-none d-sm-inline-block">
+                @if (user.UserType == "SuperAdmin")
+                {
+                    <a href="https://localhost:7279/hangfire" class="mr-2 btn btn-success" style="text-decoration: revert;">Hang Fire DashBoard</a>
+                }
+    </div>
+  </footer>
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="~/AdminPanel/plugins/jquery/jquery.min.js"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="~/AdminPanel/plugins/jquery-ui/jquery-ui.min.js"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<script>
+  $.widget.bridge('uibutton', $.ui.button)
+</script>
+<!-- Bootstrap 4 -->
+<script src="~/AdminPanel/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/AdminPanel/plugins/select2/js/select2.full.min.js"></script>
+<!-- ChartJS -->
+<script src="~/AdminPanel/plugins/chart.js/Chart.min.js"></script>
+<!-- Sparkline -->
+<script src="~/AdminPanel/plugins/sparklines/sparkline.js"></script>
+<!-- JQVMap -->
+<script src="~/AdminPanel/plugins/jqvmap/jquery.vmap.min.js"></script>
+<script src="~/AdminPanel/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+<!-- jQuery Knob Chart -->
+<script src="~/AdminPanel/plugins/jquery-knob/jquery.knob.min.js"></script>
+<!-- daterangepicker -->
+<script src="~/AdminPanel/plugins/moment/moment.min.js"></script>
+<script src="~/AdminPanel/plugins/daterangepicker/daterangepicker.js"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="~/AdminPanel/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- Summernote -->
+<script src="~/AdminPanel/plugins/summernote/summernote-bs4.min.js"></script>
+<!-- overlayScrollbars -->
+<script src="~/AdminPanel/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<!-- AdminLTE App -->
+<script src="~/AdminPanel/dist/js/adminlte.js"></script>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<script src="~/AdminPanel/dist/js/pages/dashboard.js"></script>
+    <!-- DataTables  & Plugins -->
+    <script src="~/AdminPanel/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/AdminPanel/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/AdminPanel/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/AdminPanel/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/AdminPanel/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/AdminPanel/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/AdminPanel/plugins/jszip/jszip.min.js"></script>
+    <script src="~/AdminPanel/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/AdminPanel/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/AdminPanel/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/AdminPanel/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/AdminPanel/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+</body>
+</html>

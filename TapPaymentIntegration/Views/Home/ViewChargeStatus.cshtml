@@ -1,0 +1,63 @@
+﻿@model IEnumerable<TapPaymentIntegration.Models.PaymentDTO.Activity>
+@{
+    ViewData["Title"] = "View Charge Status";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<br />
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header" style="padding: 0.5rem 1.25rem;">
+                        <h4 class="text-center mb-0">Charge Activity Detail</h4>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="example1" class="table table-bordered table-striped table-responsive-xl">
+                            <thead>
+                                <tr style="text-align:center!important">
+                                    <th>Activity ID</th>
+                                    <th>Created</th>
+                                    <th>Status</th>
+                                    <th>Currency</th>
+                                    <th>Amount</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model)
+                                {
+                                    <tr>
+                                        <td style="text-align:center!important">@user.id</td>
+                                        <td style="text-align:center!important">@user.created</td>
+                                        <td style="text-align:center!important">@user.status</td>
+                                        <td style="text-align:center!important">@user.currency</td>
+                                        <td style="text-align:center!important">@user.amount</td>
+                                        <td style="text-align:center!important">@user.remarks</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+</section>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#example1").DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    });
+</script>
+

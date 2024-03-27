@@ -1,0 +1,190 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using TapPaymentIntegration.Areas.Identity.Data
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor Accessor
+@{
+    string displayName = "";
+    int SubscribeID = 0;
+    var UserTypes = "";
+    var user = await UserManager.GetUserAsync(User);
+    if (user == null)
+    {
+        displayName = User.Identity.Name;
+        SubscribeID = 0;
+        UserTypes = "Customer";
+    }
+    else
+    {
+        displayName ="Hello" + " "+ user.GYMName;
+        SubscribeID = user.SubscribeID;
+        UserTypes = user.UserType;
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Tamarran</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Libraries Stylesheet -->
+    <link href="~/Website/lib/animate/animate.min.css" rel="stylesheet">
+    <link href="~/Website/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="~/Website/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="~/Website/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Silka">
+    <style type="text/css" id="cst_font_data">
+            .float {
+                position: fixed;
+                width: 60px;
+                height: 60px;
+                bottom: 40px;
+                right: 40px;
+                background-color: #25d366;
+                color: #FFF;
+                border-radius: 50px;
+                text-align: center;
+                font-size: 30px;
+                box-shadow: 2px 2px 3px #999;
+                z-index: 100;
+            }
+
+            .my-float {
+                margin-top: 16px;
+            }
+
+        body {
+            font-family: "Silka";
+        }
+</style>
+</head>
+
+<body>
+    <!-- Topbar Start -->
+    <div class="container-fluid d-none d-lg-block" style="background-color:#efd41c!important;color: black;font-weight: bold;font-size: 18px;">
+        <div class="row py-2 px-lg-5">
+            <div class="col-lg-6 text-left mb-2 mb-lg-0">
+                <div class="d-inline-flex align-items-center">
+                    <small><i class="fa fa-phone-alt mr-2"></i>+973-36021122</small>
+                    <small class="px-3">|</small>
+                    <small><i class="fa fa-envelope mr-2"></i><a href="mailto:accounts@tamarran.com">accounts@tamarran.com</a></small>
+                </div>
+            </div>
+            <div class="col-lg-6 text-right">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-primary px-2" href="">
+                            <small style="color:black!important">@displayName</small>
+                        </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Topbar End -->
+    <!-- Navbar Start -->
+    <div class="container-fluid p-0">
+        <nav class="navbar navbar-expand-lg bg-white navbar-light py-3 py-lg-0 px-lg-5">
+            <a href="@Url.Action("Index","Home")" class="navbar-brand ml-lg-3">
+                <img src="~/adminpanel/dist/img/adminltelogo.png" style="height:75px!important"/>
+            </a>
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between px-lg-3" id="navbarCollapse">
+                <div class="navbar-nav m-auto py-0">
+                    <a href="@Url.Action("Index","Home")" class="nav-item nav-link active">Home</a>
+                    @if (SignInManager.IsSignedIn(User)) 
+                    {
+@*                         @if (SubscribeID > 0 && user.Tap_CustomerID != null)
+                        {
+                            <a href="@Url.Action("Dashboard","Home")" class="nav-item nav-link">Dashboard</a>
+                        }
+                        @if (UserTypes == "SuperAdmin")
+                        {
+                            <a href="@Url.Action("Dashboard","Home")" class="nav-item nav-link">Dashboard</a>
+                        } *@
+                        <a href="@Url.Action("Dashboard","Home")" class="nav-item nav-link">Dashboard</a>
+                        <a href="@Url.Action("Logout","Home")" class="nav-item nav-link">Logout</a>
+                    }
+                    else
+                    {
+                        <a href="/Identity/Account/Login" class="nav-item nav-link">Sign In</a>
+                    }
+                </div>
+                @if (SubscribeID > 0 && user.Tap_CustomerID != null)
+                {
+                    <a href="#pricing" class="btn btn-primary d-none d-lg-block">Subscribe Plan</a>
+                }
+            </div>
+        </nav>
+    </div>
+    <!-- Navbar End -->
+    <!-- Carousel Start -->
+
+
+    @RenderBody()
+    <!-- Footer Start -->
+   
+    <div class="container-fluid bg-dark text-light border-top py-4" style="border-color: rgba(256, 256, 256, .15) !important;" >
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-left mb-3 mb-md-0">
+                    <p class="m-0" style="color:black!important">&copy; <a href="https://tamarran.com/bh-en">Tamarran</a>. All Rights Reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-right">
+                    <p class="m-0 " style="color:black!important">Designed by <a href="https://tamarran.com/bh-en" >Tamarran</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+    <a href="https://api.whatsapp.com/send?phone=+97336021122&text=Hello" class="float" target="_blank">
+        <i class="fa fa-whatsapp my-float"></i>
+    </a>
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Website/lib/easing/easing.min.js"></script>
+    <script src="~/Website/lib/waypoints/waypoints.min.js"></script>
+    <script src="~/Website/lib/counterup/counterup.min.js"></script>
+    <script src="~/Website/lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="~/Website/lib/tempusdominus/js/moment.min.js"></script>
+    <script src="~/Website/lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="~/Website/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+    <!-- Contact Javascript File -->
+    <script src="~/Website/mail/jqBootstrapValidation.min.js"></script>
+    <script src="~/Website/mail/contact.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="~/Website/js/main.js"></script>
+    <script>
+        var showLoader = function (form) {
+            $("<div />").css({
+                'position': 'fixed',
+                'left': 0,
+                'right': 0,
+                'bottom': 0,
+                'top': 0,
+                'background': '#0020ff36',
+                'z-index': '99',
+                'text-align': 'center'
+            }).appendTo($("body"))
+                .append(
+                    $("<img />").attr("src", "https://mir-s3-cdn-cf.behance.net/project_modules/disp/35771931234507.564a1d2403b3a.gif")
+                );
+        }
+    </script>
+</body>
+
+</html>

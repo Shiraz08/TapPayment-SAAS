@@ -1,0 +1,104 @@
+﻿@using TapPaymentIntegration.Utility
+@model IEnumerable<TapPaymentIntegration.Models.InvoiceDTO.Invoice>
+@{
+    ViewData["Title"] = "ShowInvoice";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+
+<br />
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header" style="padding: 0.5rem 1.25rem;">
+                        <h4 class="text-center mb-0">Invoice List</h4>
+                    </div>
+                    <div class="card-body">
+                        <table id="example1" class="table table-bordered table-striped table-responsive-xl">
+                            <thead>
+                                <tr style="text-align:center!important">
+                                    <th>Invoice No</th>
+                                    <th>GYM Name</th>
+                                    <th>Country</th>
+                                    <th>Subscription Name</th>
+                                    <th>Invoice Start Date</th>
+                                    <th>Invoice End Date</th>
+                                    <th>Subscription Currency</th>
+                                    <th>Subscription Amount</th>
+                                    <th>VAT</th>
+                                    <th>Discount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var invoice in Model)
+                                {
+                                    <tr>
+                                        <td style="text-align:center!important">
+                                            @{
+                                                var valw = "Inv" + @invoice.InvoiceId;
+                                                <span>@valw</span>
+                                            }
+                                        </td>
+                                        <td style="text-align:center!important">@invoice.GymName</td>
+                                        <td style="text-align:center!important">@invoice.Country</td>
+                                        <td style="text-align:center!important">@invoice.SubscriptionName</td>
+                                        <td style="text-align:center!important">
+                                            @{
+                                                DateTime sdateTime = Convert.ToDateTime(invoice.InvoiceStartDate);
+                                                <span>@sdateTime.ToString("dd/MM/yyyy")</span>
+                                            }
+                                        </td>
+                                        <td style="text-align:center!important">
+                                            @{
+                                                DateTime edateTime = Convert.ToDateTime(invoice.InvoiceEndDate);
+                                                <span>@edateTime.ToString("dd/MM/yyyy")</span>
+                                            }
+                                        </td>
+                                        <td style="text-align:center!important">@invoice.Currency</td>
+                                        <td style="text-align:center!important">@invoice.SubscriptionAmount</td>
+                                        <td style="text-align:center!important">@decimal.Round(Convert.ToDecimal(InvoiceHelper.TruncateAfterSpace(invoice.VAT)), 2)</td>
+                                        <td style="text-align:center!important">@invoice.Discount</td>
+                                        @if (invoice.Status == "Payment Captured")
+                                        {
+                                            <td style="text-align:center!important;color:green!important">@invoice.Status</td>
+                                        }
+                                        else
+                                        {
+                                            <td style="text-align:center!important">@invoice.Status</td>
+                                        }
+                                        <td style="text-align:center!important">
+                                            @if (invoice.Status != "Payment Captured")
+                                            {
+                                                <a class="btn btn-primary" href="@invoice.InvoiceLink">Pay Invoice</a>
+                                            }
+                                            else
+                                            {
+                                                <a class="btn btn-success" href="@Url.Action("ViewInvoice","Home",new {id = invoice.ChargeId, sub_id = invoice.SubscriptionId, userid = invoice.UserId,invoiceid = invoice.InvoiceId})">View Invoice</a>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<br />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#example1").DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    });
+</script>
+

@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewData["Title"] = "ChangeCardResponse";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<br />
+<br />
+<br />
+<center><h3>You updated your Card Details successfully.</h3></center>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            window.location.href = "/Home/Dashboard"
+        }, 5000);
+    });
+</script>
+

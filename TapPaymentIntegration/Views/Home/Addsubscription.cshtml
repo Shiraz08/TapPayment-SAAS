@@ -1,0 +1,100 @@
+﻿@model TapPaymentIntegration.Models.Subscription.Subscriptions
+@{
+    ViewData["Title"] = "Addsubscription";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+<br />
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-secondary">
+            <div class="card-header">
+                <h5 class="text-center mb-0" style="font-weight:700;color:white;">Add Subscription</h5>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("Addsubscription", "Home", FormMethod.Post))
+                {
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Subscription Name&nbsp;<span style="color:red!important"><b>*</b></span></label>
+                                <input type="text" class="form-control" id="Name" name="Name" tabindex="1" required="required" asp-for="Name" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Currency:&nbsp;<span style="color:red!important"><b>*</b></span></label>
+                                <input type="text" class="form-control" id="Currency" name="Currency" tabindex="3" required="required" asp-for="Currency" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Frequency:&nbsp;<span style="color:red!important"><b>*</b></span></label>
+                                <select class="form-control select2" multiple="multiple" data-placeholder="Select a Frequency" id="Frequency" name="Frequency" tabindex="2" required="required">
+                                    <option value="DAILY">Daily</option>
+                                    <option value="WEEKLY">Weekly</option>
+                                    <option value="MONTHLY">Monthly</option>
+                                    <option value="QUARTERLY">Quarterly</option>
+                                    <option value="HALFYEARLY">Semi Annual</option>
+                                    <option value="YEARLY">Annually</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Country:&nbsp;<span style="color:red!important"><b>*</b></span></label>
+                                <div class="input-group mb-3">
+                                    <select name="Countries" class="form-control" id="Countries" tabindex="4" required asp-for="Countries">
+                                        <option value=" " label="Select a Country" selected="selected">Select a Country</option>
+                                        <option value="Bahrain" label="Bahrain">Bahrain</option>
+                                        <option value="KSA" label="KSA">KSA</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Setup Fee:&nbsp;<span style="color:red!important"><b>*</b></span></label>
+                                <input type="text" asp-for="SetupFee" class="form-control" id="SetupFee" name="SetupFee" tabindex="5" required="required" min="0" oninput="validity.valid||(value='');" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Subscription Amount:&nbsp;<span style="color:red!important"><b>*</b></span></label>
+                                <input type="number" class="form-control" asp-for="Amount"  id="Amount" name="Amount" tabindex="7" required="required" min="0" oninput="validity.valid||(value='');" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>VAT:&nbsp;<span style="color:red!important"><b>*</b></span></label>
+                                <input type="number" class="form-control" id="VAT" asp-for="VAT"  name="VAT" required="required" min="0" oninput="validity.valid||(value='');" value="0" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Discount:&nbsp;<span style="color:red!important"><b>*</b></span></label>
+                                <input type="number" class="form-control" id="Discount" asp-for="Discount" name="Discount" required="required" min="0" oninput="validity.valid||(value='');" value="0" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div style="padding-top: 22px;">
+                                <button class="btn btn-success mt-2" type="submit" tabindex="6">Add Subscription</button>
+                            </div>
+                        </div>
+                        <p class="mb-1">
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                        </p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.js" integrity="sha512-8Z5++K1rB3U+USaLKG6oO8uWWBhdYsM3hmdirnOEWp8h2B1aOikj5zBzlXs8QOrvY9OxEnD2QDkbSKKpfqcIWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    $(document).ready(function () {
+        $('.select2').select2();
+        $("form").validate();
+    });
+</script>

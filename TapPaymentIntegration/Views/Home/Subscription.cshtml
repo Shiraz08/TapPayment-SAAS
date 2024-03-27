@@ -1,0 +1,678 @@
+﻿@model TapPaymentIntegration.Models.Subscription.Subscriptions
+@using Microsoft.AspNetCore.Identity
+@using TapPaymentIntegration.Areas.Identity.Data
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor Accessor
+@{
+	ViewData["Title"] = "Subscription"; 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var user = await UserManager.GetUserAsync(User);
+    var msg = TempData["Message"];
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.3.4/bluebird.min.js"></script>
+<script src="https://secure.gosell.io/js/sdk/tap.min.js"></script>
+<style>
+    @@import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600');
+@@import url('https://fonts.googleapis.com/css?family=Raleway:300,400');
+html {
+  box-sizing: border-box;
+  font-weight: 300;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  position: relative;
+  box-sizing: inherit;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+    .bg-light {
+        background-color: black !important;
+    }
+
+    .bg-dark {
+        background-color: #efd41c!important;
+    }
+
+    .owl-item {
+        width: 470px !important;
+        margin-right: 12px !important;
+    }
+
+
+.input-group {
+  justify-content: flex-end;
+  margin-bottom: .5em !important;
+}
+
+.btn {
+  border-radius: 0;
+  margin-right: .5em;
+  color: #fff !important;
+  width: 100px;
+}
+
+.nav-tabs,
+.tab-content {
+  max-width: 100%;
+}
+
+        .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+            color: black;
+            background-color: #efd41c;
+            border-color: #efd41c;
+        }
+
+    .form-row {
+        width: 70%;
+        float: left;
+        background-color: #ededed;
+    }
+
+    #card-element {
+        background-color: transparent;
+        height: 40px;
+        border-radius: 4px;
+        border: 1px solid transparent;
+        box-shadow: 0 1px 3px 0 #e6ebf1;
+        -webkit-transition: box-shadow 150ms ease;
+        transition: box-shadow 150ms ease;
+    }
+
+    #card-element--focus {
+        box-shadow: 0 1px 3px 0 #cfd7df;
+    }
+
+    #card-element--invalid {
+        border-color: #fa755a;
+    }
+
+    #card-element--webkit-autofill {
+        background-color: #fefde5 !important;
+    }
+
+    #submitbutton, #tap-btn {
+        align-items: flex-start;
+        background-attachment: scroll;
+        background-clip: border-box;
+        background-color: rgb(50, 50, 93);
+        background-image: none;
+        background-origin: padding-box;
+        background-position-x: 0%;
+        background-position-y: 0%;
+        background-size: auto;
+        border-bottom-color: rgb(255, 255, 255);
+        border-bottom-left-radius: 4px;
+        border-bottom-right-radius: 4px;
+        border-bottom-style: none;
+        border-bottom-width: 0px;
+        border-image-outset: 0px;
+        border-image-repeat: stretch;
+        border-image-slice: 100%;
+        border-image-source: none;
+        border-image-width: 1;
+        border-left-color: rgb(255, 255, 255);
+        border-left-style: none;
+        border-left-width: 0px;
+        border-right-color: rgb(255, 255, 255);
+        border-right-style: none;
+        border-right-width: 0px;
+        border-top-color: rgb(255, 255, 255);
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+        border-top-style: none;
+        border-top-width: 0px;
+        box-shadow: rgba(50, 50, 93, 0.11) 0px 4px 6px 0px, rgba(0, 0, 0, 0.08) 0px 1px 3px 0px;
+        box-sizing: border-box;
+        color: rgb(255, 255, 255);
+        cursor: pointer;
+        display: block;
+        float: left;
+        font-family: "Silka";
+        font-size: 15px;
+        font-stretch: 100%;
+        font-style: normal;
+        font-variant-caps: normal;
+        font-variant-east-asian: normal;
+        font-variant-ligatures: normal;
+        font-variant-numeric: normal;
+        font-weight: 600;
+        height: 35px;
+        letter-spacing: 0.375px;
+        line-height: 35px;
+        margin-bottom: 0px;
+        margin-left: 12px;
+        margin-right: 0px;
+        margin-top: 28px;
+        outline-color: rgb(255, 255, 255);
+        outline-style: none;
+        outline-width: 0px;
+        overflow-x: visible;
+        overflow-y: visible;
+        padding-bottom: 0px;
+        padding-left: 14px;
+        padding-right: 14px;
+        padding-top: 0px;
+        text-align: center;
+        text-decoration-color: rgb(255, 255, 255);
+        text-decoration-line: none;
+        text-decoration-style: solid;
+        text-indent: 0px;
+        text-rendering: auto;
+        text-shadow: none;
+        text-size-adjust: 100%;
+        text-transform: none;
+        transition-delay: 0s;
+        transition-duration: 0.15s;
+        transition-property: all;
+        transition-timing-function: ease;
+        white-space: nowrap;
+        width: 150.781px;
+        word-spacing: 0px;
+        writing-mode: horizontal-tb;
+        -webkit-appearance: none;
+        -webkit-font-smoothing: antialiased;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        -webkit-border-image: none;
+    }
+</style>
+@if (msg != null)
+{
+    <center><h4><span class="error" style="color:red!important">@msg</span></h4></center>
+}
+
+<br />
+<br />
+<br />
+
+<section class="content col-lg-12" style="padding-bottom:215px!important">
+    <div class="container-fluid flex-row justify-content-center align-items-center col-md-8">
+        <div class="card card-secondary" style="border:1px solid #efd41c!important">
+            <div class="card-header">
+                <ul class="nav nav-tabs" id="myTab" role="tablist" style="background-color:white!important;border:1px solid #efd41c!important">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Payment Frequency</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">View Subscription</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Card Information</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+               @* @using (Html.BeginForm("CreateInvoice", "Home", new { PaymentStatus = "Un-Paid", id = "form-container", role = "form" }, FormMethod.Post))
+                { *@
+                <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="hidden" value="@Model.SubscriptionId" name="SubscriptionId" id="SubscriptionId" />
+                                    <div class="form-group">
+                                        <label style="color:black!important">Frequency:&nbsp;<span style="color:red!important"><b>*</b></span></label>
+                                        @{
+                                            <select class="form-control" id="Frequency" name="Frequency" tabindex="1" required="required">
+                                                <option value="0">Please Select Frequency</option>
+                                                @foreach (var item in Model.Frequency.Split(','))
+                                            {
+                                                if (item == "DAILY")
+                                                {
+                                                        <option value="DAILY">Daily</option>
+                                                }
+                                                else if (item == "WEEKLY")
+                                                {
+                                                        <option value="WEEKLY">Weekly</option>
+                                                }
+                                                else if (item == "MONTHLY")
+                                                {
+                                                        <option value="MONTHLY">Monthly</option>
+                                                }
+                                                else if (item == "QUARTERLY")
+                                                {
+                                                        <option value="QUARTERLY">Quarterly</option>
+                                                }
+                                                else if (item == "HALFYEARLY")
+                                                {
+                                                        <option value="HALFYEARLY">Semi Annual</option>
+                                                }
+                                                else if (item == "YEARLY")
+                                                {
+                                                        <option value="YEARLY">Annually</option>
+                                                }                            
+                                            }
+                                            </select>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="input-group mb-3 group-end">
+                                <a class="btn btn-success btnNext">Next</a>
+                            </div>
+                            <!--/. form element wrap -->
+
+                        </div>
+                        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr style="text-align:center!important">
+                                                <th>Subscription Name</th>
+                                                <th>Currency</th>
+                                                <th>Country</th>
+                                                <th>Frequency</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="text-align:center!important;color:black!important;text-transform:capitalize;">@Model.Name</td>
+                                                <td style="text-align:center!important;color:black!important;text-transform:capitalize;">@Model.Currency</td>
+                                                <td style="text-align:center!important;color:black!important;text-transform:capitalize;">@Model.Countries</td>
+                                                <td style="text-align:center!important;color:black!important;text-transform:capitalize;"><span id="frequencyspanvalue"></span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                <table class="table table-bordered" style="margin-top:10px!important;border-collapse: collapse; border: none;">
+                                        <tbody>
+                                        <tr style="border: none;">
+                                            <td style="width:800px;border: none;"></td>
+                                            <td style="text-align:center!important;color:black!important;width:365px">Original Plan Amount</td>
+                                            <td style="text-align:center!important;color:black!important;width:153px"><input type="text" id="planamount" name="planamount" class="form-control" style="text-align:center" readonly="readonly" /></td>
+                                            </tr>
+                                        <tr>
+                                            <td style="width:800px;border: none;"></td>
+                                            <td style="text-align:center!important;color:black!important;width:365px">Frequency Plan Amount</td>
+                                            <td style="text-align:center!important;color:black!important;width:153px"><input type="text" id="subamount" name="subamount" class="form-control" style="text-align:center" readonly="readonly" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width:800px;border: none;"></td>
+                                            <td style="text-align:center!important;color:black!important;width:365px">Discount</td>
+                                            <td style="text-align:center!important;color:black!important;width:153px"><input type="text" id="Discount" name="Discount" class="form-control" style="text-align:center" readonly="readonly" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width:800px;border: none;"></td>
+                                            <td style="text-align:center!important;color:black!important;width:365px">Setup Fee</td>
+                                            <td style="text-align:center!important;color:black!important;width:153px"><input type="text" id="setupfee" name="setupfee" class="form-control" value="@Model.SetupFee" style="text-align:center" readonly="readonly" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width:800px;border: none;"></td>
+                                            <td style="text-align:center!important;color:black!important;width:365px">VAT</td>
+                                            <td style="text-align:center!important;color:black!important;width:153px"><input type="text" id="VAT" name="VAT" class="form-control" style="text-align:center" readonly="readonly" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width:800px;border: none;"></td>
+                                            <td style="text-align:center!important;color:black!important;width:365px">Total</td>
+                                            <td style="text-align:center!important;color:black!important;width:153px"><input type="text" id="TotalPlanfee" name="TotalPlanfee" class="form-control" style="text-align:center" readonly="readonly" /></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="input-group mb-3 group-end">
+                                <a class="btn btn-danger btnPrevious"id="Previous">Previous</a>
+                                <a class="btn btn-success btnNext">Next</a>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label style="color:black!important">Payment Card:&nbsp;<span style="color:red!important"><b>*</b></span></label>
+                                    <select class="form-control" id="PaymentCard" name="PaymentCard" tabindex="1" required="required" onchange="CardSelect();">
+                                        <option value="0">Please Select Card</option>
+                                        <option value="Credit Card">Credit Card</option>
+                                        @{
+                                            if (Model.Currency == "BHD")
+                                            {
+                                                    <option value="Debit Card">Debit Card</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-none" id="creditcard">
+                            <form id="form-container" method="post" action="/Home/CreateInvoice">
+                                <!-- Tap element will be here -->
+                                <div id="element-container"></div>
+                                <div id="error-handler" role="alert"></div>
+                                <div style=" display: none">
+                                    <div id="success" style=" display: none;;position: relative;float: left;">
+                                        Success! token <span id="token"></span>
+                                    </div>
+                                </div>
+                                <!-- Tap pay button -->
+                                <div class="input-group mb-3 group-end" style="margin-top:15px!important">
+                                    <a class="btn btn-danger btnPrevious"id="Previous">Previous</a>
+                                    <button class="btn btn-success" type="submit" id="Proceed">Proceed</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="d-none" id="debitcard">
+                            @{
+                                if (Model.Currency == "BHD")
+                                {
+                                            <br />
+                                            <h3><center>Pay with Benefit</center></h3>
+                                            <div class="input-group mb-3 group-end">
+                                            <a class="btn btn-danger btnPrevious" id="Previous">Previous</a>
+                                            <button class="btn btn-success" type="button" onclick="tapBanafit();" id="Proceed">Proceed</button>
+                                            </div>
+                                }
+                            }
+                        </div>
+                        </div>
+                    </div>
+                @*}*@
+            </div>
+        </div>
+    </div>
+</section>
+<br />
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    var tap = Tapjsli('@user.PublicKey');
+
+    var elements = tap.elements({});
+    var style = {
+        base: {
+            color: '#535353',
+            lineHeight: '18px',
+            fontFamily: 'sans-serif',
+            fontSmoothing: 'antialiased',
+            fontSize: '16px',
+            '::placeholder': {
+                color: 'rgba(0, 0, 0, 0.26)',
+                fontSize: '15px'
+            }
+        },
+        invalid: {
+            color: 'red'
+        }
+    };
+    // input labels/placeholders
+    var labels = {
+        cardNumber: "Card Number",
+        expirationDate: "MM/YY",
+        cvv: "CVV",
+        cardHolder: "Card Holder Name"
+    };
+    //payment options
+    var paymentOptions = {
+        currencyCode: ["KWD", "USD", "SAR","BHD"],
+        labels: labels,
+        TextDirection: 'ltr'
+    }
+    //create element, pass style and payment options
+    var card = elements.create('card', { style: style }, paymentOptions);
+    //mount element
+    card.mount('#element-container');
+    //card change event listener
+    card.addEventListener('change', function (event) {
+        if (event.BIN) {
+            console.log(event.BIN)
+        }
+        if (event.loaded) {
+            console.log("UI loaded :" + event.loaded);
+            console.log("current currency is :" + card.getCurrency())
+        }
+        var displayError = document.getElementById('error-handler');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
+
+    // Handle form submission
+    var form = document.getElementById('form-container');
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        tap.createToken(card).then(function (result) {
+            console.log(result);
+            if (result.error) {
+                // Inform the user if there was an error
+                var errorElement = document.getElementById('error-handler');
+                errorElement.textContent = result.error.message;
+            } else {
+                var errorElement = document.getElementById('success');
+                errorElement.style.display = "block";
+                var tokenElement = document.getElementById('token');
+                 tokenElement.textContent = result.id;
+                tapTokenHandler(result.id);
+            }
+        });
+    });
+
+    function tapTokenHandler(id) 
+    {
+        showLoader();
+        var currentUrl = window.location.href;
+        var Frequency = $('select#Frequency option:selected').val();
+        var TotalPlanfee = $('#TotalPlanfee').val();
+        var VAT = $('#VAT').val();
+        var SubscriptionId = $('#SubscriptionId').val(); 
+        var Currenturl = currentUrl;
+        var formd = new FormData();
+        formd.append("Frequency", Frequency);
+        formd.append("TotalPlanfee", TotalPlanfee);
+        formd.append("SubscriptionId", SubscriptionId);
+        formd.append("Token", id); 
+        formd.append("VAT", VAT); 
+        formd.append("Currenturl", Currenturl);
+        $.ajax({
+            type: 'POST',
+            url: '/Home/CreateInvoice', 
+            processData: false,
+            contentType: false,
+            data: formd,
+            success: function (response)
+            {
+                if (response.status == true) {
+                    window.location.href = response.URL;
+                }
+                else
+                {
+                    alert(response.URL);
+                }
+                
+            },
+            failure: function (response) {
+                $('#result').html(response);
+            }
+        });
+    }
+    function tapBanafit() {
+        showLoader();
+        var currentUrl = window.location.href;
+        var Frequency = $('select#Frequency option:selected').val();
+        var TotalPlanfee = $('#TotalPlanfee').val();
+        var VAT = $('#VAT').val();
+        var SubscriptionId = $('#SubscriptionId').val();
+        var Currenturl = currentUrl;
+        var formd = new FormData();
+        formd.append("Frequency", Frequency);
+        formd.append("TotalPlanfee", TotalPlanfee);
+        formd.append("SubscriptionId", SubscriptionId);
+        formd.append("Token", "BENEFIT");
+        formd.append("VAT", VAT);
+        formd.append("Currenturl", Currenturl);
+        $.ajax({
+            type: 'POST',
+            url: '/Home/CreateInvoiceBenefit',
+            processData: false,
+            contentType: false,
+            data: formd,
+            success: function (response) {
+                if (response.status == true) {
+                    window.location.href = response.URL;
+                }
+                else {
+                    alert(response.URL);
+                }
+
+            },
+            failure: function (response) {
+                $('#result').html(response);
+            }
+        });
+    }
+    function tapmada() {
+        showLoader();
+        var currentUrl = window.location.href;
+        var Frequency = $('select#Frequency option:selected').val();
+        var TotalPlanfee = $('#TotalPlanfee').val();
+        var VAT = $('#VAT').val();
+        var SubscriptionId = $('#SubscriptionId').val();
+        var Currenturl = currentUrl;
+        var formd = new FormData();
+        formd.append("Frequency", Frequency);
+        formd.append("TotalPlanfee", TotalPlanfee);
+        formd.append("SubscriptionId", SubscriptionId);
+        formd.append("Token", "src_sa.mada");
+        formd.append("VAT", VAT);
+        formd.append("Currenturl", Currenturl);
+        $.ajax({
+            type: 'POST',
+            url: '/Home/CreateInvoiceMada',
+            processData: false,
+            contentType: false,
+            data: formd,
+            success: function (response) {
+                if (response.status == true) {
+                    window.location.href = response.URL;
+                }
+                else {
+                    alert(response.URL);
+                }
+
+            },
+            failure: function (response) {
+                $('#result').html(response);
+            }
+        });
+    }
+    function CardSelect()
+    {
+        debugger
+        var card = $('select#PaymentCard option:selected').val();
+        if (card === "Credit Card")
+        {
+            $("#debitcard").addClass("d-none");
+            $("#creditcard").removeClass("d-none");
+        }
+        else if (card === "Debit Card") {
+            $("#creditcard").addClass("d-none");
+            $("#debitcard").removeClass("d-none");
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('.btnNext').click(function () {
+            if ($('#Frequency option:selected').val() != "0") 
+            {
+                $("#frequencyspanvalue").text($('#Frequency option:selected').val());
+                $('.nav-tabs .active').parent().next('li').find('a').trigger('click');
+            }
+            else
+            {
+                alert("Please Select Payment Frequency..!");
+            }
+        });
+
+        $('.btnPrevious').click(function () {
+            $('.nav-tabs .active').parent().prev('li').find('a').trigger('click');
+        });
+
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            var target = $(e.target).attr("href") 
+            if ($('#Frequency option:selected').val() == "0")
+            {
+                $('.nav-tabs .active').parent().prev('li').find('a').trigger('click');
+            }
+            else
+            {
+                $("#frequencyspanvalue").text($('#Frequency option:selected').val());
+            }
+            
+        });
+    });
+    function daysInThisMonth() {
+        var now = new Date();
+        return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    }
+    $("#Frequency").change(function ()
+    {     
+        $("#planamount").val('');
+        $("#subamount").val('');
+        $("#TotalPlanfee").val('');
+        $("#Discount").val('');
+        $("#subamount2").val('');
+        $("#TotalPlanfee2").val('');
+        var selValue = $(this).val();
+        var subscriptionamount = "";
+        if (selValue == "YEARLY") 
+        {
+            var amountpercentage = (@Model.Amount / 100) * @Model.Discount;
+            var final_amount_percentage = @Model.Amount - amountpercentage;
+            subscriptionamount = final_amount_percentage * 12;
+            var dis = amountpercentage * 12;
+            $("#Discount").val(dis.toFixed(2));
+        }
+        else if (selValue == "DAILY") {
+            $("#Discount").val('0');
+            var total_days = daysInThisMonth();
+            subscriptionamount = @Model.Amount / total_days;
+        } 
+        else if (selValue == "WEEKLY") {
+            $("#Discount").val('0');
+            subscriptionamount = @Model.Amount / 4;
+        }
+        else if (selValue == "QUARTERLY") {
+            $("#Discount").val('0');
+            subscriptionamount = @Model.Amount * 3;
+        }
+        else if (selValue == "HALFYEARLY") {
+            $("#Discount").val('0');
+            subscriptionamount = @Model.Amount * 6;
+        }
+        else {
+            $("#Discount").val('0');
+            subscriptionamount = @Model.Amount;
+        }
+        var totala = parseFloat(subscriptionamount) + parseFloat(@Model.SetupFee);
+        var calculate_vat = "";
+        if (@Model.VAT == "0") 
+        {
+            $("#VAT").val('0');
+            calculate_vat = "0";
+        }
+        else 
+        {
+            debugger;
+            var roundoff_totalamount = Math.round(totala);
+            calculate_vat = (totala / 100) * @Model.VAT;
+            $("#VAT").val(calculate_vat.toFixed(2));
+        }
+        $("#planamount").val(@Model.Amount);
+        $("#subamount").val(subscriptionamount.toFixed(2));
+        $("#subamount2").val(subscriptionamount.toFixed(2));
+        var subscriptionSetupFee = @Model.SetupFee;
+        var totalamount = parseFloat(subscriptionamount) + parseFloat(subscriptionSetupFee) + parseFloat(calculate_vat);
+        $("#TotalPlanfee").val(totalamount.toFixed(2));
+        $("#TotalPlanfee2").val(totalamount.toFixed(2));
+    });
+</script>

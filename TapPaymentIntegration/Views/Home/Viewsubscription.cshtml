@@ -1,0 +1,117 @@
+﻿@model IEnumerable<TapPaymentIntegration.Models.Subscription.Subscriptions>
+@{
+    ViewData["Title"] = "View Subscription";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<br />
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header" style="padding: 0.5rem 1.25rem;">
+                        <h4 class="text-center mb-0">Subscriptions List</h4>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="example1" class="table table-bordered table-striped table-responsive-xl">
+                            <thead>
+                                <tr style="text-align:center!important">
+                                    <th>Name</th>
+                                    <th>Setup Fee</th>
+                                    <th>Currency</th>
+                                    <th>Country</th>
+                                    <th>Frequency</th>
+                                    <th>Amount</th>
+                                    <th>VAT %</th>
+                                    <th>Discount %</th>
+                                    <th>Status</th>
+                                    <th>Added Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model)
+                                {
+                                    <tr>
+                                        <td style="text-align:center!important">@user.Name</td>
+                                        <td style="text-align:center!important">@user.SetupFee</td>
+                                        <td style="text-align:center!important">@user.Currency</td>
+                                        <td style="text-align:center!important">@user.Countries</td>
+                                        <td style="text-align:center!important">@user.Frequency</td>
+                                        <td style="text-align:center!important">@user.Amount</td>
+                                        <td style="text-align:center!important">
+                                            @{
+                                                if (user.VAT == null)
+                                                {
+                                                    <span>0%</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>@user.VAT%</span>
+                                                }
+                                            }
+                                        </td>
+                                        <td style="text-align:center!important">
+                                            @{
+                                                if (user.Discount == null)
+                                                {
+                                                    <span>0%</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>@user.Discount%</span>
+                                                }
+                                            }
+                                        </td>
+                                        <td style="text-align:center!important">
+                                            @{
+                                                if (user.Status == true)
+                                                {
+                                                    <span style="color:green">Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span style="color:red">In-Active</span>
+                                                }
+                                            }
+                                        </td>
+                                        <td style="text-align:center!important">@user.CreatedDate.Date.ToString("dd/MM/yyyy")</td>
+                                        <td style="text-align:center!important">
+                                            <a class="btn btn-danger" asp-controller="Home" asp-action="Deletesubscription" asp-route-userId="@user.SubscriptionId">Delete</a> &nbsp;  <a class="btn btn-primary" asp-controller="Home" asp-action="Editsubscription" asp-route-userId="@user.SubscriptionId">Edit</a> &nbsp;
+                                            @{
+                                                if (user.Status == true)
+                                                {
+                                                    <a class="btn btn-danger" asp-controller="Home" asp-action="InActiveSubscription" asp-route-id="@user.SubscriptionId">De-Activate</a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="btn btn-success" asp-controller="Home" asp-action="ActiveSubscription" asp-route-id="@user.SubscriptionId">Active</a>
+                                                }
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+</section>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#example1").DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    });
+</script>
