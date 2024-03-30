@@ -14,6 +14,7 @@
     var userId = ViewBag.userid;
     var publicKey = ViewBag.PublicKey;
     var redirectUrl = ViewBag.RedirectURL;
+    var IsFirstInvoice = ViewBag.IsFirstInvoice;
     Layout = "~/Views/Shared/_Layout.cshtml";
     var user = await UserManager.GetUserAsync(User);
     var msg = TempData["Message"];
@@ -253,7 +254,7 @@ else
                                         @{
                                             if (Model.Currency == "BHD")
                                             {
-                                                <option value="Debit Card">Debit Card</option>
+                                                        <option value="Debit Card">Debit Card</option>
                                             }
                                         }
                                     </select>
@@ -282,12 +283,12 @@ else
                                 @{
                                     if (Model.Currency == "BHD")
                                     {
-                                        <br />
-                                        <h3><center>Pay with Benefit</center></h3>
-                                        <div class="input-group mb-3 group-end">
-                                            <a class="btn btn-danger btnPrevious">Previous</a>
-                                            <button class="btn btn-success" type="button" onclick="tapBanafit();" id="Proceed">Proceed</button>
-                                        </div>
+                                                <br />
+                                                <h3><center>Pay with Benefit</center></h3>
+                                                <div class="input-group mb-3 group-end">
+                                                    <a class="btn btn-danger btnPrevious">Previous</a>
+                                                    <button class="btn btn-success" type="button" onclick="tapBanafit();" id="Proceed">Proceed</button>
+                                                </div>
                                     }
                                 }
                             </div>
@@ -397,6 +398,7 @@ else
             formd.append("VAT", VAT);
             formd.append("Userid", userid);
             formd.append("Invoiceid", Invoiceid);
+            formd.append("IsFirstInvoice", @IsFirstInvoice);
             formd.append("Currenturl", Currenturl);
             $.ajax({
                 type: 'POST',
@@ -427,6 +429,7 @@ else
             var convert_val = fval.toFixed(2);
             var VAT = $('#VAT').val();
             var SubscriptionId = $('#SubscriptionId').val();
+            var InvoiceId = @invoiceId;
             var Currenturl = currentUrl;
             var formd = new FormData();
             formd.append("Frequency", Frequency);
@@ -434,10 +437,12 @@ else
             formd.append("SubscriptionId", SubscriptionId);
             formd.append("Token", "BENEFIT");
             formd.append("VAT", VAT);
+            formd.append("Invoiceid", InvoiceId);
+            formd.append("IsFirstInvoice", @IsFirstInvoice);
             formd.append("Currenturl", Currenturl);
             $.ajax({
                 type: 'POST',
-                url: '/Home/CreateInvoiceBenefit',
+                url: '/Home/CreateInvoiceBenefit/',
                 processData: false,
                 contentType: false,
                 data: formd,
@@ -545,7 +550,7 @@ else
             var subscriptionamount = "";
             if (selValue == "YEARLY") {
                 var amountpercentage = (@Model.Amount / 100) * @Model.Discount;
-                                                        var final_amount_percentage = @Model.Amount - amountpercentage;
+                var final_amount_percentage = @Model.Amount - amountpercentage;
                 subscriptionamount = final_amount_percentage * 12;
                 var dis = amountpercentage * 12;
                 $("#Discount").val(dis.toFixed(2));
@@ -570,22 +575,33 @@ else
                 $("#Discount").val('0');
                 subscriptionamount = @Model.Amount;
             }
-            var totala = parseInt(subscriptionamount) + parseInt(@Model.SetupFee);
+            var totala = 0;
+            if (@IsFirstInvoice == "true") {
+                totala = parseFloat(subscriptionamount) + parseFloat(@Model.SetupFee);
+            }
+            else {
+                totala = parseFloat(subscriptionamount);
+            }
             var calculate_vat = "";
             if (@Model.VAT == "0") {
                 $("#VAT").val('0');
                 calculate_vat = "0";
             }
             else {
-                var roundoff_totalamount = Math.round(totala);
-                calculate_vat = (roundoff_totalamount / 100) * @Model.VAT;
+                calculate_vat = (totala / 100.0m) * @Model.VAT;
                 $("#VAT").val(calculate_vat.toFixed(2));
             }
             $("#planamount").val(@Model.Amount);
             $("#subamount").val(subscriptionamount.toFixed(2));
             $("#subamount2").val(subscriptionamount.toFixed(2));
             var subscriptionSetupFee = @Model.SetupFee;
-            var totalamount = parseInt(subscriptionamount) + parseInt(subscriptionSetupFee) + parseInt(calculate_vat);
+        var totalamount = 0;
+        if (@IsFirstInvoice == "true") {
+            totalamount = parseFloat(subscriptionamount) + parseFloat(subscriptionSetupFee) + parseFloat(calculate_vat);
+        }
+        else {
+            totalamount = parseFloat(subscriptionamount) + parseFloat(calculate_vat);
+        }
             $("#TotalPlanfee").val(totalamount.toFixed(2));
             $("#TotalPlanfee2").val(totalamount.toFixed(2));
         });

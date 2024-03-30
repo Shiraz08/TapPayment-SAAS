@@ -1,4 +1,5 @@
 ﻿using TapPaymentIntegration.Areas.Identity.Data;
+using TapPaymentIntegration.Migrations;
 using TapPaymentIntegration.Models.Subscription;
 
 namespace TapPaymentIntegration.Utility
@@ -70,39 +71,38 @@ namespace TapPaymentIntegration.Utility
             after_vat_total_amount = 0;
             string subscriptionsSetupFee = subscriptions.SetupFee;
             string subscriptionsCurrency = subscriptions.Currency;
-            //int amount = Convert.ToInt32(finalamount) + Convert.ToInt32(Math.Round(decimal.Round(Convert.ToDecimal(subscriptions.SetupFee), 1), 0, MidpointRounding.AwayFromZero));
 
-            decimal amount = Math.Round(finalAmount + Convert.ToDecimal(subscriptionsSetupFee), 2);
-            subscriptionAmount = decimal.Round(Convert.ToDecimal(finalAmount), 2).ToString() + " " + subscriptionsCurrency;
+            decimal amount = finalAmount + Convert.ToDecimal(subscriptionsSetupFee);
+            subscriptionAmount = finalAmount.ToString("0.00") + " " + subscriptionsCurrency;
 
             ///If selected subscription doesn't contain any VAT amount then it must be 0.
             if (subscriptions.VAT == null || subscriptions.VAT == "0")
             {
                 vat_str = "0.00" + " " + subscriptionsCurrency; vat = 0.0m;
                 invoiceTotal = amount.ToString() + " " + subscriptionsCurrency;
-                var without_vat = Convert.ToDecimal(finalAmount) + Convert.ToDecimal(subscriptionsSetupFee);
-                invoiceAmount = decimal.Round(Convert.ToDecimal(without_vat), 2).ToString() + " " + subscriptionsCurrency;
-                Totalinvoicewithoutvat = decimal.Round(Convert.ToDecimal(without_vat), 2).ToString() + " " + subscriptionsCurrency;
-                after_vat_total_amount = decimal.Round((finalAmount + Convert.ToDecimal(subscriptionsSetupFee) + vat), 2);
+                var without_vat = finalAmount + Convert.ToDecimal(subscriptionsSetupFee);
+                invoiceAmount = without_vat.ToString("0.00") + " " + subscriptionsCurrency;
+                Totalinvoicewithoutvat = without_vat.ToString("0.00") + " " + subscriptionsCurrency;
+                after_vat_total_amount = Convert.ToDecimal((finalAmount + Convert.ToDecimal(subscriptionsSetupFee) + vat).ToString("0.00"));
             }
             ///If selected subscription contain VAT Amount.
             else
             {
                 decimal total = finalAmount + Convert.ToDecimal(subscriptionsSetupFee);
-                vat = (decimal)((total / Convert.ToInt32(subscriptions.VAT)) * 100) / 100;
-                after_vat_total_amount = decimal.Round((finalAmount + Convert.ToDecimal(subscriptionsSetupFee) + vat), 2);
+                vat = (decimal)((total / 100) * Convert.ToDecimal(subscriptions.VAT));
+                after_vat_total_amount = Convert.ToDecimal((finalAmount + Convert.ToDecimal(subscriptionsSetupFee) + vat).ToString("0.00"));
 
-                var without_vat = Convert.ToDecimal(finalAmount) + Convert.ToDecimal(subscriptionsSetupFee);
-                var totalincVATAmount = Convert.ToDecimal(finalAmount) + Convert.ToDecimal(subscriptionsSetupFee) + decimal.Round(Convert.ToDecimal(vat), 2);
-                vat_str = decimal.Round(Convert.ToDecimal(vat), 2).ToString() + " " + subscriptionsCurrency;
-                vat = decimal.Round(Convert.ToDecimal(vat), 2);
-                invoiceTotal = decimal.Round(Convert.ToDecimal(totalincVATAmount), 2).ToString() + " " + subscriptionsCurrency;
-                invoiceAmount = decimal.Round(Convert.ToDecimal(after_vat_total_amount), 2).ToString() + " " + subscriptionsCurrency;
-                Totalinvoicewithoutvat = decimal.Round(Convert.ToDecimal(without_vat), 2).ToString() + " " + subscriptionsCurrency;
+                var without_vat = finalAmount + Convert.ToDecimal(subscriptionsSetupFee);
+                var totalincVATAmount = finalAmount + Convert.ToDecimal(subscriptionsSetupFee) + vat;
+                vat_str = vat.ToString("0.00") + " " + subscriptionsCurrency;
+                vat = Convert.ToDecimal(vat.ToString("0.00"));
+                invoiceTotal = totalincVATAmount.ToString("0.00") + " " + subscriptionsCurrency;
+                invoiceAmount = after_vat_total_amount.ToString("0.00") + " " + subscriptionsCurrency;
+                Totalinvoicewithoutvat = without_vat.ToString("0.00") + " " + subscriptionsCurrency;
             }
         }
 
-        public static void GetDiscountAndFinalAmountBySubscriptionFrequency(string frequency, string subscriptionsAmount, int days, out decimal discount, out decimal finalAmount)
+        public static void GetDiscountAndFinalAmountBySubscriptionFrequency(string frequency, string subscriptionsAmount, string Discount, int days, out decimal discount, out decimal finalAmount)
         {
             discount = 0; finalAmount = 0;
             switch (frequency)
@@ -123,7 +123,7 @@ namespace TapPaymentIntegration.Utility
                     finalAmount = (decimal)(Convert.ToInt32(subscriptionsAmount) * 6);
                     break;
                 case "YEARLY":
-                    var amountpercentage = (decimal)(Convert.ToInt32(subscriptionsAmount) / 100) * 10;
+                    var amountpercentage = (decimal)(Convert.ToInt32(subscriptionsAmount) / 100) * decimal.Parse(Discount);
                     var final_amount_percentage = Convert.ToInt32(subscriptionsAmount) - amountpercentage;
                     finalAmount = final_amount_percentage * 12;
                     discount = amountpercentage * 12;
@@ -165,7 +165,7 @@ namespace TapPaymentIntegration.Utility
             }
             else if (user.Frequency == "YEARLY")
             {
-                var amountpercentage = (decimal)(Convert.ToInt32(subscription.Amount) / 100) * Convert.ToDecimal(subscription.Discount);
+                var amountpercentage = (decimal)(Convert.ToDecimal(subscription.Amount) / 100) * decimal.Parse(subscription.Discount);
                 var final_amount_percentage = Convert.ToInt32(subscription.Amount) - amountpercentage;
                 finalamount = final_amount_percentage * 12;
                 Discount = amountpercentage * 12;
@@ -176,11 +176,11 @@ namespace TapPaymentIntegration.Utility
             }
             else
             {
-                decimal total_amount = finalamount;
-                sun_amount = total_amount;
-                Vat = (decimal)((total_amount / Convert.ToInt32(subscription.VAT)) * 100) / 100;
+                decimal totala = finalamount;// + Convert.ToDecimal(subscription.SetupFee);
+                sun_amount = finalamount;
+                Vat = (decimal)((totala / 100) * Convert.ToDecimal(subscription.VAT));
             }
-            after_vat_totalamount = finalamount + Vat;
+            after_vat_totalamount = finalamount + Vat;// Convert.ToDecimal(subscription.SetupFee) + Vat;
         }
 
         public static string TruncateAfterSpace(string input)
