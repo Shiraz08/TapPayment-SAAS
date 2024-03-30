@@ -116,7 +116,7 @@
 
     <partial name="_ValidationScriptsPartial" />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-@* <script src="https://www.google.com/recaptcha/api.js" async defer></script> *@
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script>
         $(".toggle-password").click(function () {
 
@@ -166,15 +166,15 @@
 
     }
 
-    // document.getElementById('AddCustomer').addEventListener('submit', function (event) {
-    //     var response = grecaptcha.getResponse();
-    //     if (response.length == 0) {
-    //         // reCAPTCHA not verified
-    //         event.preventDefault();
-    //         alert('Please verify reCAPTCHA');
-    //     } else {
-    //         // Set reCAPTCHA response in hidden input
-    //         document.getElementById('recaptchaResponse').value = response;
-    //     }
-    //});
+    document.getElementById('AddCustomer').addEventListener('submit', function (event) {
+        var response = grecaptcha.getResponse();
+        if (response.length == 0) {
+            // reCAPTCHA not verified
+            event.preventDefault();
+            alert('Please verify reCAPTCHA');
+        } else {
+            // Set reCAPTCHA response in hidden input
+            document.getElementById('recaptchaResponse').value = response;
+        }
+    });
     </script>
