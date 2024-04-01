@@ -815,7 +815,7 @@ namespace TapPaymentIntegration.Controllers
                             recurringCharge.ChargeId = tap_id;
                             recurringCharge.Invoice = "Inv" + max_invoice_id;
                             recurringCharge.IsRun = false;
-                            recurringCharge.JobRunDate = nextrecurringdate.AddDays(1);
+                            recurringCharge.JobRunDate = DateTime.UtcNow.AddDays(1);
                             _context.recurringCharges.Add(recurringCharge);
                             _context.SaveChanges();
 
@@ -963,7 +963,7 @@ namespace TapPaymentIntegration.Controllers
                             recurringCharge.Tap_CustomerId = Deserialized_savecard.payment_agreement.contract.customer_id;
                             recurringCharge.ChargeId = tap_id;
                             recurringCharge.IsRun = false;
-                            recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddDays(1);
+                            recurringCharge.JobRunDate = DateTime.UtcNow.AddDays(1);
                             _context.recurringCharges.Add(recurringCharge);
                             _context.SaveChanges();
 
@@ -1208,7 +1208,7 @@ namespace TapPaymentIntegration.Controllers
                             recurringCharge.ChargeId = tap_id;
                             recurringCharge.Invoice = "Inv" + invoiceid;
                             recurringCharge.IsRun = false;
-                            recurringCharge.JobRunDate = nextrecurringdate.AddDays(1);
+                            recurringCharge.JobRunDate = DateTime.UtcNow.AddDays(1);
                             _context.recurringCharges.Add(recurringCharge);
                             _context.SaveChanges();
                         }
