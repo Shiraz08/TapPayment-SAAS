@@ -662,9 +662,7 @@ html {
         }
         else 
         {
-            debugger;
-            var roundoff_totalamount = Math.round(totala);
-            calculate_vat = (totala / 100) * @Model.VAT;
+            calculate_vat = (totala / 100) * parseFloat(@Model.VAT);
             $("#VAT").val(calculate_vat.toFixed(2));
         }
         $("#planamount").val(@Model.Amount);

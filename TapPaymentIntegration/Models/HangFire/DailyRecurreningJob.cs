@@ -103,11 +103,13 @@ namespace TapPaymentIntegration.Models.HangFire
                                         UserId = getuserinfo.Id,
                                         ChargeId = deserialized_CreateCharge.id,
                                         GymName = getuserinfo.GYMName,
-                                        Country = getsubinfo.Countries
+                                        Country = getsubinfo.Countries,
+                                        IsFirstInvoice = false
                                     };
                                     _context.invoices.Add(invoice);
                                     _context.SaveChanges();
                                     int max_invoice_id = _context.invoices.Max(x => x.InvoiceId);
+
                                     //Next Recurrening Job Date
                                     RecurringCharge recurringCharge = new RecurringCharge();
                                     recurringCharge.Amount = Convert.ToDecimal(after_vat_totalamount.ToString("0.00"));
@@ -197,11 +199,21 @@ namespace TapPaymentIntegration.Models.HangFire
                                         UserId = getuserinfo.Id,
                                         ChargeId = deserialized_CreateCharge.id,
                                         GymName = getuserinfo.GYMName,
-                                        Country = getsubinfo.Countries
+                                        Country = getsubinfo.Countries,
+                                        IsFirstInvoice = false
                                     };
                                     _context.invoices.Add(invoice);
                                     _context.SaveChanges();
                                     int max_invoice_id = _context.invoices.Max(x => x.InvoiceId);
+
+                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice={"false"}";
+
+                                    Invoice i = _context.invoices.FirstOrDefault(a => a.InvoiceId == max_invoice_id);
+
+                                    i.InvoiceLink = callbackUrl;
+                                    _context.invoices.Update(i);
+                                    _context.SaveChanges();
+
                                     var nameinvoice = "Inv" + max_invoice_id;
 
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
@@ -240,7 +252,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                         UserId = getuserinfo.Id,
                                         ChargeId = deserialized_CreateCharge.id,
                                         GymName = getuserinfo.GYMName,
-                                        Country = getsubinfo.Countries
+                                        Country = getsubinfo.Countries,
+                                        IsFirstInvoice = false
                                     };
                                     _context.invoices.Add(invoice);
                                     _context.SaveChanges();
@@ -334,11 +347,21 @@ namespace TapPaymentIntegration.Models.HangFire
                                         UserId = getuserinfo.Id,
                                         ChargeId = deserialized_CreateCharge.id,
                                         GymName = getuserinfo.GYMName,
-                                        Country = getsubinfo.Countries
+                                        Country = getsubinfo.Countries,
+                                        IsFirstInvoice = false
                                     };
                                     _context.invoices.Add(invoice);
                                     _context.SaveChanges();
                                     int max_invoice_id = _context.invoices.Max(x => x.InvoiceId);
+
+                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice={"false"}";
+
+                                    Invoice i = _context.invoices.FirstOrDefault(a => a.InvoiceId == max_invoice_id);
+
+                                    i.InvoiceLink = callbackUrl;
+                                    _context.invoices.Update(i);
+                                    _context.SaveChanges();
+
                                     var nameinvoice = "Inv" + max_invoice_id;
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
                                     _ = _emailSender.SendEmailAsync(user_Email, "Tamarran - Your subscription renewal in Tamarran failed", bodyemail);
@@ -376,7 +399,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                         UserId = getuserinfo.Id,
                                         ChargeId = deserialized_CreateCharge.id,
                                         GymName = getuserinfo.GYMName,
-                                        Country = getsubinfo.Countries
+                                        Country = getsubinfo.Countries,
+                                        IsFirstInvoice = false
                                     };
                                     _context.invoices.Add(invoice);
                                     _context.SaveChanges();
@@ -470,11 +494,21 @@ namespace TapPaymentIntegration.Models.HangFire
                                         UserId = getuserinfo.Id,
                                         ChargeId = deserialized_CreateCharge.id,
                                         GymName = getuserinfo.GYMName,
-                                        Country = getsubinfo.Countries
+                                        Country = getsubinfo.Countries,
+                                        IsFirstInvoice = false
                                     };
                                     _context.invoices.Add(invoice);
                                     _context.SaveChanges();
                                     int max_invoice_id = _context.invoices.Max(x => x.InvoiceId);
+
+                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice={"false"}";
+
+                                    Invoice i = _context.invoices.FirstOrDefault(a => a.InvoiceId == max_invoice_id);
+
+                                    i.InvoiceLink = callbackUrl;
+                                    _context.invoices.Update(i);
+                                    _context.SaveChanges();
+
                                     var nameinvoice = "Inv" + max_invoice_id;
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
                                     _ = _emailSender.SendEmailAsync(user_Email, "Tamarran - Your subscription renewal in Tamarran failed", bodyemail);
@@ -512,7 +546,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                         UserId = getuserinfo.Id,
                                         ChargeId = deserialized_CreateCharge.id,
                                         GymName = getuserinfo.GYMName,
-                                        Country = getsubinfo.Countries
+                                        Country = getsubinfo.Countries,
+                                        IsFirstInvoice = false
                                     };
                                     _context.invoices.Add(invoice);
                                     _context.SaveChanges();
@@ -606,11 +641,21 @@ namespace TapPaymentIntegration.Models.HangFire
                                         UserId = getuserinfo.Id,
                                         ChargeId = deserialized_CreateCharge.id,
                                         GymName = getuserinfo.GYMName,
-                                        Country = getsubinfo.Countries
+                                        Country = getsubinfo.Countries,
+                                        IsFirstInvoice = false
                                     };
                                     _context.invoices.Add(invoice);
                                     _context.SaveChanges();
                                     int max_invoice_id = _context.invoices.Max(x => x.InvoiceId);
+
+                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice={"false"}";
+
+                                    Invoice i = _context.invoices.FirstOrDefault(a => a.InvoiceId == max_invoice_id);
+
+                                    i.InvoiceLink = callbackUrl;
+                                    _context.invoices.Update(i);
+                                    _context.SaveChanges();
+
                                     var nameinvoice = "Inv" + max_invoice_id;
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
                                     _ = _emailSender.SendEmailAsync(user_Email, "Tamarran - Your subscription renewal in Tamarran failed", bodyemail);
@@ -648,7 +693,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                         UserId = getuserinfo.Id,
                                         ChargeId = deserialized_CreateCharge.id,
                                         GymName = getuserinfo.GYMName,
-                                        Country = getsubinfo.Countries
+                                        Country = getsubinfo.Countries,
+                                        IsFirstInvoice = false
                                     };
                                     _context.invoices.Add(invoice);
                                     _context.SaveChanges();
@@ -742,11 +788,21 @@ namespace TapPaymentIntegration.Models.HangFire
                                         UserId = getuserinfo.Id,
                                         ChargeId = deserialized_CreateCharge.id,
                                         GymName = getuserinfo.GYMName,
-                                        Country = getsubinfo.Countries
+                                        Country = getsubinfo.Countries,
+                                        IsFirstInvoice = false
                                     };
                                     _context.invoices.Add(invoice);
                                     _context.SaveChanges();
                                     int max_invoice_id = _context.invoices.Max(x => x.InvoiceId);
+
+                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice={"false"}";
+
+                                    Invoice i = _context.invoices.FirstOrDefault(a => a.InvoiceId == max_invoice_id);
+
+                                    i.InvoiceLink = callbackUrl;
+                                    _context.invoices.Update(i);
+                                    _context.SaveChanges();
+
                                     var nameinvoice = "Inv" + max_invoice_id;
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
                                     _ = _emailSender.SendEmailAsync(user_Email, "Tamarran - Your subscription renewal in Tamarran failed", bodyemail);
@@ -784,7 +840,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                         UserId = getuserinfo.Id,
                                         ChargeId = deserialized_CreateCharge.id,
                                         GymName = getuserinfo.GYMName,
-                                        Country = getsubinfo.Countries
+                                        Country = getsubinfo.Countries,
+                                        IsFirstInvoice = false
                                     };
                                     _context.invoices.Add(invoice);
                                     _context.SaveChanges();
@@ -878,11 +935,21 @@ namespace TapPaymentIntegration.Models.HangFire
                                         UserId = getuserinfo.Id,
                                         ChargeId = deserialized_CreateCharge.id,
                                         GymName = getuserinfo.GYMName,
-                                        Country = getsubinfo.Countries
+                                        Country = getsubinfo.Countries,
+                                        IsFirstInvoice = false
                                     };
                                     _context.invoices.Add(invoice);
                                     _context.SaveChanges();
                                     int max_invoice_id = _context.invoices.Max(x => x.InvoiceId);
+
+                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice={"false"}";
+
+                                    Invoice i = _context.invoices.FirstOrDefault(a => a.InvoiceId == max_invoice_id);
+
+                                    i.InvoiceLink = callbackUrl;
+                                    _context.invoices.Update(i);
+                                    _context.SaveChanges();
+
                                     var nameinvoice = "Inv" + max_invoice_id;
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
                                     _ = _emailSender.SendEmailAsync(user_Email, "Tamarran - Your subscription renewal in Tamarran failed", bodyemail);
@@ -999,7 +1066,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     SubscriptionName = getsubinfo.Name,
                                     UserId = getuserinfo.Id,
                                     GymName = getuserinfo.GYMName,
-                                    Country = getsubinfo.Countries
+                                    Country = getsubinfo.Countries,
+                                    IsFirstInvoice = false
                                 };
                                 _context.invoices.Add(invoice);
                                 _context.SaveChanges();
@@ -1300,7 +1368,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     SubscriptionName = getsubinfo.Name,
                                     UserId = getuserinfo.Id,
                                     GymName = getuserinfo.GYMName,
-                                    Country = getsubinfo.Countries
+                                    Country = getsubinfo.Countries,
+                                    IsFirstInvoice = false
                                 };
                                 _context.invoices.Add(invoice);
                                 _context.SaveChanges();
@@ -1600,7 +1669,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     SubscriptionName = getsubinfo.Name,
                                     UserId = getuserinfo.Id,
                                     GymName = getuserinfo.GYMName,
-                                    Country = getsubinfo.Countries
+                                    Country = getsubinfo.Countries,
+                                    IsFirstInvoice = false
                                 };
                                 _context.invoices.Add(invoice);
                                 _context.SaveChanges();
@@ -1899,7 +1969,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     SubscriptionName = getsubinfo.Name,
                                     UserId = getuserinfo.Id,
                                     GymName = getuserinfo.GYMName,
-                                    Country = getsubinfo.Countries
+                                    Country = getsubinfo.Countries,
+                                    IsFirstInvoice = false
                                 };
                                 _context.invoices.Add(invoice);
                                 _context.SaveChanges();
@@ -2198,7 +2269,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     SubscriptionName = getsubinfo.Name,
                                     UserId = getuserinfo.Id,
                                     GymName = getuserinfo.GYMName,
-                                    Country = getsubinfo.Countries
+                                    Country = getsubinfo.Countries,
+                                    IsFirstInvoice = false
                                 };
                                 _context.invoices.Add(invoice);
                                 _context.SaveChanges();
@@ -2498,7 +2570,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     SubscriptionName = getsubinfo.Name,
                                     UserId = getuserinfo.Id,
                                     GymName = getuserinfo.GYMName,
-                                    Country = getsubinfo.Countries
+                                    Country = getsubinfo.Countries,
+                                    IsFirstInvoice = false
                                 };
                                 _context.invoices.Add(invoice);
                                 _context.SaveChanges();

@@ -16,6 +16,7 @@ namespace TapPaymentIntegration.Models.PaymentDTO
         public string method { get; set; }
         public string status { get; set; }
         public double amount { get; set; }
+        public bool? IsFirstInvoice { get; set; }
         public string currency { get; set; }
         public bool threeDSecure { get; set; }
         public bool card_threeDSecure { get; set; }

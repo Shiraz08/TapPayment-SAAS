@@ -124,30 +124,41 @@
                                 <div class="col-6">
                                     <div class="table-responsive">
                                         <table class="table">
+                                            @if((bool)Model.IsFirstInvoice)
+                                            {
+                                                <tr>
+                                                    <th>Setup Fee:</th>
+                                                    <td style="text-align:center!important">@Model.Subscriptions.Currency @Convert.ToDecimal(Model.Subscriptions.SetupFee).ToString("0.00") <br /><span style="color:red!important">This fee is charged once only.</span></td>
+                                                </tr>
+                                            }
                                             <tr>
-                                                <th style="width:50%">Subtotal:</th>
+                                                <th style="width:50%">Subscription Amount:</th>
                                                 @{
-                                                    var finalamount = decimal.Round(Convert.ToDecimal(@Model.finalamount), 2);
-                                                    <td style="text-align:center!important">@Model.Subscriptions.Currency @finalamount</td>
+                                                    var finalamountt = Convert.ToDecimal(Model.finalamount).ToString("0.00");
+                                                    <td style="text-align:center!important">@Model.Subscriptions.Currency @finalamountt</td>
+                                                }
+
+                                            </tr>
+                                            <tr>
+                                                <th style="width:50%">Total:</th>
+                                                @{
+                                                    var total = Convert.ToDecimal(Model.finalamount) + ((bool)Model.IsFirstInvoice ? Convert.ToDecimal(Model.Subscriptions.SetupFee) : 0.00m);
+                                                    <td style="text-align:center!important">@Model.Subscriptions.Currency @Convert.ToDecimal(total).ToString("0.00")</td>
                                                 }
 
                                             </tr>
                                             <tr>
                                                 <th>VAT </th>
                                                 @{
-                                                    var vats = decimal.Round(Convert.ToDecimal(@Model.VAT), 2);
+                                                    var vats = Convert.ToDecimal(@Model.VAT).ToString("0.00");
                                                     <td style="text-align:center!important">@Model.Subscriptions.Currency @vats</td>
                                                 }
                                             </tr>
                                             <tr>
-                                                <th>Setup Fee:</th>
-                                                <td style="text-align:center!important">@Model.Subscriptions.Currency @Model.Subscriptions.SetupFee <br /><span style="color:red!important">This fee is charged once only.</span></td>
-                                            </tr>
-                                            <tr>
-                                                <th>Total:</th>
+                                                <th>Grand Total:</th>
                                                 @{
-                                                    var total = decimal.Round(Convert.ToDecimal(Model.amount), 2);
-                                                    <td style="text-align:center!important">@Model.Subscriptions.Currency @total</td>
+                                                    var gtotal = Convert.ToDecimal(Model.amount).ToString("0.00");
+                                                    <td style="text-align:center!important">@Model.Subscriptions.Currency @gtotal</td>
                                                 }
                                             </tr>
                                         </table>
