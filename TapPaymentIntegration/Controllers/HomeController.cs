@@ -1376,6 +1376,8 @@ namespace TapPaymentIntegration.Controllers
                             Invoice invoice_info = _context.invoices.Where(x => x.InvoiceId == invoiceid).FirstOrDefault();
 
                             invoice_info.Status = "Payment Captured";
+                            invoice_info.ChargeResponseId = getchargesresposemodel;
+                            invoice_info.ChargeId = tap_id;
                             _context.invoices.Update(invoice_info);
                             _context.SaveChanges();
                         }
@@ -2542,6 +2544,7 @@ namespace TapPaymentIntegration.Controllers
                         chargeDetail.finalamount = finalamount.ToString();
                         chargeDetail.VAT = Vat.ToString();
                         chargeDetail.InvoiceID = getinvoiceinfo.InvoiceId.ToString();
+                        chargeDetail.IsFirstInvoice = getinvoiceinfo.IsFirstInvoice;
                         chargeDetail.Subscriptions = subscriptions;
                         chargeDetail.customer = Deserialized_savecard.customer;
                         chargeDetail.reference = Deserialized_savecard.reference;
