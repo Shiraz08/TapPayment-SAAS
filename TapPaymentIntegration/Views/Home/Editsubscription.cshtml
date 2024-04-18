@@ -87,6 +87,13 @@
                                 <input type="number" class="form-control" id="Discount"   value="@Model.Discount" name="Discount" required="required" min="0" oninput="validity.valid||(value='');" value="0" />
                             </div>
                         </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Remarks:&nbsp</label>
+                                <input type="text" class="form-control" id="Remarks" value="@Model.Remarks" asp-for="Remarks" name="Remarks" />
+                            </div>
+                        </div>
                         <div class="col-md-3">
                             <div style="padding-top: 22px;">
                                 <button class="btn btn-success mt-2" type="submit" tabindex="6">Update Subscription</button>

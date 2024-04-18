@@ -20,10 +20,10 @@ namespace TapPaymentIntegration.Models
 
         #region EMAIL SENDING
 
-        public static readonly string HOST = "email-smtp.me-south-1.amazonaws.com";
+        public static readonly string HOST = "email-smtp.ap-south-1.amazonaws.com";
         public static readonly int PORT = 587;
-        public static readonly string NETWORKCREDENTIALUSERNAME = "AKIA4A4DJ4EYIWYYKHDH";
-        public static readonly string NETWORKCREDENTIALPASSWORD = "bBN/9yxelBO3DG0hm7z0aRCyfF3RCnJ32LTiS9M/";
+        public static readonly string NETWORKCREDENTIALUSERNAME = "AKIA4A4DJ4EYKP35ZV4I";
+        public static readonly string NETWORKCREDENTIALPASSWORD = "BBjF8ecukbhW7cj15wkKMB+icuJpU84F1Ur6wSpN0MN";
         public static readonly string MAINEMAILADDRESS = "accounts@tamarran.com";
         public static readonly string BCC = "ali.zayer@tamarran.com";
         public static readonly string MAINDISPLAYNAME = "Tamarran";

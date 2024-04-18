@@ -69,13 +69,20 @@ namespace TapPaymentIntegration.Controllers
                 var subscriptions = _context.subscriptions.Where(x => x.Status).ToList();
                 return View(subscriptions);
             }
-            catch
+            catch(Exception ex)
             {
+                ViewBag.PageName = "Index";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
                 return View("Error");
             }
         }
 
         public IActionResult Error()
+        {
+            return View();
+        }
+        public IActionResult DashboardError()
         {
             return View();
         }
@@ -96,8 +103,11 @@ namespace TapPaymentIntegration.Controllers
                 ViewBag.Invoiceid = invoiceid;
                 return View(subscriptions);
             }
-            catch
+            catch (Exception ex)
             {
+                ViewBag.PageName = "Subscription";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
                 return View("Error");
             }
         }
@@ -130,8 +140,11 @@ namespace TapPaymentIntegration.Controllers
                 ViewBag.IsFirstInvoice = isfirstinvoice;
                 return View(subscriptions);
             }
-            catch
+            catch (Exception ex)
             {
+                ViewBag.PageName = "SubscriptionAdmin";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
                 return View("Error");
             }
         }
@@ -293,10 +306,12 @@ namespace TapPaymentIntegration.Controllers
                 }
                 return Json(false);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                ViewBag.PageName = "CreateInvoiceMada";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
                 return View("Error");
-                throw;
             }
         }
         [HttpPost]
@@ -557,10 +572,12 @@ namespace TapPaymentIntegration.Controllers
                 }
                 return Json(false);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                ViewBag.PageName = "CreateInvoiceBenefit";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
                 return View("Error");
-                throw;
             }
         }
         [HttpPost]
@@ -724,10 +741,12 @@ namespace TapPaymentIntegration.Controllers
                 }
                 return Json(false);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                ViewBag.PageName = "CreateInvoice";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
                 return View("Error");
-                throw;
             }
         }
         public async Task<IActionResult> CardVerify(int invoiceid, string IsFirstInvoice)
@@ -1240,10 +1259,12 @@ namespace TapPaymentIntegration.Controllers
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                ViewBag.PageName = "CardVerify";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
                 return View("Error");
-                throw;
             }
         }
 
@@ -1512,10 +1533,12 @@ namespace TapPaymentIntegration.Controllers
                 _ = _emailSender.SendEmailWithFIle(bytes, users.Email, "Tamarran – Payment Receipt", bodyemail);
                 return RedirectToAction("ShowInvoice", "Home", new { PaymentStatus = "All" });
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                ViewBag.PageName = "CardVerifyBenefit";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
                 return View("Error");
-                throw;
             }
         }
 
@@ -1784,9 +1807,12 @@ namespace TapPaymentIntegration.Controllers
                 ViewBag.SubscriptionCount = _context.subscriptions.Where(x => x.Status == true).ToList().Count();
                 return View();
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "Dashboard";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
         //Customer Section
@@ -1817,11 +1843,13 @@ namespace TapPaymentIntegration.Controllers
                              });
                 return View(users);
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "ViewCustomer";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
-
         }
         public IActionResult ViewAllInvoices(string userId)
         {
@@ -1830,9 +1858,12 @@ namespace TapPaymentIntegration.Controllers
                 var incoices = _context.invoices.Where(x => x.UserId == userId).ToList();
                 return View(incoices);
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "ViewAllInvoices";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
         public IActionResult AddCustomer()
@@ -1843,9 +1874,12 @@ namespace TapPaymentIntegration.Controllers
                 ViewBag.SubscriptionList = _context.subscriptions.Select(x => new SelectListItem { Value = x.SubscriptionId.ToString(), Text = x.Name + " " + "-" + " " + x.Amount });
                 return View();
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "AddCustomer";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
         [HttpPost]
@@ -2014,9 +2048,12 @@ namespace TapPaymentIntegration.Controllers
                 }
                 return View();
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "AddCustomer";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
         public ActionResult DeleteCustomer(string userId)
@@ -2031,9 +2068,12 @@ namespace TapPaymentIntegration.Controllers
                 }
                 return RedirectToAction("ViewCustomer", "Home");
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "DeleteCustomer";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
         public async Task<IActionResult> InActiveUser(string id)
@@ -2047,11 +2087,13 @@ namespace TapPaymentIntegration.Controllers
                 _context.SaveChanges();
                 return RedirectToAction("ViewCustomer", "Home");
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "InActiveUser";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
-
         }
         public IActionResult ActiveUser(string id)
         {
@@ -2063,11 +2105,13 @@ namespace TapPaymentIntegration.Controllers
                 _context.SaveChanges();
                 return RedirectToAction("ViewCustomer", "Home");
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "ActiveUser";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
-
         }
         public ActionResult DeleteInvoice(int id, string userid, string status)
         {
@@ -2078,11 +2122,13 @@ namespace TapPaymentIntegration.Controllers
                 _context.SaveChanges();
                 return RedirectToAction("CreateInvoice", "Home", new { PaymentStatus = "All" });
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "DeleteInvoice";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
-
         }
         //Subscription Section
         [Authorize]
@@ -2093,9 +2139,12 @@ namespace TapPaymentIntegration.Controllers
                 var subscriptions = _context.subscriptions.ToList();
                 return View(subscriptions);
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "Viewsubscription";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
 
         }
@@ -2112,11 +2161,13 @@ namespace TapPaymentIntegration.Controllers
                 }
                 return RedirectToAction("Viewsubscription", "Home");
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "Deletesubscription";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
-
         }
         public IActionResult Addsubscription()
         {
@@ -2150,9 +2201,12 @@ namespace TapPaymentIntegration.Controllers
                 ModelState.AddModelError(string.Empty, "");
                 return View();
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "Addsubscription";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
         public IActionResult Editsubscription(string userId)
@@ -2164,9 +2218,12 @@ namespace TapPaymentIntegration.Controllers
                 ViewBag.Fre = s;
                 return View(subscriptions);
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "Editsubscription";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
         [HttpPost]
@@ -2188,9 +2245,12 @@ namespace TapPaymentIntegration.Controllers
                     return View(subscription);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "Editsubscription";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
         [HttpPost]
@@ -2205,9 +2265,12 @@ namespace TapPaymentIntegration.Controllers
                     Frequency = x.Frequency
                 }).Where(x => x.SubscriptionId == Convert.ToInt32(Currenturl)).FirstOrDefault());
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "getFrequency";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
         public IActionResult InActiveSubscription(int id)
@@ -2220,9 +2283,12 @@ namespace TapPaymentIntegration.Controllers
                 _context.SaveChanges();
                 return RedirectToAction("Viewsubscription", "Home");
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "InActiveSubscription";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
         public IActionResult ActiveSubscription(int id)
@@ -2235,9 +2301,12 @@ namespace TapPaymentIntegration.Controllers
                 _context.SaveChanges();
                 return RedirectToAction("Viewsubscription", "Home");
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "ActiveSubscription";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
         public IActionResult GetAllCharges()
@@ -2264,9 +2333,12 @@ namespace TapPaymentIntegration.Controllers
                              }).ToList();
                 return View(users);
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "GetAllCharges";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
         public ActionResult UnSubscribeSubscription(string id)
@@ -2283,9 +2355,12 @@ namespace TapPaymentIntegration.Controllers
                 _ = _emailSender.SendEmailAsync(userinfo.Email, "Un-subscription Confirmation - You're always welcome back!", bodyemail);
                 return RedirectToAction("ViewGYMCustomer");
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "UnSubscribeSubscription";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
         //List Section
@@ -2318,9 +2393,12 @@ namespace TapPaymentIntegration.Controllers
                 }
                 return View(userlist);
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "ViewSubinfo";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
         public async Task<IActionResult> ViewInvoice(string id, int sub_id, string userid, string invoiceid)
@@ -2342,6 +2420,7 @@ namespace TapPaymentIntegration.Controllers
                     var subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == sub_id).FirstOrDefault();
                     var getinvoiceinfo = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(invoiceid)).FirstOrDefault();
                     Deserialized_savecard.IsFirstInvoice = getinvoiceinfo.IsFirstInvoice;
+                    Deserialized_savecard.gymname = users.GYMName;
                     Deserialized_savecard.Subscriptions = subscriptions;
                     if (Deserialized_savecard.id != null)
                     {
@@ -2546,6 +2625,7 @@ namespace TapPaymentIntegration.Controllers
                         chargeDetail.InvoiceID = getinvoiceinfo.InvoiceId.ToString();
                         chargeDetail.IsFirstInvoice = getinvoiceinfo.IsFirstInvoice;
                         chargeDetail.Subscriptions = subscriptions;
+                        chargeDetail.gymname = users.GYMName;
                         chargeDetail.customer = Deserialized_savecard.customer;
                         chargeDetail.reference = Deserialized_savecard.reference;
                         chargeDetail.Created_date = Deserialized_savecard.created;
@@ -2598,7 +2678,7 @@ namespace TapPaymentIntegration.Controllers
                         else
                         {
 
-                            decimal totala = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
+                            decimal totala = finalamount;
                             Vat = (decimal)((totala / 100) * Convert.ToInt32(subscriptions.VAT));
                         }
                         decimal after_vat_totalamount = finalamount + Vat;
@@ -2607,6 +2687,8 @@ namespace TapPaymentIntegration.Controllers
                         chargeDetail.VAT = Vat.ToString();
                         chargeDetail.InvoiceID = getinvoiceinfo.InvoiceId.ToString();
                         chargeDetail.Subscriptions = subscriptions;
+                        chargeDetail.IsFirstInvoice = getinvoiceinfo.IsFirstInvoice;
+                        chargeDetail.gymname = users.GYMName;
                         chargeDetail.customer = Deserialized_savecard.customer;
                         chargeDetail.reference = Deserialized_savecard.reference;
                         chargeDetail.Created_date = Deserialized_savecard.created;
@@ -2616,11 +2698,13 @@ namespace TapPaymentIntegration.Controllers
                     return View(chargeDetail);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "ViewInvoice";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
-            
         }
         public IActionResult ShowInvoice(string PaymentStatus)
         {
@@ -2654,9 +2738,12 @@ namespace TapPaymentIntegration.Controllers
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "ShowInvoice";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
         #endregion
@@ -2775,9 +2862,12 @@ namespace TapPaymentIntegration.Controllers
                 }
                 return View();
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "AddGymCustomer";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
         [Authorize]
@@ -2806,9 +2896,12 @@ namespace TapPaymentIntegration.Controllers
                              });
                 return View(users);
             }
-            catch
+            catch (Exception ex)
             {
-                return View("Error");
+                ViewBag.PageName = "ViewGYMCustomer";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
 #endregion

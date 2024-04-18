@@ -14,6 +14,7 @@ namespace TapPaymentIntegration.Models.PaymentDTO
         public bool customer_initiated { get; set; }
         public string api_version { get; set; }
         public string method { get; set; }
+        public string gymname { get; set; }
         public string status { get; set; }
         public double amount { get; set; }
         public bool? IsFirstInvoice { get; set; }
