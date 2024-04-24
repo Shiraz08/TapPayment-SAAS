@@ -15,9 +15,8 @@ namespace TapPaymentIntegration.Models.Email
             {
                 SmtpClient client = new SmtpClient();
                 client.Host = Constants.HOST;
-                client.Port = Constants.PORT;
-                client.UseDefaultCredentials = false;
                 client.EnableSsl = true;
+                client.Port = Constants.PORT;
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
                 client.Credentials = new NetworkCredential(Constants.NETWORKCREDENTIALUSERNAME, Constants.NETWORKCREDENTIALPASSWORD);
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
@@ -49,9 +48,8 @@ namespace TapPaymentIntegration.Models.Email
             {
                 SmtpClient client = new SmtpClient();
                 client.Host = Constants.HOST;
-                client.Port = Constants.PORT;
-                client.UseDefaultCredentials = false;
                 client.EnableSsl = true;
+                client.Port = Constants.PORT;
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
                 client.Credentials = new NetworkCredential(Constants.NETWORKCREDENTIALUSERNAME, Constants.NETWORKCREDENTIALPASSWORD);
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;

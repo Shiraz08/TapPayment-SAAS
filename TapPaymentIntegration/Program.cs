@@ -75,10 +75,10 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
-    //var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-    //var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    //await StaticRoles.SeedRolesAsync(userManager, roleManager);
-    //await StaticRoles.SeedSuperAdminAsync(userManager, roleManager);
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    await StaticRoles.SeedRolesAsync(userManager, roleManager);
+    await StaticRoles.SeedSuperAdminAsync(userManager, roleManager);
 
 }
 if (!app.Environment.IsDevelopment())

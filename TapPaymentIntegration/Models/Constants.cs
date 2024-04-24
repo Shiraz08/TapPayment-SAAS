@@ -22,8 +22,8 @@ namespace TapPaymentIntegration.Models
 
         public static readonly string HOST = "email-smtp.ap-south-1.amazonaws.com";
         public static readonly int PORT = 587;
-        public static readonly string NETWORKCREDENTIALUSERNAME = "info@hoozzee.com";
-        public static readonly string NETWORKCREDENTIALPASSWORD = "yykbjptkvssnyhih";
+        public static readonly string NETWORKCREDENTIALUSERNAME = "AKIA4A4DJ4EYKP35ZV4I";
+        public static readonly string NETWORKCREDENTIALPASSWORD = "BBjF8ecukbhW7cj15wkKMB+icuJpU84F1Ur6wSpN0MNs";
         public static readonly string MAINEMAILADDRESS = "accounts@tamarran.com";
         public static readonly string BCC = "ali.zayer@tamarran.com";
         public static readonly string MAINDISPLAYNAME = "Tamarran";
