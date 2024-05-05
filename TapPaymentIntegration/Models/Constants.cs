@@ -13,7 +13,6 @@ namespace TapPaymentIntegration.Models
         public static readonly string RedirectURL = "https://billing.tamarran.com";  //don't put / in the end
 #endif
 #if DEBUG
-        //public static readonly string RedirectURL = "https://test.softsolutionlogix.com";  //don't put / in the end
         public static readonly string RedirectURL = "https://localhost:7279";  //don't put / in the end
 #endif
         public const string SubscriptionErrorMessage = "subscription is In-Active";

@@ -47,25 +47,6 @@ namespace TapPaymentIntegration.Controllers
         {
             try
             {
-                //var applicationUser = GetCurrentUserAsync().Result;
-                //var sub = _context.subscriptions.FirstOrDefault();
-
-                //var bodyemail1 = EmailBodyFill.EmailBodyForPaymentRequest(applicationUser, "jdsjdjdsjgjdsgsdjs");
-                //_ = _emailSender.SendEmailAsync("shiraznaseer786@gmail.com", "Tamarran – Payment Request", bodyemail1);
-
-                //var bodyemail2 = EmailBodyFill.EmailBodyForPaymentReceipt(applicationUser);
-                //_ = _emailSender.SendEmailAsync("shiraznaseer786@gmail.com", "Tamarran – Payment Receipt", bodyemail2);
-
-                //var bodyemail3 = EmailBodyFill.EmailBodyForAutomaticPaymentConfirmation(sub, applicationUser);
-                //_ = _emailSender.SendEmailAsync("shiraznaseer786@gmail.com", "Tamarran - Automatic Payment Confirmation", bodyemail3);
-
-                //var bodyemail4 = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(sub, applicationUser);
-                //_ = _emailSender.SendEmailAsync("shiraznaseer786@gmail.com", "Tamarran - Your subscription renewal in Tamarran failed", bodyemail4);
-
-
-                //var bodyemail5 = EmailBodyFill.EmailBodyForUnsubscriptionSuccessful(applicationUser);
-                //_ = _emailSender.SendEmailAsync("shiraznaseer786@gmail.com", "Un-subscription Successful - You're Always Welcome Back!", bodyemail5);
-
                 var subscriptions = _context.subscriptions.Where(x => x.Status).ToList();
                 return View(subscriptions);
             }
@@ -95,7 +76,7 @@ namespace TapPaymentIntegration.Controllers
                     var applicationUser = _context.Users.Where(x => x.Id == userid).FirstOrDefault();
                     await _signInManager.PasswordSignInAsync(applicationUser.UserName.ToString(), applicationUser.Password, true, lockoutOnFailure: true);
                 }
-                var subscriptions = _context.subscriptions.Where(x => x.Status == true && x.SubscriptionId == id).FirstOrDefault();
+                var subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == id).FirstOrDefault();
                 if (subscriptions.VAT == null || subscriptions.VAT == "0")
                 {
                     subscriptions.VAT = "0";
@@ -120,7 +101,7 @@ namespace TapPaymentIntegration.Controllers
                     var applicationUser = _context.Users.Where(x => x.Id == userid).FirstOrDefault();
                     await _signInManager.PasswordSignInAsync(applicationUser.UserName.ToString(), applicationUser.Password, true, lockoutOnFailure: true);
                 }
-                var subscriptions = _context.subscriptions.Where(x => x.Status == true && x.SubscriptionId == id).FirstOrDefault();
+                var subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == id).FirstOrDefault();
                 if (subscriptions is null)
                 {
                     TempData["ErrorMessage"] = Constants.SubscriptionErrorMessage;
@@ -187,7 +168,7 @@ namespace TapPaymentIntegration.Controllers
                 if (SubscriptionId != null && Frequency != null)
                 {
                     var userinfo = _context.Users.Where(x => x.Id == GetCurrentUserAsync().Result.Id).FirstOrDefault();
-                    var subscriptions = _context.subscriptions.Where(x => x.Status == true && x.SubscriptionId == Convert.ToInt32(SubscriptionId)).FirstOrDefault();
+                    var subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == Convert.ToInt32(SubscriptionId)).FirstOrDefault();
                     Random rnd = new Random();
                     var TransNo = "Txn_" + rnd.Next(10000000, 99999999);
                     var OrderNo = "Ord_" + rnd.Next(10000000, 99999999);
@@ -356,7 +337,7 @@ namespace TapPaymentIntegration.Controllers
                 if (SubscriptionId != null && Frequency != null)
                 {
                     var userinfo = _context.Users.Where(x => x.Id == GetCurrentUserAsync().Result.Id).FirstOrDefault();
-                    var subscriptions = _context.subscriptions.Where(x => x.Status == true && x.SubscriptionId == Convert.ToInt32(SubscriptionId)).FirstOrDefault();
+                    var subscriptions = _context.subscriptions.Where(x =>  x.SubscriptionId == Convert.ToInt32(SubscriptionId)).FirstOrDefault();
                     Random rnd = new Random();
                     var TransNo = "Txn_" + rnd.Next(10000000, 99999999);
                     var OrderNo = "Ord_" + rnd.Next(10000000, 99999999);
@@ -622,7 +603,7 @@ namespace TapPaymentIntegration.Controllers
                 if (SubscriptionId != null && Frequency != null)
                 {
                     var userinfo = _context.Users.Where(x => x.Id == GetCurrentUserAsync().Result.Id).FirstOrDefault();
-                    var subscriptions = _context.subscriptions.Where(x => x.Status == true && x.SubscriptionId == Convert.ToInt32(SubscriptionId)).FirstOrDefault();
+                    var subscriptions = _context.subscriptions.Where(x =>  x.SubscriptionId == Convert.ToInt32(SubscriptionId)).FirstOrDefault();
                     Random rnd = new Random();
                     var TransNo = "Txn_" + rnd.Next(10000000, 99999999);
                     var OrderNo = "Ord_" + rnd.Next(10000000, 99999999);
@@ -781,7 +762,7 @@ namespace TapPaymentIntegration.Controllers
                             {
                                 //Create Invoice
                                 var users = GetCurrentUserAsync().Result;
-                                var subscriptions = _context.subscriptions.Where(x => x.Status == true && x.SubscriptionId == Convert.ToInt32(SubscriptionId)).FirstOrDefault();
+                                var subscriptions = _context.subscriptions.Where(x =>  x.SubscriptionId == Convert.ToInt32(SubscriptionId)).FirstOrDefault();
                                 int days = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
                                 decimal finalamount = 0;
                                 decimal Discount = 0;
@@ -945,14 +926,15 @@ namespace TapPaymentIntegration.Controllers
 
                                 var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                                 var bodyemail = EmailBodyFill.EmailBodyForPaymentReceipt(users, subscriptions);
-                                _ = _emailSender.SendEmailWithFIle(bytes, userinfo.Email, "Tamarran – Payment Receipt", bodyemail);
+                                var emailSubject = "Tamarran – Payment Receipt - " + " Inv" + invoice_info.InvoiceId;
+                                _ = _emailSender.SendEmailWithFIle(bytes, userinfo.Email, emailSubject, bodyemail);
                                 return RedirectToAction("ShowInvoice", "Home", new { PaymentStatus = "All" });
                             }
                             else
                             {
                                 //Create Invoice
                                 var users = GetCurrentUserAsync().Result;
-                                var subscriptions = _context.subscriptions.Where(x => x.Status == true && x.SubscriptionId == Convert.ToInt32(SubscriptionId)).FirstOrDefault();
+                                var subscriptions = _context.subscriptions.Where(x =>  x.SubscriptionId == Convert.ToInt32(SubscriptionId)).FirstOrDefault();
                                 var Amount = subscriptions.Amount;
                                 int days = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
                                 decimal finalamount = 0;
@@ -1094,7 +1076,8 @@ namespace TapPaymentIntegration.Controllers
                                 }
                                 var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                                 var bodyemail = EmailBodyFill.EmailBodyForPaymentReceipt(users, subscriptions);
-                                _ = _emailSender.SendEmailWithFIle(bytes, userinfo.Email, "Tamarran – Payment Receipt", bodyemail);
+                                var emailSubject = "Tamarran – Payment Receipt - " + " Inv" + invoice_info.InvoiceId;
+                                _ = _emailSender.SendEmailWithFIle(bytes, userinfo.Email, emailSubject, bodyemail);
                                 return RedirectToAction("ShowInvoice", "Home", new { PaymentStatus = "All" });
                             }
                         }
@@ -1110,7 +1093,7 @@ namespace TapPaymentIntegration.Controllers
                     {
                         //Create Invoice
                         var users = GetCurrentUserAsync().Result;
-                        var subscriptions = _context.subscriptions.Where(x => x.Status == true && x.SubscriptionId == Convert.ToInt32(SubscriptionId)).FirstOrDefault();
+                        var subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == Convert.ToInt32(SubscriptionId)).FirstOrDefault();
                         var Amount = subscriptions.Amount;
                         int days = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
                         decimal finalamount = 0;
@@ -1233,7 +1216,8 @@ namespace TapPaymentIntegration.Controllers
                         }
                         var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                         var bodyemail = EmailBodyFill.EmailBodyForPaymentReceipt(users, subscriptions);
-                        _ = _emailSender.SendEmailWithFIle(bytes, userinfo.Email, "Tamarran – Payment Receipt", bodyemail);
+                        var emailSubject = "Tamarran – Payment Receipt - " + " Inv" + invoice_info.InvoiceId;
+                        _ = _emailSender.SendEmailWithFIle(bytes, userinfo.Email, emailSubject, bodyemail);
                         return RedirectToAction("ShowInvoice", "Home", new { PaymentStatus = "All" });
                     }
                     return View();
@@ -1278,13 +1262,13 @@ namespace TapPaymentIntegration.Controllers
                 {
                     users = GetCurrentUserAsync().Result;
                     var SubscriptionId = HttpContext.Session.GetString("SubscriptionId");
-                    subscriptions = _context.subscriptions.Where(x => x.Status == true && x.SubscriptionId == Convert.ToInt32(SubscriptionId)).FirstOrDefault();
+                    subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == Convert.ToInt32(SubscriptionId)).FirstOrDefault();
                 }
                 else
                 {
                     var invoice_info = _context.invoices.FirstOrDefault(a=>a.InvoiceId == invoiceid);
                     users = _context.Users.FirstOrDefault(a => a.Id == invoice_info.UserId); 
-                    subscriptions = _context.subscriptions.Where(x => x.Status == true && x.SubscriptionId == invoice_info.SubscriptionId).FirstOrDefault();
+                    subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == invoice_info.SubscriptionId).FirstOrDefault();
 
                 }
                 
@@ -1530,7 +1514,8 @@ namespace TapPaymentIntegration.Controllers
 
                 var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                 var bodyemail = EmailBodyFill.EmailBodyForPaymentReceipt(users, subscriptions);
-                _ = _emailSender.SendEmailWithFIle(bytes, users.Email, "Tamarran – Payment Receipt", bodyemail);
+                var emailSubject = "Tamarran - Tamarran – Payment Receipt - " + " Inv" + invoiceid;
+                _ = _emailSender.SendEmailWithFIle(bytes, users.Email, emailSubject, bodyemail);
                 return RedirectToAction("ShowInvoice", "Home", new { PaymentStatus = "All" });
             }
             catch (Exception ex)
@@ -1541,257 +1526,6 @@ namespace TapPaymentIntegration.Controllers
                 return View("Error");
             }
         }
-
-        //public async Task<IActionResult> CardVerifyBenefit(int invoiceid, string IsFirstInvoice)
-        //{
-        //    try
-        //    {
-        //        string tap_id = HttpContext.Request.Query["tap_id"].ToString();
-        //        TapInvoiceResponseDTO Deserialized_savecard = null;
-        //        var log_user = GetCurrentUserAsync().Result;
-        //        if (tap_id != null && log_user.Id != null)
-        //        {
-        //            var client = new HttpClient();
-        //            var request = new HttpRequestMessage
-        //            {
-        //                Method = HttpMethod.Get,
-        //                RequestUri = new Uri("https://api.tap.company/v2/invoices/" + tap_id),
-        //                Headers =
-        //                {
-        //                    { "accept", "application/json" },
-        //                    { "Authorization", "Bearer " + log_user.SecertKey },
-        //                },
-        //            };
-        //            using (var response = await client.SendAsync(request))
-        //            {
-        //                var body = await response.Content.ReadAsStringAsync();
-        //                Deserialized_savecard = JsonConvert.DeserializeObject<TapInvoiceResponseDTO>(body);
-        //            }
-        //        }
-        //        var SubscriptionId = HttpContext.Session.GetString("SubscriptionId");
-        //        int getchargesresposemodel = _context.chargeResponses.Max(x => x.ChargeResponseId);
-        //        if (Deserialized_savecard.status == "PAID")
-        //        {
-        //            var Frequency = HttpContext.Session.GetString("Frequency");
-        //            var Invoiceid = log_user.Benefit_Invoice;
-        //            if (Deserialized_savecard.id != null)
-        //            {
-        //                //Create Invoice
-        //                var users = GetCurrentUserAsync().Result;
-        //                var subscriptions = _context.subscriptions.Where(x => x.Status == true && x.SubscriptionId == Convert.ToInt32(SubscriptionId)).FirstOrDefault();
-        //                int days = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
-        //                decimal finalamount = 0;
-        //                decimal Discount = 0;
-        //                decimal Vat = 0;
-        //                if (users.Frequency == "DAILY")
-        //                {
-        //                    Discount = 0;
-        //                    finalamount = (decimal)Convert.ToInt32(subscriptions.Amount) / (int)days;
-        //                }
-        //                else if (users.Frequency == "WEEKLY")
-        //                {
-        //                    Discount = 0;
-        //                    finalamount = (decimal)Convert.ToInt32(subscriptions.Amount) / 4;
-        //                }
-        //                else if (users.Frequency == "MONTHLY")
-        //                {
-        //                    Discount = 0;
-        //                    finalamount = (decimal)Convert.ToInt32(subscriptions.Amount);
-        //                }
-        //                else if (users.Frequency == "QUARTERLY")
-        //                {
-        //                    Discount = 0;
-        //                    finalamount = (decimal)(Convert.ToInt32(subscriptions.Amount) * 3) / 1;
-        //                }
-        //                else if (users.Frequency == "HALFYEARLY")
-        //                {
-        //                    Discount = 0;
-        //                    finalamount = (decimal)(Convert.ToInt32(subscriptions.Amount) * 6) / 1;
-        //                }
-        //                else if (users.Frequency == "YEARLY")
-        //                {
-        //                    var amountpercentage = (decimal)(Convert.ToDecimal(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
-        //                    var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
-        //                    finalamount = final_amount_percentage * 12;
-        //                    Discount = amountpercentage * 12;
-        //                }
-        //                if (subscriptions.VAT == null || subscriptions.VAT == "0")
-        //                {
-        //                    Vat = 0;
-        //                }
-        //                else
-        //                {
-        //                    decimal totala = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
-        //                    Vat = (decimal)((totala / 100) * Convert.ToDecimal(subscriptions.VAT));
-        //                }
-        //                decimal after_vat_totalamount = finalamount + Convert.ToDecimal(subscriptions.SetupFee) + Vat;
-        //                //Remove Old Invoice
-        //                //if (Invoiceid != null)
-        //                //{
-        //                //    var getoldinvoice = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(Invoiceid)).FirstOrDefault();
-        //                //    _context.Remove(getoldinvoice);
-        //                //    _context.SaveChanges();
-        //                //}
-        //                //Invoice invoices = new Invoice
-        //                //{
-        //                //    InvoiceStartDate = DateTime.UtcNow,
-        //                //    InvoiceEndDate = DateTime.UtcNow,
-        //                //    Currency = subscriptions.Currency,
-        //                //    AddedDate = DateTime.UtcNow,
-        //                //    AddedBy = GetCurrentUserAsync().Result.FullName,
-        //                //    SubscriptionAmount = Convert.ToDouble(after_vat_totalamount.ToString("0.00")),
-        //                //    SubscriptionId = Convert.ToInt32(subscriptions.SubscriptionId),
-        //                //    Status = "Un-Paid",
-        //                //    IsDeleted = false,
-        //                //    VAT = Vat.ToString(),
-        //                //    Discount = Discount.ToString(),
-        //                //    Description = "Invoice Create - Frequency(" + users.Frequency + ")",
-        //                //    SubscriptionName = subscriptions.Name,
-        //                //    UserId = users.Id,
-        //                //    ChargeId = tap_id,
-        //                //    GymName = users.GYMName,
-        //                //    Country = subscriptions.Countries
-        //                //};
-        //                //_context.invoices.Add(invoices);
-        //                //_context.SaveChanges();
-        //                // Update Recurring Job data
-        //                //int max_invoice_id = _context.invoices.Max(x => x.InvoiceId);
-        //                var userinfo = _context.Users.Where(x => x.Id == users.Id).FirstOrDefault();
-        //                //update user 
-        //                users.SubscribeID = Convert.ToInt32(SubscriptionId);
-        //                users.Tap_CustomerID = Deserialized_savecard.customer.id;
-        //                users.First_Six = "******";
-        //                users.Last_Four = "****";
-        //                users.PaymentSource = "BENEFIT";
-        //                _context.Users.Update(users);
-        //                _context.SaveChanges();
-
-        //                UserSubscriptions userSubscriptions = new UserSubscriptions();
-        //                userSubscriptions.SubID = Convert.ToInt32(SubscriptionId);
-        //                userSubscriptions.Userid = userinfo.Id;
-        //                _context.userSubscriptions.Add(userSubscriptions);
-        //                _context.SaveChanges();
-
-        //                if(IsFirstInvoice == "true")
-        //                {
-        //                    DateTime nextrecurringdate = _context.invoices.Where(x => x.InvoiceId == invoiceid).Select(x => x.InvoiceEndDate).FirstOrDefault();
-        //                    RecurringCharge recurringCharge = new RecurringCharge();
-        //                    recurringCharge.Amount = Convert.ToDecimal(finalamount + Vat);
-        //                    recurringCharge.SubscriptionId = subscriptions.SubscriptionId;
-        //                    recurringCharge.UserID = users.Id;
-        //                    recurringCharge.Tap_CustomerId = Deserialized_savecard.customer.id;
-        //                    recurringCharge.ChargeId = tap_id;
-        //                    recurringCharge.Invoice = "Inv" + invoiceid;
-        //                    recurringCharge.IsRun = false;
-        //                    recurringCharge.JobRunDate = nextrecurringdate.AddDays(1);
-        //                    _context.recurringCharges.Add(recurringCharge);
-        //                    _context.SaveChanges();
-        //                }
-
-        //                Invoice invoice_info = _context.invoices.Where(x => x.InvoiceId == invoiceid).FirstOrDefault();
-        //                invoice_info.ChargeId = tap_id;
-        //                invoice_info.Status = "Payment Captured";
-        //                invoice_info.ChargeResponseId = getchargesresposemodel;
-        //                _context.invoices.Update(invoice_info);
-        //                _context.SaveChanges();
-        //                // Send Email
-        //                string body = string.Empty;
-        //                _environment.WebRootPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-        //                string contentRootPath = _environment.WebRootPath + "/htmltopdf.html";
-        //                string contentRootPath1 = _environment.WebRootPath + "/css/bootstrap.min.css";
-        //                //Generate PDF
-        //                var cr = _context.chargeResponses.Where(x => x.ChargeId == tap_id).FirstOrDefault();
-        //                var sub_id = HttpContext.Session.GetString("SubscriptionId");
-        //                var sub_info = _context.subscriptions.Where(x => x.SubscriptionId == Convert.ToInt32(sub_id)).FirstOrDefault();
-        //                using (StreamReader reader = new StreamReader(contentRootPath))
-        //                {
-        //                    body = reader.ReadToEnd();
-        //                }
-        //                //Fill EMail By Parameter
-        //                body = body.Replace("{title}", "Tamarran Payment Invoice");
-        //                body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
-
-        //                body = body.Replace("{InvocieStatus}", "Payment Captured");
-        //                body = body.Replace("{InvoiceID}", "Inv" + invoice_info.InvoiceId);
-
-        //                body = body.Replace("{User_Name}", userinfo.FullName);
-        //                body = body.Replace("{User_Email}", userinfo.Email);
-        //                body = body.Replace("{User_GYM}", userinfo.GYMName);
-        //                body = body.Replace("{User_Phone}", userinfo.PhoneNumber);
-
-
-        //                body = body.Replace("{SubscriptionName}", subscriptions.Name);
-        //                body = body.Replace("{Discount}", Discount.ToString());
-        //                body = body.Replace("{SubscriptionPeriod}", userinfo.Frequency);
-        //                body = body.Replace("{SetupFee}", subscriptions.SetupFee + " " + subscriptions.Currency);
-        //                var amount = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
-        //                body = body.Replace("{SubscriptionAmount}", finalamount.ToString("0.00") + " " + subscriptions.Currency);
-        //                //Calculate VAT
-        //                if (subscriptions.VAT == null || subscriptions.VAT == "0")
-        //                {
-        //                    body = body.Replace("{VAT}", "0.00" + " " + subscriptions.Currency);
-        //                    body = body.Replace("{Total}", amount.ToString("0.00") + " " + subscriptions.Currency);
-        //                    body = body.Replace("{InvoiceAmount}", amount.ToString("0.00") + " " + subscriptions.Currency);
-        //                    var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(subscriptions.SetupFee);
-        //                    body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
-        //                }
-        //                else
-        //                {
-        //                    body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + subscriptions.Currency);
-        //                    body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
-        //                    body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
-        //                    var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(subscriptions.SetupFee);
-        //                    body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
-        //                }
-
-        //                var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
-        //                var bodyemail = EmailBodyFill.EmailBodyForPaymentReceipt(users, subscriptions);
-        //                _ = _emailSender.SendEmailWithFIle(bytes, userinfo.Email, "Tamarran – Payment Receipt", bodyemail);
-        //                return RedirectToAction("ShowInvoice", "Home", new { PaymentStatus = "All" });
-        //            }
-        //            else
-        //            {
-        //                //Update Charge Response;
-        //                var chargeresponse = _context.chargeResponses.Where(x => x.ChargeResponseId == getchargesresposemodel).FirstOrDefault();
-        //                _context.chargeResponses.Remove(chargeresponse);
-        //                _context.SaveChanges();
-        //            }
-        //            return View();
-        //        }
-        //        else
-        //        {
-        //            //Remove Charge Response;
-        //            var chargeresponse = _context.chargeResponses.Where(x => x.ChargeResponseId == getchargesresposemodel).FirstOrDefault();
-        //            _context.chargeResponses.Remove(chargeresponse);
-        //            _context.SaveChanges();
-
-        //            var _uri = HttpContext.Session.GetString("Currenturl");
-        //            if (_uri != null)
-        //            {
-        //                string[] arrs = _uri.Split('/');
-        //                if (arrs[4] == "Subscription")
-        //                {
-        //                    TempData["Message"] = Deserialized_savecard.status;
-        //                    return Redirect(_uri);
-        //                }
-        //                else
-        //                {
-        //                    TempData["Message"] = Deserialized_savecard.status;
-        //                    return Redirect(_uri);
-        //                }
-        //            }
-        //            else
-        //            {
-        //                return RedirectToAction("Index", "Home");
-        //            }
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-
-        //        throw;
-        //    }
-        //}
 
         #endregion
         #region Admin Dashboard
@@ -2024,9 +1758,9 @@ namespace TapPaymentIntegration.Controllers
                     var callbackUrl = @Url.Action("SubscriptionAdmin", "Home", new { id = applicationUser.SubscribeID, link = "Yes", userid = max_user_id, invoiceid = max_invoice_id, After_vat_totalamount = after_vat_totalamount, isfirstinvoice = "true" });
                     var websiteurl = HtmlEncoder.Default.Encode(Constants.RedirectURL + callbackUrl);
 
-                    var subject = "Tamarran – Payment Request";
+                    var emailSubject = "Tamarran – Payment Request - " + " Inv" + max_invoice_id; 
                     var bodyemail = EmailBodyFill.EmailBodyForPaymentRequest(applicationUser, websiteurl);
-                    _ = _emailSender.SendEmailWithFIle(bytes, applicationUser.Email, subject, bodyemail);
+                    _ = _emailSender.SendEmailWithFIle(bytes, applicationUser.Email, emailSubject, bodyemail);
 
 
                     var adduser = _context.Users.Where(x => x.Email == applicationUser.Email).FirstOrDefault();
@@ -2213,7 +1947,7 @@ namespace TapPaymentIntegration.Controllers
         {
             try
             {
-                var subscriptions = _context.subscriptions.Where(x => x.Status == true && x.SubscriptionId == Convert.ToInt32(userId)).FirstOrDefault();
+                var subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == Convert.ToInt32(userId)).FirstOrDefault();
                 var s = string.Join(",", subscriptions.Frequency.Split(',').Select(x => string.Format("'{0}'", x)));
                 ViewBag.Fre = s;
                 return View(subscriptions);

@@ -175,9 +175,10 @@ namespace TapPaymentIntegration.Models.HangFire
                                         var without_vat = Convert.ToDecimal(finalamount);
                                         body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
                                     }
+                                    var emailSubject = "Tamarran - Automatic Payment Confirmation - "+" Inv" + incoice_info.InvoiceId;
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                                     var bodyemail = EmailBodyFill.EmailBodyForAutomaticPaymentConfirmation(getsubinfo, getuserinfo);
-                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, "Tamarran - Automatic Payment Confirmation", bodyemail, attachmentTitle);
+                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, emailSubject, bodyemail, attachmentTitle);
                                 }
                                 else
                                 {
@@ -215,9 +216,9 @@ namespace TapPaymentIntegration.Models.HangFire
                                     _context.SaveChanges();
 
                                     var nameinvoice = "Inv" + max_invoice_id;
-
+                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id;
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
-                                    _ = _emailSender.SendEmailAsync(user_Email, "Tamarran - Your subscription renewal in Tamarran failed", bodyemail);
+                                    _ = _emailSender.SendEmailAsync(user_Email, emailSubject, bodyemail);
                                 }
                             }
                             else if (getuserinfo.Frequency == "WEEKLY")
@@ -323,9 +324,10 @@ namespace TapPaymentIntegration.Models.HangFire
                                         var without_vat = Convert.ToDecimal(finalamount);
                                         body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
                                     }
+                                    var emailSubject = "Tamarran - Automatic Payment Confirmation - " + " Inv" + incoice_info.InvoiceId;
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                                     var bodyemail = EmailBodyFill.EmailBodyForAutomaticPaymentConfirmation(getsubinfo, getuserinfo);
-                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, "Tamarran - Automatic Payment Confirmation", bodyemail, attachmentTitle);
+                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, emailSubject, bodyemail, attachmentTitle);
                                 }
                                 else
                                 {
@@ -363,8 +365,9 @@ namespace TapPaymentIntegration.Models.HangFire
                                     _context.SaveChanges();
 
                                     var nameinvoice = "Inv" + max_invoice_id;
+                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id;
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
-                                    _ = _emailSender.SendEmailAsync(user_Email, "Tamarran - Your subscription renewal in Tamarran failed", bodyemail);
+                                    _ = _emailSender.SendEmailAsync(user_Email, emailSubject, bodyemail);
                                 }
                             }
                             else if (getuserinfo.Frequency == "MONTHLY")
@@ -472,7 +475,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                                     var bodyemail = EmailBodyFill.EmailBodyForAutomaticPaymentConfirmation(getsubinfo, getuserinfo);
-                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, "Tamarran - Automatic Payment Confirmation", bodyemail, attachmentTitle);
+                                    var emailSubject = "Tamarran - Automatic Payment Confirmation - " + " Inv" + incoice_info.InvoiceId;
+                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, emailSubject, bodyemail, attachmentTitle);
                                 }
                                 else
                                 {
@@ -510,8 +514,9 @@ namespace TapPaymentIntegration.Models.HangFire
                                     _context.SaveChanges();
 
                                     var nameinvoice = "Inv" + max_invoice_id;
+                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id;
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
-                                    _ = _emailSender.SendEmailAsync(user_Email, "Tamarran - Your subscription renewal in Tamarran failed", bodyemail);
+                                    _ = _emailSender.SendEmailAsync(user_Email, emailSubject, bodyemail);
                                 }
                             }
                             else if (getuserinfo.Frequency == "QUARTERLY")
@@ -619,7 +624,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                                     var bodyemail = EmailBodyFill.EmailBodyForAutomaticPaymentConfirmation(getsubinfo, getuserinfo);
-                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, "Tamarran - Automatic Payment Confirmation", bodyemail, attachmentTitle);
+                                    var emailSubject = "Tamarran - Automatic Payment Confirmation - " + " Inv" + incoice_info.InvoiceId;
+                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, emailSubject, bodyemail, attachmentTitle);
                                 }
                                 else
                                 {
@@ -657,8 +663,9 @@ namespace TapPaymentIntegration.Models.HangFire
                                     _context.SaveChanges();
 
                                     var nameinvoice = "Inv" + max_invoice_id;
+                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id;
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
-                                    _ = _emailSender.SendEmailAsync(user_Email, "Tamarran - Your subscription renewal in Tamarran failed", bodyemail);
+                                    _ = _emailSender.SendEmailAsync(user_Email, emailSubject, bodyemail);
                                 }
                             }
                             else if (getuserinfo.Frequency == "HALFYEARLY")
@@ -766,7 +773,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                                     var bodyemail = EmailBodyFill.EmailBodyForAutomaticPaymentConfirmation(getsubinfo, getuserinfo);
-                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, "Tamarran - Automatic Payment Confirmation", bodyemail, attachmentTitle);
+                                    var emailSubject = "Tamarran - Automatic Payment Confirmation - " + " Inv" + incoice_info.InvoiceId;
+                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, emailSubject, bodyemail, attachmentTitle);
                                 }
                                 else
                                 {
@@ -804,8 +812,9 @@ namespace TapPaymentIntegration.Models.HangFire
                                     _context.SaveChanges();
 
                                     var nameinvoice = "Inv" + max_invoice_id;
+                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id;
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
-                                    _ = _emailSender.SendEmailAsync(user_Email, "Tamarran - Your subscription renewal in Tamarran failed", bodyemail);
+                                    _ = _emailSender.SendEmailAsync(user_Email, emailSubject, bodyemail);
                                 }
                             }
                             else if (getuserinfo.Frequency == "YEARLY")
@@ -913,7 +922,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                                     var bodyemail = EmailBodyFill.EmailBodyForAutomaticPaymentConfirmation(getsubinfo, getuserinfo);
-                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, "Tamarran - Automatic Payment Confirmation", bodyemail, attachmentTitle);
+                                    var emailSubject = "Tamarran - Automatic Payment Confirmation - " + " Inv" + incoice_info.InvoiceId;
+                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, emailSubject, bodyemail, attachmentTitle);
                                 }
                                 else
                                 {
@@ -951,8 +961,9 @@ namespace TapPaymentIntegration.Models.HangFire
                                     _context.SaveChanges();
 
                                     var nameinvoice = "Inv" + max_invoice_id;
+                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id;
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
-                                    _ = _emailSender.SendEmailAsync(user_Email, "Tamarran - Your subscription renewal in Tamarran failed", bodyemail);
+                                    _ = _emailSender.SendEmailAsync(user_Email, emailSubject, bodyemail);
                                 }
                             }
                         }
@@ -1271,8 +1282,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                                     var bodyemail = EmailBodyFill.EmailBodyForBenefitPaymentRequest(getsubinfo, getuserinfo, myDeserializedClass.url);
-
-                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, "Tamarran - Automatic Payment Request", bodyemail, attachmentTitle);
+                                    var emailSubject = "Tamarran - Automatic Payment Request - " + " Inv" + incoice_info.InvoiceId;
+                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, emailSubject, bodyemail, attachmentTitle);
                                 }
                                 else
                                 {
@@ -1573,7 +1584,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                                     var bodyemail = EmailBodyFill.EmailBodyForBenefitPaymentRequest(getsubinfo, getuserinfo, myDeserializedClass.url);
-                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, "Tamarran - Automatic Payment Request", bodyemail, attachmentTitle);
+                                    var emailSubject = "Tamarran - Automatic Payment Request - " + " Inv" + incoice_info.InvoiceId;
+                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, emailSubject, bodyemail, attachmentTitle);
                                 }
                                 else
                                 {
@@ -1872,8 +1884,9 @@ namespace TapPaymentIntegration.Models.HangFire
                                         body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
                                     }
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
+                                    var emailSubject = "Tamarran - Automatic Payment Request - " + " Inv" + incoice_info.InvoiceId;
                                     var bodyemail = EmailBodyFill.EmailBodyForBenefitPaymentRequest(getsubinfo, getuserinfo, myDeserializedClass.url);
-                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, "Tamarran - Automatic Payment Request", bodyemail, attachmentTitle);
+                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, emailSubject, bodyemail, attachmentTitle);
                                 }
                                 else
                                 {
@@ -2172,8 +2185,9 @@ namespace TapPaymentIntegration.Models.HangFire
                                         body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
                                     }
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
+                                    var emailSubject = "Tamarran - Automatic Payment Request - " + " Inv" + incoice_info.InvoiceId;
                                     var bodyemail = EmailBodyFill.EmailBodyForBenefitPaymentRequest(getsubinfo, getuserinfo, myDeserializedClass.url);
-                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, "Tamarran - Automatic Payment Request", bodyemail, attachmentTitle);
+                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, emailSubject, bodyemail, attachmentTitle);
                                 }
                                 else
                                 {
@@ -2472,8 +2486,9 @@ namespace TapPaymentIntegration.Models.HangFire
                                         body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
                                     }
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
+                                    var emailSubject = "Tamarran - Automatic Payment Request - " + " Inv" + incoice_info.InvoiceId;
                                     var bodyemail = EmailBodyFill.EmailBodyForBenefitPaymentRequest(getsubinfo, getuserinfo, myDeserializedClass.url);
-                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, "Tamarran - Automatic Payment Request", bodyemail, attachmentTitle);
+                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, emailSubject, bodyemail, attachmentTitle);
                                 }
                                 else
                                 {
@@ -2773,8 +2788,9 @@ namespace TapPaymentIntegration.Models.HangFire
                                         body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
                                     }
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
+                                    var emailSubject = "Tamarran - Automatic Payment Request - " + " Inv" + incoice_info.InvoiceId;
                                     var bodyemail = EmailBodyFill.EmailBodyForBenefitPaymentRequest(getsubinfo, getuserinfo, myDeserializedClass.url);
-                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, "Tamarran - Automatic Payment Request", bodyemail, attachmentTitle);
+                                    _ = _emailSender.SendEmailWithFIle(bytes, user_Email, emailSubject, bodyemail, attachmentTitle);
                                 }
                                 else
                                 {

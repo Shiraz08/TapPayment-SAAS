@@ -79,7 +79,7 @@
                                         </td>
                                         <td style="text-align:center!important">@user.CreatedDate.Date.ToString("dd/MM/yyyy")</td>
                                         <td style="text-align:center!important">
-                                            <a class="btn btn-danger" asp-controller="Home" asp-action="Deletesubscription" asp-route-userId="@user.SubscriptionId">Delete</a> &nbsp;  <a class="btn btn-primary" asp-controller="Home" asp-action="Editsubscription" asp-route-userId="@user.SubscriptionId">Edit</a> &nbsp;
+                                            @* <a class="btn btn-danger" asp-controller="Home" asp-action="Deletesubscription" asp-route-userId="@user.SubscriptionId">Delete</a> *@ &nbsp;  <a class="btn btn-primary" asp-controller="Home" asp-action="Editsubscription" asp-route-userId="@user.SubscriptionId">Edit</a> &nbsp;
                                             @{
                                                 if (user.Status == true)
                                                 {
