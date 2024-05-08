@@ -18,6 +18,8 @@ using TapPaymentIntegration.Models.Subscription;
 using TapPaymentIntegration.Utility;
 using TapPaymentIntegration.Models;
 using Google.Cloud.RecaptchaEnterprise.V1;
+using System.Text.RegularExpressions;
+using System.Security.Policy;
 
 namespace TapPaymentIntegration.Controllers
 {
@@ -2135,6 +2137,56 @@ namespace TapPaymentIntegration.Controllers
                 return View("DashboardError");
             }
         }
+        [HttpPost]
+        public ActionResult SaveInvoiceManually(string emailinvoice, string smsinvoicelink,string remarks)
+        {
+            try
+            {
+                Match emailinvoicematch = Regex.Match(emailinvoice, @"([A-Za-z]+)(\d+)");
+                var ev = emailinvoicematch.Groups[2].Value.ToString();
+
+                string invoiceId = ExtractInvoiceId(smsinvoicelink);
+
+
+                var invoice = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(ev)).FirstOrDefault();
+                invoice.Status = "Payment Captured";
+                invoice.Remarks = remarks;
+                invoice.ChargeId = invoiceId;
+                _context.invoices.Update(invoice);
+                _context.SaveChanges();
+                return RedirectToAction("ShowInvoice", "Home", new { PaymentStatus = "All" });
+            }
+            catch (Exception ex)
+            {
+                ViewBag.PageName = "ViewInvoice";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return RedirectToAction("ShowInvoice", "Home", new { PaymentStatus = "All" });
+            }
+        }
+        static string ExtractInvoiceId(string url)
+        {
+            // Define a regular expression pattern to match the invoice ID
+            string pattern = @"inv_[A-Za-z0-9]+";
+
+            // Create a Regex object
+            Regex regex = new Regex(pattern);
+
+            // Match the pattern in the URL
+            Match match = regex.Match(url);
+
+            // Check if a match is found
+            if (match.Success)
+            {
+                // Extract and return the matched invoice ID
+                return match.Value;
+            }
+            else
+            {
+                // If no match is found, return null or handle the case as needed
+                return null;
+            }
+        }
         public async Task<IActionResult> ViewInvoice(string id, int sub_id, string userid, string invoiceid)
         {
             try
@@ -2210,6 +2262,7 @@ namespace TapPaymentIntegration.Controllers
                             Deserialized_savecard.Frequency = users.Frequency;
                             Deserialized_savecard.finalamount = finalamount.ToString();
                             Deserialized_savecard.VAT = Vat.ToString();
+                            Deserialized_savecard.remarks = getinvoiceinfo.Remarks.ToString();
                             Deserialized_savecard.InvoiceID = getinvoiceinfo.InvoiceId.ToString();
                             Deserialized_savecard.Created_date = Deserialized_savecard.activities.Skip(1).Select(x => x.created).FirstOrDefault();
                         }
@@ -2265,6 +2318,7 @@ namespace TapPaymentIntegration.Controllers
                             Deserialized_savecard.Frequency = users.Frequency;
                             Deserialized_savecard.finalamount = finalamount.ToString();
                             Deserialized_savecard.VAT = Vat.ToString();
+                            Deserialized_savecard.remarks = getinvoiceinfo.Remarks.ToString();
                             Deserialized_savecard.InvoiceID = getinvoiceinfo.InvoiceId.ToString();
                             Deserialized_savecard.Created_date = Deserialized_savecard.activities.Skip(1).Select(x => x.created).FirstOrDefault();
                         }
@@ -2362,6 +2416,7 @@ namespace TapPaymentIntegration.Controllers
                         chargeDetail.gymname = users.GYMName;
                         chargeDetail.customer = Deserialized_savecard.customer;
                         chargeDetail.reference = Deserialized_savecard.reference;
+                        chargeDetail.remarks = getinvoiceinfo.Remarks;
                         chargeDetail.Created_date = Deserialized_savecard.created;
                         chargeDetail.Paymentname = Deserialized_savecard.payment_methods.First();
                         chargeDetail.amount = Convert.ToDouble(after_vat_totalamount);
@@ -2423,6 +2478,7 @@ namespace TapPaymentIntegration.Controllers
                         chargeDetail.Subscriptions = subscriptions;
                         chargeDetail.IsFirstInvoice = getinvoiceinfo.IsFirstInvoice;
                         chargeDetail.gymname = users.GYMName;
+                        chargeDetail.remarks = getinvoiceinfo.Remarks;
                         chargeDetail.customer = Deserialized_savecard.customer;
                         chargeDetail.reference = Deserialized_savecard.reference;
                         chargeDetail.Created_date = Deserialized_savecard.created;

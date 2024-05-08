@@ -22,6 +22,7 @@
                                     <th>Invoice No</th>
                                     <th>GYM Name</th>
                                     <th>Country</th>
+                                    <th>Remarks</th>
                                     <th>Subscription Name</th>
                                     <th>Invoice Start Date</th>
                                     <th>Invoice End Date</th>
@@ -45,6 +46,7 @@
                                         </td>
                                         <td style="text-align:center!important">@invoice.GymName</td>
                                         <td style="text-align:center!important">@invoice.Country</td>
+                                        <td style="text-align:center!important">@invoice.Remarks</td>
                                         <td style="text-align:center!important">@invoice.SubscriptionName</td>
                                         <td style="text-align:center!important">
                                             @{
@@ -74,6 +76,9 @@
                                             @if (invoice.Status != "Payment Captured")
                                             {
                                                 <a class="btn btn-primary" href="@invoice.InvoiceLink">Pay Invoice</a>
+                                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">
+                                                    Change Invoice Status
+                                                </button>
                                             }
                                             else
                                             {
@@ -90,6 +95,51 @@
         </div>
     </div>
 </section>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Manual Invoice Paid</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @using (Html.BeginForm("SaveInvoiceManually", "Home", FormMethod.Post))
+            {
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            Email Invoice No#
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="emailinvoice" name="emailinvoice" required placeholder="Enter Email Invoice No#" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            SMS Invoice Link
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="smsinvoicelink" name="smsinvoicelink" required placeholder="Enter SMS Invoice Link" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            Remarks
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="remarks" name="remarks" required placeholder="Enter Remarks" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
 <br />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>

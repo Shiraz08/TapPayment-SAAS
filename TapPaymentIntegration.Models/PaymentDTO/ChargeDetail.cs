@@ -50,6 +50,7 @@ namespace TapPaymentIntegration.Models.PaymentDTO
         public string VAT { get; set; }
         public string InvoiceID { get; set; }
         public string Paymentname { get; set; }
+        public string remarks { get; set; }
         public long Created_date { get; set; }
 
 
