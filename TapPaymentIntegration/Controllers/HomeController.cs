@@ -2262,7 +2262,7 @@ namespace TapPaymentIntegration.Controllers
                             Deserialized_savecard.Frequency = users.Frequency;
                             Deserialized_savecard.finalamount = finalamount.ToString();
                             Deserialized_savecard.VAT = Vat.ToString();
-                            Deserialized_savecard.remarks = getinvoiceinfo.Remarks.ToString();
+                            Deserialized_savecard.remarks = string.IsNullOrEmpty(getinvoiceinfo.Remarks) ? "------" : getinvoiceinfo.Remarks;
                             Deserialized_savecard.InvoiceID = getinvoiceinfo.InvoiceId.ToString();
                             Deserialized_savecard.Created_date = Deserialized_savecard.activities.Skip(1).Select(x => x.created).FirstOrDefault();
                         }
@@ -2318,7 +2318,7 @@ namespace TapPaymentIntegration.Controllers
                             Deserialized_savecard.Frequency = users.Frequency;
                             Deserialized_savecard.finalamount = finalamount.ToString();
                             Deserialized_savecard.VAT = Vat.ToString();
-                            Deserialized_savecard.remarks = getinvoiceinfo.Remarks.ToString();
+                            Deserialized_savecard.remarks = string.IsNullOrEmpty(getinvoiceinfo.Remarks) ? "------" : getinvoiceinfo.Remarks;
                             Deserialized_savecard.InvoiceID = getinvoiceinfo.InvoiceId.ToString();
                             Deserialized_savecard.Created_date = Deserialized_savecard.activities.Skip(1).Select(x => x.created).FirstOrDefault();
                         }
@@ -2416,7 +2416,7 @@ namespace TapPaymentIntegration.Controllers
                         chargeDetail.gymname = users.GYMName;
                         chargeDetail.customer = Deserialized_savecard.customer;
                         chargeDetail.reference = Deserialized_savecard.reference;
-                        chargeDetail.remarks = getinvoiceinfo.Remarks;
+                        chargeDetail.remarks = string.IsNullOrEmpty(getinvoiceinfo.Remarks) ? "------" : getinvoiceinfo.Remarks;
                         chargeDetail.Created_date = Deserialized_savecard.created;
                         chargeDetail.Paymentname = Deserialized_savecard.payment_methods.First();
                         chargeDetail.amount = Convert.ToDouble(after_vat_totalamount);
@@ -2478,7 +2478,7 @@ namespace TapPaymentIntegration.Controllers
                         chargeDetail.Subscriptions = subscriptions;
                         chargeDetail.IsFirstInvoice = getinvoiceinfo.IsFirstInvoice;
                         chargeDetail.gymname = users.GYMName;
-                        chargeDetail.remarks = getinvoiceinfo.Remarks;
+                        chargeDetail.remarks = string.IsNullOrEmpty(getinvoiceinfo.Remarks) ? "------" : getinvoiceinfo.Remarks;
                         chargeDetail.customer = Deserialized_savecard.customer;
                         chargeDetail.reference = Deserialized_savecard.reference;
                         chargeDetail.Created_date = Deserialized_savecard.created;
