@@ -866,7 +866,30 @@ namespace TapPaymentIntegration.Controllers
                                 recurringCharge.ChargeId = tap_id;
                                 recurringCharge.Invoice = "Inv" + max_invoice_id;
                                 recurringCharge.IsRun = false;
-                                recurringCharge.JobRunDate = nextrecurringdate.AddDays(1);
+                                if (log_user.Frequency == "DAILY")
+                                {
+                                    recurringCharge.JobRunDate = nextrecurringdate.AddDays(1);
+                                }
+                                else if (log_user.Frequency == "WEEKLY")
+                                {
+                                    recurringCharge.JobRunDate = nextrecurringdate.AddDays(7);
+                                }
+                                else if (log_user.Frequency == "MONTHLY")
+                                {
+                                    recurringCharge.JobRunDate = nextrecurringdate.AddMonths(1);
+                                }
+                                else if (log_user.Frequency == "QUARTERLY")
+                                {
+                                    recurringCharge.JobRunDate = nextrecurringdate.AddMonths(3);
+                                }
+                                else if (log_user.Frequency == "HALFYEARLY")
+                                {
+                                    recurringCharge.JobRunDate = nextrecurringdate.AddMonths(6);
+                                }
+                                else if (log_user.Frequency == "YEARLY")
+                                {
+                                    recurringCharge.JobRunDate = nextrecurringdate.AddYears(1);
+                                }
                                 _context.recurringCharges.Add(recurringCharge);
                                 _context.SaveChanges();
 
@@ -1015,7 +1038,30 @@ namespace TapPaymentIntegration.Controllers
                                 recurringCharge.Tap_CustomerId = Deserialized_savecard.payment_agreement.contract.customer_id;
                                 recurringCharge.ChargeId = tap_id;
                                 recurringCharge.IsRun = false;
-                                recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddDays(1);
+                                if (log_user.Frequency == "DAILY")
+                                {
+                                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddDays(1);
+                                }
+                                else if (log_user.Frequency == "WEEKLY")
+                                {
+                                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddDays(7);
+                                }
+                                else if (log_user.Frequency == "MONTHLY")
+                                {
+                                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(1);
+                                }
+                                else if (log_user.Frequency == "QUARTERLY")
+                                {
+                                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(3);
+                                }
+                                else if (log_user.Frequency == "HALFYEARLY")
+                                {
+                                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(6);
+                                }
+                                else if (log_user.Frequency == "YEARLY")
+                                {
+                                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddYears(1);
+                                }
                                 _context.recurringCharges.Add(recurringCharge);
                                 _context.SaveChanges();
 
@@ -1155,7 +1201,30 @@ namespace TapPaymentIntegration.Controllers
                         recurringCharge.Tap_CustomerId = Deserialized_savecard.payment_agreement.contract.customer_id;
                         recurringCharge.ChargeId = tap_id;
                         recurringCharge.IsRun = false;
-                        recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddDays(1);
+                        if (log_user.Frequency == "DAILY")
+                        {
+                            recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddDays(1);
+                        }
+                        else if (log_user.Frequency == "WEEKLY")
+                        {
+                            recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddDays(7);
+                        }
+                        else if (log_user.Frequency == "MONTHLY")
+                        {
+                            recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(1);
+                        }
+                        else if (log_user.Frequency == "QUARTERLY")
+                        {
+                            recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(3);
+                        }
+                        else if (log_user.Frequency == "HALFYEARLY")
+                        {
+                            recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(6);
+                        }
+                        else if (log_user.Frequency == "YEARLY")
+                        {
+                            recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddYears(1);
+                        }
                         _context.recurringCharges.Add(recurringCharge);
                         _context.SaveChanges();
 
@@ -1417,7 +1486,30 @@ namespace TapPaymentIntegration.Controllers
                             recurringCharge.ChargeId = tap_id;
                             recurringCharge.Invoice = "Inv" + invoiceid;
                             recurringCharge.IsRun = false;
-                            recurringCharge.JobRunDate = nextrecurringdate.AddDays(1);
+                            if (log_user.Frequency == "DAILY")
+                            {
+                                recurringCharge.JobRunDate = nextrecurringdate.AddDays(1);
+                            }
+                            else if (log_user.Frequency == "WEEKLY")
+                            {
+                                recurringCharge.JobRunDate = nextrecurringdate.AddDays(7);
+                            }
+                            else if (log_user.Frequency == "MONTHLY")
+                            {
+                                recurringCharge.JobRunDate = nextrecurringdate.AddMonths(1);
+                            }
+                            else if (log_user.Frequency == "QUARTERLY")
+                            {
+                                recurringCharge.JobRunDate = nextrecurringdate.AddMonths(3);
+                            }
+                            else if (log_user.Frequency == "HALFYEARLY")
+                            {
+                                recurringCharge.JobRunDate = nextrecurringdate.AddMonths(6);
+                            }
+                            else if (log_user.Frequency == "YEARLY")
+                            {
+                                recurringCharge.JobRunDate = nextrecurringdate.AddYears(1);
+                            }
                             _context.recurringCharges.Add(recurringCharge);
                             _context.SaveChanges();
                         }
