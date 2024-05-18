@@ -1037,6 +1037,7 @@ namespace TapPaymentIntegration.Controllers
                                 recurringCharge.UserID = users.Id;
                                 recurringCharge.Tap_CustomerId = Deserialized_savecard.payment_agreement.contract.customer_id;
                                 recurringCharge.ChargeId = tap_id;
+                                recurringCharge.Invoice = "Inv" + max_invoice_id;
                                 recurringCharge.IsRun = false;
                                 if (log_user.Frequency == "DAILY")
                                 {
@@ -1200,6 +1201,7 @@ namespace TapPaymentIntegration.Controllers
                         recurringCharge.UserID = users.Id;
                         recurringCharge.Tap_CustomerId = Deserialized_savecard.payment_agreement.contract.customer_id;
                         recurringCharge.ChargeId = tap_id;
+                        recurringCharge.Invoice = "Inv" + max_invoice_id;
                         recurringCharge.IsRun = false;
                         if (log_user.Frequency == "DAILY")
                         {
@@ -1899,6 +1901,46 @@ namespace TapPaymentIntegration.Controllers
             catch (Exception ex)
             {
                 ViewBag.PageName = "DeleteCustomer";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
+            }
+        }
+        public ActionResult ViewNextPayment(string userId)
+        {
+            try
+            {
+                var users = (from um in _context.Users
+                             join rc in _context.recurringCharges on um.Id equals rc.UserID
+                             join sub in _context.subscriptions on um.SubscribeID equals sub.SubscriptionId into ps
+                             from sub in ps.DefaultIfEmpty()
+                             select new UserInfoDTO
+                             {
+                                 Id = um.Id,
+                                 FullName = um.FullName,
+                                 Email = um.Email,
+                                 PhoneNumber = um.PhoneNumber,
+                                 Country = um.Country,
+                                 City = um.City,
+                                 Currency = um.Currency,
+                                 SubscribeName = sub.Name + " " + "-" + " " + "(" + sub.Amount + ")",
+                                 SubscribeID = um.SubscribeID,
+                                 Status = um.Status,
+                                 PaymentSource = um.PaymentSource,
+                                 Tap_CustomerID = um.Tap_CustomerID,
+                                 GYMName = um.GYMName,
+                                 UserType = um.UserType,
+                                 IsJOnRun = rc.IsRun,
+                                 JobRunDate = rc.JobRunDate,
+                                 Amount = rc.Amount,
+                                 InvoiceNo = rc.Invoice
+
+                             });
+                return View(users);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.PageName = "ViewCustomer";
                 ViewBag.Message = ex.Message;
                 ViewBag.Details = ex.StackTrace;
                 return View("DashboardError");

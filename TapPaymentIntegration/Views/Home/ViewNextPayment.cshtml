@@ -1,0 +1,102 @@
+﻿@model IEnumerable<TapPaymentIntegration.Models.UserDTO.UserInfoDTO>
+@{
+    ViewData["Title"] = "View Recurring List";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+<br />
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header" style="padding: 0.5rem 1.25rem;">
+                        <h4 class="text-center mb-0">View Recurring List</h4>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="example1" class="table table-bordered table-striped table-responsive-xl">
+                            <thead>
+                                <tr style="text-align:center!important">
+                                    <th>GYM Name</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Job Run</th>
+                                    <th>Next Job Run Date</th>
+                                    <th>Subscription</th>
+                                    <th>Status</th>
+                                    <th>Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model)
+                                {
+                                    <tr>
+                                        <td style="text-align:center!important">@user.GYMName</td>
+                                        <td style="text-align:center!important">@user.FullName</td>
+                                        <td style="text-align:center!important">@user.Email</td>
+                                        <td style="text-align:center!important">
+                                            @{
+                                                if (user.IsJOnRun == true)
+                                                {
+                                                    <span style="color:green">Run</span>
+                                                }
+                                                else
+                                                {
+                                                    <span style="color:red">Pending</span>
+                                                }
+                                            }
+                                        </td>
+                                        <td style="text-align:center!important">@user.JobRunDate.ToShortDateString()</td>
+                                        <td style="text-align:center!important">
+                                            @{
+                                                if (user.SubscribeID == 0)
+                                                {
+                                                    <span style="color:red!important"> Not Selected Yet</span>
+                                                }
+                                                else
+                                                {
+                                                    @user.SubscribeName
+                                                }
+                                            }
+                                        </td>
+                                        <td style="text-align:center!important">
+                                            @{
+                                                if (user.Status == true)
+                                                {
+                                                    <span style="color:green">Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span style="color:red">In-Active</span>
+                                                }
+                                            }
+                                        </td>
+                                        <td style="text-align:center!important">@user.Amount</td>
+                                        <td style="text-align:center!important">
+                                            In-Progress
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+</section>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#example1").DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    });
+</script>

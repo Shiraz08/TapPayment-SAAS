@@ -1,4 +1,6 @@
-﻿namespace TapPaymentIntegration.Models.UserDTO
+﻿using System;
+
+namespace TapPaymentIntegration.Models.UserDTO
 {
     public class UserInfoDTO
     {
@@ -12,9 +14,13 @@
         public string GYMName { get; set; }
         public string PhoneNumber { get; set; }
         public bool Status { get; set; }
+        public bool IsJOnRun { get; set; }
+        public DateTime JobRunDate { get; set; }
         public string SubscribeName  { get; set; }
         public string Country { get; set; }
         public string City { get; set; }
+        public string InvoiceNo { get; set; }
+        public decimal Amount { get; set; }
         public string Currency { get; set; }
         public string StepFee { get; set; } 
         public int SubscribeID { get; set; }

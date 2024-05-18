@@ -87,6 +87,7 @@
                                                             <a class="dropdown-item" asp-controller="Home" asp-action="ActiveUser" asp-route-id="@user.Id">Enable</a>
                                                         }
                                                         <a class="dropdown-item" href="~/Home/DeleteCustomer?userId=@user.Id" class="btn bg-danger mr-1" onclick="return confirm('Are you sure you want to delete this customer?');">Delete Customer</a>
+                                                        <a class="dropdown-item" href="~/Home/ViewNextPayment?userId=@user.Id" class="btn bg-danger mr-1">View Recurring Payments</a>
                                                     </div>
                                                 </div>
                                             }
