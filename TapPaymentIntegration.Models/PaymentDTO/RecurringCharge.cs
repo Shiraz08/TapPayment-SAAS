@@ -13,6 +13,7 @@ namespace TapPaymentIntegration.Models.PaymentDTO
         public string UserID { get; set; }
         public string Invoice { get; set; }
         public bool IsRun { get; set; } 
+        public bool IsFreeze { get; set; } 
         public int SubscriptionId { get; set; }
         public Decimal Amount { get; set; }
 

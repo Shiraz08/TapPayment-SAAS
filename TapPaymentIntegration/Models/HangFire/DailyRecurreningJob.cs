@@ -39,7 +39,7 @@ namespace TapPaymentIntegration.Models.HangFire
         public async Task AutoChargeJob()
         {
             CreateCharge deserialized_CreateCharge = null;
-            var recurringCharges_list = _context.recurringCharges.Where(x => x.JobRunDate.Date == DateTime.UtcNow.Date && x.IsRun == false).ToList();
+            var recurringCharges_list = _context.recurringCharges.Where(x => x.JobRunDate.Date == DateTime.UtcNow.Date && x.IsRun == false && x.IsFreeze != true).ToList();
             foreach (var item in recurringCharges_list)
             {
                 string[] result = item.ChargeId.Split('_').ToArray();
@@ -975,7 +975,7 @@ namespace TapPaymentIntegration.Models.HangFire
         public async Task AutoChargeJobForBenefit()
         {
             CreateCharge deserialized_CreateCharge = null;
-            var recurringCharges_list = _context.recurringCharges.Where(x => x.JobRunDate.Date == DateTime.UtcNow.Date && x.IsRun == false).ToList();
+            var recurringCharges_list = _context.recurringCharges.Where(x => x.JobRunDate.Date == DateTime.UtcNow.Date && x.IsRun == false && x.IsFreeze != true).ToList();
             //var recurringCharges_list = _context.recurringCharges.Where(x => x.IsRun == false).ToList();
             foreach (var item in recurringCharges_list)
             {

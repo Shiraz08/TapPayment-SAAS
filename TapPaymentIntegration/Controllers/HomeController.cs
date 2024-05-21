@@ -1933,10 +1933,11 @@ namespace TapPaymentIntegration.Controllers
                                  IsJOnRun = rc.IsRun,
                                  JobRunDate = rc.JobRunDate,
                                  Amount = rc.Amount,
-                                 InvoiceNo = rc.Invoice
-
+                                 InvoiceNo = rc.Invoice,
+                                 RecurringId = rc.RecurringChargeId.ToString(),
+                                 IsFreze = rc.IsFreeze
                              });
-                return View(users);
+                return View(users.Where(x=>x.Id == userId).ToList());
             }
             catch (Exception ex)
             {
@@ -1945,6 +1946,14 @@ namespace TapPaymentIntegration.Controllers
                 ViewBag.Details = ex.StackTrace;
                 return View("DashboardError");
             }
+        }
+        public ActionResult FreezeRecurring(string userId)
+        {
+            var res = _context.recurringCharges.Where(x => x.RecurringChargeId == Convert.ToInt32(userId)).FirstOrDefault();
+            res.IsFreeze = true;
+            _context.recurringCharges.Update(res);
+            _context.SaveChanges();
+            return RedirectToAction("ViewNextPayment","Home", new { userId  = res.UserID});
         }
         public async Task<IActionResult> InActiveUser(string id)
         {

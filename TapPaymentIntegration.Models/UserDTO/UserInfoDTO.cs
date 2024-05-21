@@ -5,6 +5,7 @@ namespace TapPaymentIntegration.Models.UserDTO
     public class UserInfoDTO
     {
         public string Id { get; set; }
+        public string RecurringId { get; set; }
         public string Password { get; set; }
         public string FullName { get; set; }
         public string Tap_CustomerID { get; set; }
@@ -15,6 +16,7 @@ namespace TapPaymentIntegration.Models.UserDTO
         public string PhoneNumber { get; set; }
         public bool Status { get; set; }
         public bool IsJOnRun { get; set; }
+        public bool IsFreze { get; set; }
         public DateTime JobRunDate { get; set; }
         public string SubscribeName  { get; set; }
         public string Country { get; set; }
