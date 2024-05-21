@@ -77,17 +77,22 @@
                                             @{
                                                 if (user.IsFreze == false || user.IsFreze == null)
                                                 {
-                                                    <span style="color:green">--------</span>
+                                                    <span style="color:green">No</span>
                                                 }
                                                 else
                                                 {
-                                                    <span style="color:red">Freeze</span>
+                                                    <span style="color:red">Yes</span>
                                                 }
                                             }
                                         </td>
                                         <td style="text-align:center!important">@user.Amount</td>
                                         <td style="text-align:center!important">
-                                            <a href="~/Home/FreezeRecurring?userId=@user.RecurringId" class="btn bg-danger mr-1" onclick="return confirm('Are you sure you want to Freeze Recurring?');">Freeze Recurring</a>
+                                            @{
+                                                if(user.IsJOnRun == false)
+                                                {
+                                                    <a href="~/Home/FreezeRecurring?userId=@user.RecurringId" class="btn bg-danger mr-1" onclick="return confirm('Are you sure you want to Freeze Recurring?');">Freeze Recurring</a>
+                                                }
+                                            }
                                         </td>
                                     </tr>
                                 }
