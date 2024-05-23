@@ -1953,7 +1953,32 @@ namespace TapPaymentIntegration.Controllers
             res.IsFreeze = true;
             _context.recurringCharges.Update(res);
             _context.SaveChanges();
+
+            //Send Email
+            var users = _context.Users.Where(x => x.Id == res.UserID).FirstOrDefault();
+            var bodyemail = EmailBodyFill.EmailBodyForPauseSubscription(users);
+            var emailSubject = "Tamarran – Subscription Paused";
+            _ = _emailSender.SendEmailAsync(users.Email, emailSubject, bodyemail);
+
             return RedirectToAction("ViewNextPayment","Home", new { userId  = res.UserID});
+        }
+
+        [HttpPost]
+        public ActionResult ResumeRecurring(string Recurringid, string resumedate)
+        {
+            var res = _context.recurringCharges.Where(x => x.RecurringChargeId == Convert.ToInt32(Recurringid)).FirstOrDefault();
+            res.IsFreeze = false;
+            res.JobRunDate = Convert.ToDateTime(resumedate);
+            _context.recurringCharges.Update(res);
+            _context.SaveChanges();
+
+            //Send Email
+            var users = _context.Users.Where(x => x.Id == res.UserID).FirstOrDefault();
+            var bodyemail = EmailBodyFill.EmailBodyForResumeSubscription(users);
+            var emailSubject = "Tamarran – Subscription Resume - " + res.Invoice;
+            _ = _emailSender.SendEmailAsync(users.Email, emailSubject, bodyemail);
+
+            return RedirectToAction("ViewNextPayment", "Home", new { userId = res.UserID });
         }
         public async Task<IActionResult> InActiveUser(string id)
         {

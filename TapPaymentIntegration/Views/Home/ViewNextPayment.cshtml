@@ -88,9 +88,16 @@
                                         <td style="text-align:center!important">@user.Amount</td>
                                         <td style="text-align:center!important">
                                             @{
-                                                if(user.IsJOnRun == false)
+                                                if(user.IsJOnRun == false && user.IsFreze == false)
                                                 {
-                                                    <a href="~/Home/FreezeRecurring?userId=@user.RecurringId" class="btn bg-danger mr-1" onclick="return confirm('Are you sure you want to Freeze Recurring?');">Freeze Recurring</a>
+                                                    <a href="~/Home/FreezeRecurring?userId=@user.RecurringId" class="btn bg-danger mr-1" onclick="return confirm('Are you sure you want to Freeze Recurring?');">Freeze</a>
+                                                }
+
+                                                if (user.IsJOnRun == false && user.IsFreze == true)
+                                                {
+                                                    <button type="button" class="btn bg-success mr-1" data-toggle="modal" data-target="#exampleModalLong" onclick="PutValue(@user.RecurringId);">
+                                                        Resume
+                                                    </button>
                                                 }
                                             }
                                         </td>
@@ -108,6 +115,34 @@
         <!-- /.row -->
     </div>
 </section>
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        @Html.BeginForm("ResumeRecurring", "Home", FormMethod.Post)
+        {
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Update Recurring</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                <input type="hidden" id="Recurringid" name="Recurringid" />
+                <div class="d-flex justify-content-center mb-4">
+                    <div class="form-outline me-3" style="width:22rem;padding-right: 19px;">
+                        <label class="form-label">Select Next Recurring Date</label>
+                        <input type="date" id="resumedate" name="resumedate" class="form-control" required="required"/>
+                    </div>
+                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            }
+    </div>
+</div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
@@ -117,4 +152,9 @@
             "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
         }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
+
+    function PutValue(id)
+    {
+        $("#Recurringid").val(id);
+    }
 </script>
