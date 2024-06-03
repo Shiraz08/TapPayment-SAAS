@@ -14,6 +14,12 @@
                 <div class="card">
                     <div class="card-header" style="padding: 0.5rem 1.25rem;">
                         <h4 class="text-center mb-0">Invoice List</h4>
+                        @{
+                            if (!string.IsNullOrEmpty(ViewBag.Message))
+                            {
+                                <h3 class="text-center mb-0" style="color:red!important">@ViewBag.MessageError</h3>
+                            }
+                        }
                     </div>
                     <div class="card-body">
                         <table id="example1" class="table table-bordered table-striped table-responsive-xl">
@@ -113,14 +119,6 @@
                         </div>
                         <div class="col-md-6">
                             <input type="text" class="form-control" id="emailinvoice" name="emailinvoice" required placeholder="Enter Email Invoice No#" />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-3">
-                            SMS Invoice Link
-                        </div>
-                        <div class="col-md-6">
-                            <input type="text" class="form-control" id="smsinvoicelink" name="smsinvoicelink" required placeholder="Enter SMS Invoice Link" />
                         </div>
                     </div>
                     <div class="row">
