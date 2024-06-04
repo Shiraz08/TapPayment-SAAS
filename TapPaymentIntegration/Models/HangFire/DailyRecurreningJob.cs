@@ -2887,6 +2887,11 @@ namespace TapPaymentIntegration.Models.HangFire
                 _context.SaveChanges();
 
 
+                var rc = _context.recurringCharges.Where(x => x.RecurringChargeId == item.RecurringChargeId).FirstOrDefault();
+                rc.IsRun = true;
+                _context.recurringCharges.Update(rc);
+                _context.SaveChanges();
+
                 RecurringCharge recurringCharge = new RecurringCharge();
                 recurringCharge.Amount = Convert.ToDecimal(invoice.SubscriptionAmount);
                 recurringCharge.SubscriptionId = invoice.SubscriptionId;
@@ -2980,7 +2985,7 @@ namespace TapPaymentIntegration.Models.HangFire
                     body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
                 }
                 var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
-                var bodyemail = EmailBodyFill.EmailBodyForPaymentReceipt(users, subscriptions);
+                var bodyemail = EmailBodyFill.EmailBodyForManuallyPaymentReceipt(users, subscriptions); 
                 var emailSubject = "Tamarran – Payment Receipt - " + " Inv" + max_invoice_id.InvoiceId;
                 _ = _emailSender.SendEmailWithFIle(bytes, users.Email, emailSubject, bodyemail);
             }

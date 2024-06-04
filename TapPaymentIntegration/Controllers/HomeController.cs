@@ -20,6 +20,7 @@ using TapPaymentIntegration.Models;
 using Google.Cloud.RecaptchaEnterprise.V1;
 using System.Text.RegularExpressions;
 using System.Security.Policy;
+using Card = TapPaymentIntegration.Models.Card.Card;
 
 namespace TapPaymentIntegration.Controllers
 {
@@ -2829,8 +2830,136 @@ namespace TapPaymentIntegration.Controllers
                 else
                 {
                     var invoiceinfo = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(invoiceid)).FirstOrDefault();
-                    ChargeDetail chargeDetail = new ChargeDetail();
-                    //chargeDetail.Created_date = ConvertToUnixTimeMilliseconds(invoiceinfo.AddedDate);
+                    var sub_info = _context.subscriptions.Where(x => x.SubscriptionId == invoiceinfo.SubscriptionId).FirstOrDefault();
+                    var userinfo = _context.Users.Where(x => x.Id == invoiceinfo.UserId).FirstOrDefault();
+                    Random generator = new Random();
+                    String o = "Ord_" + generator.Next(0, 1000000).ToString("D6");
+                    String t = "Txn_" + generator.Next(0, 1000000).ToString("D6");
+
+                    var countrycode = "";
+                    if (userinfo.Country == "Bahrain")
+                    {
+                        countrycode = "+973";
+                    }
+                    else if (userinfo.Country == "KSA")
+                    {
+                        countrycode = "+966";
+                    }
+                    else if (userinfo.Country == "Kuwait")
+                    {
+                        countrycode = "+965";
+                    }
+                    else if (userinfo.Country == "UAE")
+                    {
+                        countrycode = "+971";
+                    }
+                    else if (userinfo.Country == "Qatar")
+                    {
+                        countrycode = "+974";
+                    }
+                    else if (userinfo.Country == "Oman")
+                    {
+                        countrycode = "+968";
+                    }
+
+                    int days = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
+                    decimal finalamount = 0;
+                    decimal Discount = 0;
+                    decimal Vat = 0;
+                    if (userinfo.Frequency == "DAILY")
+                    {
+                        Discount = 0;
+                        finalamount = (decimal)Convert.ToInt32(sub_info.Amount) / (int)days;
+                    }
+                    else if (userinfo.Frequency == "WEEKLY")
+                    {
+                        Discount = 0;
+                        finalamount = (decimal)Convert.ToInt32(sub_info.Amount) / 4;
+                    }
+                    else if (userinfo.Frequency == "MONTHLY")
+                    {
+                        Discount = 0;
+                        finalamount = (decimal)Convert.ToInt32(sub_info.Amount);
+                    }
+                    else if (userinfo.Frequency == "QUARTERLY")
+                    {
+                        Discount = 0;
+                        finalamount = (decimal)(Convert.ToInt32(sub_info.Amount) * 3) / 1;
+                    }
+                    else if (userinfo.Frequency == "HALFYEARLY")
+                    {
+                        Discount = 0;
+                        finalamount = (decimal)(Convert.ToInt32(sub_info.Amount) * 6) / 1;
+                    }
+                    else if (userinfo.Frequency == "YEARLY")
+                    {
+                        var amountpercentage = (decimal)(Convert.ToInt32(sub_info.Amount) / 100) * Convert.ToDecimal(sub_info.Discount);
+                        var final_amount_percentage = Convert.ToInt32(sub_info.Amount) - amountpercentage;
+                        finalamount = final_amount_percentage * 12;
+                        Discount = amountpercentage * 12;
+                    }
+                    if (sub_info.VAT == null || sub_info.VAT == "0")
+                    {
+                        Vat = 0;
+                    }
+                    else
+                    {
+                        decimal totala = finalamount + Convert.ToDecimal(sub_info.SetupFee);
+                        Vat = (decimal)((totala / 100) * Convert.ToDecimal(sub_info.VAT));
+                    }
+                    decimal after_vat_totalamount = finalamount + Convert.ToDecimal(sub_info.SetupFee) + Vat;
+
+                    var chargeDetail = new ChargeDetail
+                    {
+                        id = "ch_1Gq2Gi2eZvKYlo2C0uZR0k4j",
+                        @object = "charge",
+                        live_mode = false,
+                        customer_initiated = true,
+                        api_version = "2020-08-27",
+                        method = "Manually",
+                        gymname = userinfo.GYMName,
+                        status = "succeeded",
+                        amount = Convert.ToDouble(after_vat_totalamount),
+                        IsFirstInvoice = invoiceinfo.IsFirstInvoice,
+                        currency = "usd",
+                        threeDSecure = true,
+                        card_threeDSecure = true,
+                        save_card = false,
+                        merchant_id = "merchant_12345",
+                        product = "Membership",
+                        statement_descriptor = "XYZ Gym Membership",
+                        description = "Monthly gym membership fee",
+                        reference = new Reference { order =o, transaction = t},
+                        security = new Security
+                        {
+                            threeDSecure = new ThreeDSecure
+                            {
+                                id = "3ds_1Gq2Gi2eZvKYlo2C0uZR0k4j",
+                                status = "authenticated"
+                            }
+                        },
+                        card = null,
+                        receipt = new Receipt { /* Fill receipt properties here */ },
+                        customer = new Customer 
+                        { 
+                        id= userinfo.Id,
+                        phone = new Phone { country_code = countrycode, number= userinfo.PhoneNumber},
+                        email = userinfo.Email
+                        },
+                        merchant = new Merchant { /* Fill merchant properties here */ },
+                        source = new Source { /* Fill source properties here */ },
+                        redirect = new Redirect { /* Fill redirect properties here */ },
+                        post = new Post { /* Fill post properties here */ },
+                        auto_reversed = false,
+                        Subscriptions = sub_info,
+                        Frequency = "monthly",
+                        finalamount = finalamount.ToString(),
+                        VAT = Vat.ToString(),
+                        InvoiceID = invoiceinfo.InvoiceId.ToString(),
+                        Paymentname = "Manually",
+                        remarks = string.IsNullOrEmpty(invoiceinfo.Remarks) ? "------" : invoiceinfo.Remarks,
+                        Created_date = ConvertToUnixTimeMilliseconds(invoiceinfo.AddedDate)
+                };
                     return View(chargeDetail);
                 }
             }
