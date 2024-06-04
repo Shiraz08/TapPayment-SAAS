@@ -2323,8 +2323,8 @@ namespace TapPaymentIntegration.Controllers
                     return RedirectToAction("ShowInvoice", "Home", new { PaymentStatus = "All", messages = "This invoice has already been paid." });
                 }
 
-                var users = GetCurrentUserAsync().Result;
                 var max_invoice_id = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(invoice.InvoiceId)).FirstOrDefault();
+                var users = _context.Users.Where(x => x.Id == max_invoice_id.UserId).FirstOrDefault();
                 var subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == Convert.ToInt32(invoice.SubscriptionId)).FirstOrDefault();
                 var Amount = subscriptions.Amount;
                 int days = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
@@ -2527,25 +2527,176 @@ namespace TapPaymentIntegration.Controllers
         {
             try
             {
-                string[] result = id.Split('_').ToArray();
-                if (result[0] == "chg")
+                if(!string.IsNullOrEmpty(id))
                 {
-                    //Get Charge Detail
-                    var users = _context.Users.Where(x => x.Id == userid).FirstOrDefault();
-                    var client_ChargeDetail = new HttpClient();
-                    var request_ChargeDetail = new HttpRequestMessage(HttpMethod.Get, "https://api.tap.company/v2/charges/" + id);
-                    request_ChargeDetail.Headers.Add("Authorization", "Bearer " + users.SecertKey);
-                    request_ChargeDetail.Headers.Add("accept", "application/json");
-                    var response_ChargeDetail = await client_ChargeDetail.SendAsync(request_ChargeDetail);
-                    var result_ChargeDetail = await response_ChargeDetail.Content.ReadAsStringAsync();
-                    ChargeDetail Deserialized_savecard = JsonConvert.DeserializeObject<ChargeDetail>(result_ChargeDetail);
-                    var subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == sub_id).FirstOrDefault();
-                    var getinvoiceinfo = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(invoiceid)).FirstOrDefault();
-                    Deserialized_savecard.IsFirstInvoice = getinvoiceinfo.IsFirstInvoice;
-                    Deserialized_savecard.gymname = users.GYMName;
-                    Deserialized_savecard.Subscriptions = subscriptions;
-                    if (Deserialized_savecard.id != null)
+                    string[] result = id.Split('_').ToArray();
+                    if (result[0] == "chg")
                     {
+                        //Get Charge Detail
+                        var users = _context.Users.Where(x => x.Id == userid).FirstOrDefault();
+                        var client_ChargeDetail = new HttpClient();
+                        var request_ChargeDetail = new HttpRequestMessage(HttpMethod.Get, "https://api.tap.company/v2/charges/" + id);
+                        request_ChargeDetail.Headers.Add("Authorization", "Bearer " + users.SecertKey);
+                        request_ChargeDetail.Headers.Add("accept", "application/json");
+                        var response_ChargeDetail = await client_ChargeDetail.SendAsync(request_ChargeDetail);
+                        var result_ChargeDetail = await response_ChargeDetail.Content.ReadAsStringAsync();
+                        ChargeDetail Deserialized_savecard = JsonConvert.DeserializeObject<ChargeDetail>(result_ChargeDetail);
+                        var subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == sub_id).FirstOrDefault();
+                        var getinvoiceinfo = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(invoiceid)).FirstOrDefault();
+                        Deserialized_savecard.IsFirstInvoice = getinvoiceinfo.IsFirstInvoice;
+                        Deserialized_savecard.gymname = users.GYMName;
+                        Deserialized_savecard.Subscriptions = subscriptions;
+                        if (Deserialized_savecard.id != null)
+                        {
+                            if (getinvoiceinfo.ChargeResponseId > 0)
+                            {
+                                int days = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
+                                decimal finalamount = 0;
+                                decimal Discount = 0;
+                                decimal Vat = 0;
+                                if (users.Frequency == "DAILY")
+                                {
+                                    Discount = 0;
+                                    finalamount = (decimal)Convert.ToInt32(subscriptions.Amount) / (int)days;
+                                }
+                                else if (users.Frequency == "WEEKLY")
+                                {
+                                    Discount = 0;
+                                    finalamount = (decimal)Convert.ToInt32(subscriptions.Amount) / 4;
+                                }
+                                else if (users.Frequency == "MONTHLY")
+                                {
+                                    Discount = 0;
+                                    finalamount = (decimal)Convert.ToInt32(subscriptions.Amount);
+                                }
+                                else if (users.Frequency == "QUARTERLY")
+                                {
+                                    Discount = 0;
+                                    finalamount = (decimal)(Convert.ToInt32(subscriptions.Amount) * 3) / 1;
+                                }
+                                else if (users.Frequency == "HALFYEARLY")
+                                {
+                                    Discount = 0;
+                                    finalamount = (decimal)(Convert.ToInt32(subscriptions.Amount) * 6) / 1;
+                                }
+                                else if (users.Frequency == "YEARLY")
+                                {
+                                    var amountpercentage = (decimal)(Convert.ToInt32(subscriptions.Amount) / 100) * Convert.ToDecimal(subscriptions.Discount);
+                                    var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
+                                    finalamount = final_amount_percentage * 12;
+                                    Discount = amountpercentage * 12;
+                                }
+                                if (subscriptions.VAT == null || subscriptions.VAT == "0")
+                                {
+                                    Vat = 0;
+                                }
+                                else
+                                {
+                                    decimal totala = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
+                                    Vat = (decimal)((totala / 100) * Convert.ToDecimal(subscriptions.VAT));
+                                }
+                                decimal after_vat_totalamount = finalamount + Convert.ToDecimal(subscriptions.SetupFee) + Vat;
+                                Deserialized_savecard.amount = Convert.ToDouble(after_vat_totalamount);
+                                Deserialized_savecard.Frequency = users.Frequency;
+                                Deserialized_savecard.finalamount = finalamount.ToString();
+                                Deserialized_savecard.VAT = Vat.ToString();
+                                Deserialized_savecard.remarks = string.IsNullOrEmpty(getinvoiceinfo.Remarks) ? "------" : getinvoiceinfo.Remarks;
+                                Deserialized_savecard.InvoiceID = getinvoiceinfo.InvoiceId.ToString();
+                                Deserialized_savecard.Created_date = Deserialized_savecard.activities.Skip(1).Select(x => x.created).FirstOrDefault();
+                            }
+                            else
+                            {
+                                int days = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
+                                decimal finalamount = 0;
+                                decimal Discount = 0;
+                                decimal Vat = 0;
+                                if (users.Frequency == "DAILY")
+                                {
+                                    Discount = 0;
+                                    finalamount = (decimal)Convert.ToInt32(subscriptions.Amount) / (int)days;
+                                }
+                                else if (users.Frequency == "WEEKLY")
+                                {
+                                    Discount = 0;
+                                    finalamount = (decimal)Convert.ToInt32(subscriptions.Amount) / 4;
+                                }
+                                else if (users.Frequency == "MONTHLY")
+                                {
+                                    Discount = 0;
+                                    finalamount = (decimal)Convert.ToInt32(subscriptions.Amount);
+                                }
+                                else if (users.Frequency == "QUARTERLY")
+                                {
+                                    Discount = 0;
+                                    finalamount = (decimal)(Convert.ToInt32(subscriptions.Amount) * 3) / 1;
+                                }
+                                else if (users.Frequency == "HALFYEARLY")
+                                {
+                                    Discount = 0;
+                                    finalamount = (decimal)(Convert.ToInt32(subscriptions.Amount) * 6) / 1;
+                                }
+                                else if (users.Frequency == "YEARLY")
+                                {
+                                    var amountpercentage = (decimal)(Convert.ToInt32(subscriptions.Amount) / 100) * Convert.ToDecimal(subscriptions.Discount);
+                                    var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
+                                    finalamount = final_amount_percentage * 12;
+                                    Discount = amountpercentage * 12;
+                                }
+                                if (subscriptions.VAT == null || subscriptions.VAT == "0")
+                                {
+                                    Vat = 0;
+                                }
+                                else
+                                {
+                                    decimal totala = finalamount;
+                                    Vat = (decimal)((totala / 100) * Convert.ToDecimal(subscriptions.VAT));
+                                }
+                                decimal after_vat_totalamount = finalamount + Vat;
+                                Deserialized_savecard.amount = Convert.ToDouble(after_vat_totalamount);
+                                Deserialized_savecard.Frequency = users.Frequency;
+                                Deserialized_savecard.finalamount = finalamount.ToString();
+                                Deserialized_savecard.VAT = Vat.ToString();
+                                Deserialized_savecard.remarks = string.IsNullOrEmpty(getinvoiceinfo.Remarks) ? "------" : getinvoiceinfo.Remarks;
+                                Deserialized_savecard.InvoiceID = getinvoiceinfo.InvoiceId.ToString();
+                                Deserialized_savecard.Created_date = Deserialized_savecard.activities.Skip(1).Select(x => x.created).FirstOrDefault();
+                            }
+                            return View(Deserialized_savecard);
+                        }
+                        else
+                        {
+                            return View(Deserialized_savecard);
+                        }
+                    }
+                    else
+                    {
+                        //Get Charge Detail
+                        ChargeDetail chargeDetail = new ChargeDetail();
+                        TapInvoiceResponseDTO Deserialized_savecard = null;
+                        var log_user = _context.Users.Where(x => x.Id == userid).FirstOrDefault();
+                        if (id != null && log_user.Id != null)
+                        {
+                            var client = new HttpClient();
+                            var request = new HttpRequestMessage
+                            {
+                                Method = HttpMethod.Get,
+                                RequestUri = new Uri("https://api.tap.company/v2/invoices/" + id),
+                                Headers =
+                        {
+                            { "accept", "application/json" },
+                            { "Authorization", "Bearer " + log_user.SecertKey },
+                        },
+                            };
+                            using (var response = await client.SendAsync(request))
+                            {
+                                var body = await response.Content.ReadAsStringAsync();
+                                Deserialized_savecard = JsonConvert.DeserializeObject<TapInvoiceResponseDTO>(body);
+                            }
+                        }
+                        var subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == sub_id).FirstOrDefault();
+                        var users = _context.Users.Where(x => x.Id == userid).FirstOrDefault();
+                        var getinvoiceinfo = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(invoiceid)).FirstOrDefault();
+                        Deserialized_savecard.Subscriptions = subscriptions;
+
                         if (getinvoiceinfo.ChargeResponseId > 0)
                         {
                             int days = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
@@ -2591,16 +2742,23 @@ namespace TapPaymentIntegration.Controllers
                             else
                             {
                                 decimal totala = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
-                                Vat = (decimal)((totala / 100) * Convert.ToDecimal(subscriptions.VAT));
+                                Vat = (decimal)((totala / 100) * Convert.ToInt32(subscriptions.VAT));
                             }
                             decimal after_vat_totalamount = finalamount + Convert.ToDecimal(subscriptions.SetupFee) + Vat;
-                            Deserialized_savecard.amount = Convert.ToDouble(after_vat_totalamount);
-                            Deserialized_savecard.Frequency = users.Frequency;
-                            Deserialized_savecard.finalamount = finalamount.ToString();
-                            Deserialized_savecard.VAT = Vat.ToString();
-                            Deserialized_savecard.remarks = string.IsNullOrEmpty(getinvoiceinfo.Remarks) ? "------" : getinvoiceinfo.Remarks;
-                            Deserialized_savecard.InvoiceID = getinvoiceinfo.InvoiceId.ToString();
-                            Deserialized_savecard.Created_date = Deserialized_savecard.activities.Skip(1).Select(x => x.created).FirstOrDefault();
+                            chargeDetail.Frequency = users.Frequency;
+                            chargeDetail.finalamount = finalamount.ToString();
+                            chargeDetail.VAT = Vat.ToString();
+                            chargeDetail.InvoiceID = getinvoiceinfo.InvoiceId.ToString();
+                            chargeDetail.IsFirstInvoice = getinvoiceinfo.IsFirstInvoice;
+                            chargeDetail.Subscriptions = subscriptions;
+                            chargeDetail.gymname = users.GYMName;
+                            chargeDetail.customer = Deserialized_savecard.customer;
+                            chargeDetail.reference = Deserialized_savecard.reference;
+                            chargeDetail.remarks = string.IsNullOrEmpty(getinvoiceinfo.Remarks) ? "------" : getinvoiceinfo.Remarks;
+                            chargeDetail.Created_date = Deserialized_savecard.created;
+                            chargeDetail.Paymentname = Deserialized_savecard.payment_methods.First();
+                            chargeDetail.amount = Convert.ToDouble(after_vat_totalamount);
+                            chargeDetail.Created_date = Deserialized_savecard.created;
                         }
                         else
                         {
@@ -2646,181 +2804,33 @@ namespace TapPaymentIntegration.Controllers
                             }
                             else
                             {
+
                                 decimal totala = finalamount;
-                                Vat = (decimal)((totala / 100) * Convert.ToDecimal(subscriptions.VAT));
+                                Vat = (decimal)((totala / 100) * Convert.ToInt32(subscriptions.VAT));
                             }
                             decimal after_vat_totalamount = finalamount + Vat;
-                            Deserialized_savecard.amount = Convert.ToDouble(after_vat_totalamount);
-                            Deserialized_savecard.Frequency = users.Frequency;
-                            Deserialized_savecard.finalamount = finalamount.ToString();
-                            Deserialized_savecard.VAT = Vat.ToString();
-                            Deserialized_savecard.remarks = string.IsNullOrEmpty(getinvoiceinfo.Remarks) ? "------" : getinvoiceinfo.Remarks;
-                            Deserialized_savecard.InvoiceID = getinvoiceinfo.InvoiceId.ToString();
-                            Deserialized_savecard.Created_date = Deserialized_savecard.activities.Skip(1).Select(x => x.created).FirstOrDefault();
+                            chargeDetail.Frequency = users.Frequency;
+                            chargeDetail.finalamount = finalamount.ToString();
+                            chargeDetail.VAT = Vat.ToString();
+                            chargeDetail.InvoiceID = getinvoiceinfo.InvoiceId.ToString();
+                            chargeDetail.Subscriptions = subscriptions;
+                            chargeDetail.IsFirstInvoice = getinvoiceinfo.IsFirstInvoice;
+                            chargeDetail.gymname = users.GYMName;
+                            chargeDetail.remarks = string.IsNullOrEmpty(getinvoiceinfo.Remarks) ? "------" : getinvoiceinfo.Remarks;
+                            chargeDetail.customer = Deserialized_savecard.customer;
+                            chargeDetail.reference = Deserialized_savecard.reference;
+                            chargeDetail.Created_date = Deserialized_savecard.created;
+                            chargeDetail.Paymentname = Deserialized_savecard.payment_methods.First();
+                            chargeDetail.amount = Convert.ToDouble(after_vat_totalamount);
                         }
-                        return View(Deserialized_savecard);
-                    }
-                    else
-                    {
-                        return View(Deserialized_savecard);
+                        return View(chargeDetail);
                     }
                 }
                 else
                 {
-                    //Get Charge Detail
+                    var invoiceinfo = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(invoiceid)).FirstOrDefault();
                     ChargeDetail chargeDetail = new ChargeDetail();
-                    TapInvoiceResponseDTO Deserialized_savecard = null;
-                    var log_user = _context.Users.Where(x => x.Id == userid).FirstOrDefault();
-                    if (id != null && log_user.Id != null)
-                    {
-                        var client = new HttpClient();
-                        var request = new HttpRequestMessage
-                        {
-                            Method = HttpMethod.Get,
-                            RequestUri = new Uri("https://api.tap.company/v2/invoices/" + id),
-                            Headers =
-                        {
-                            { "accept", "application/json" },
-                            { "Authorization", "Bearer " + log_user.SecertKey },
-                        },
-                        };
-                        using (var response = await client.SendAsync(request))
-                        {
-                            var body = await response.Content.ReadAsStringAsync();
-                            Deserialized_savecard = JsonConvert.DeserializeObject<TapInvoiceResponseDTO>(body);
-                        }
-                    }
-                    var subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == sub_id).FirstOrDefault();
-                    var users = _context.Users.Where(x => x.Id == userid).FirstOrDefault();
-                    var getinvoiceinfo = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(invoiceid)).FirstOrDefault();
-                    Deserialized_savecard.Subscriptions = subscriptions;
-
-                    if (getinvoiceinfo.ChargeResponseId > 0)
-                    {
-                        int days = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
-                        decimal finalamount = 0;
-                        decimal Discount = 0;
-                        decimal Vat = 0;
-                        if (users.Frequency == "DAILY")
-                        {
-                            Discount = 0;
-                            finalamount = (decimal)Convert.ToInt32(subscriptions.Amount) / (int)days;
-                        }
-                        else if (users.Frequency == "WEEKLY")
-                        {
-                            Discount = 0;
-                            finalamount = (decimal)Convert.ToInt32(subscriptions.Amount) / 4;
-                        }
-                        else if (users.Frequency == "MONTHLY")
-                        {
-                            Discount = 0;
-                            finalamount = (decimal)Convert.ToInt32(subscriptions.Amount);
-                        }
-                        else if (users.Frequency == "QUARTERLY")
-                        {
-                            Discount = 0;
-                            finalamount = (decimal)(Convert.ToInt32(subscriptions.Amount) * 3) / 1;
-                        }
-                        else if (users.Frequency == "HALFYEARLY")
-                        {
-                            Discount = 0;
-                            finalamount = (decimal)(Convert.ToInt32(subscriptions.Amount) * 6) / 1;
-                        }
-                        else if (users.Frequency == "YEARLY")
-                        {
-                            var amountpercentage = (decimal)(Convert.ToInt32(subscriptions.Amount) / 100) * Convert.ToDecimal(subscriptions.Discount);
-                            var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
-                            finalamount = final_amount_percentage * 12;
-                            Discount = amountpercentage * 12;
-                        }
-                        if (subscriptions.VAT == null || subscriptions.VAT == "0")
-                        {
-                            Vat = 0;
-                        }
-                        else
-                        {
-                            decimal totala = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
-                            Vat = (decimal)((totala / 100) * Convert.ToInt32(subscriptions.VAT));
-                        }
-                        decimal after_vat_totalamount = finalamount + Convert.ToDecimal(subscriptions.SetupFee) + Vat;
-                        chargeDetail.Frequency = users.Frequency;
-                        chargeDetail.finalamount = finalamount.ToString();
-                        chargeDetail.VAT = Vat.ToString();
-                        chargeDetail.InvoiceID = getinvoiceinfo.InvoiceId.ToString();
-                        chargeDetail.IsFirstInvoice = getinvoiceinfo.IsFirstInvoice;
-                        chargeDetail.Subscriptions = subscriptions;
-                        chargeDetail.gymname = users.GYMName;
-                        chargeDetail.customer = Deserialized_savecard.customer;
-                        chargeDetail.reference = Deserialized_savecard.reference;
-                        chargeDetail.remarks = string.IsNullOrEmpty(getinvoiceinfo.Remarks) ? "------" : getinvoiceinfo.Remarks;
-                        chargeDetail.Created_date = Deserialized_savecard.created;
-                        chargeDetail.Paymentname = Deserialized_savecard.payment_methods.First();
-                        chargeDetail.amount = Convert.ToDouble(after_vat_totalamount);
-                        chargeDetail.Created_date = Deserialized_savecard.created;
-                    }
-                    else
-                    {
-                        int days = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
-                        decimal finalamount = 0;
-                        decimal Discount = 0;
-                        decimal Vat = 0;
-                        if (users.Frequency == "DAILY")
-                        {
-                            Discount = 0;
-                            finalamount = (decimal)Convert.ToInt32(subscriptions.Amount) / (int)days;
-                        }
-                        else if (users.Frequency == "WEEKLY")
-                        {
-                            Discount = 0;
-                            finalamount = (decimal)Convert.ToInt32(subscriptions.Amount) / 4;
-                        }
-                        else if (users.Frequency == "MONTHLY")
-                        {
-                            Discount = 0;
-                            finalamount = (decimal)Convert.ToInt32(subscriptions.Amount);
-                        }
-                        else if (users.Frequency == "QUARTERLY")
-                        {
-                            Discount = 0;
-                            finalamount = (decimal)(Convert.ToInt32(subscriptions.Amount) * 3) / 1;
-                        }
-                        else if (users.Frequency == "HALFYEARLY")
-                        {
-                            Discount = 0;
-                            finalamount = (decimal)(Convert.ToInt32(subscriptions.Amount) * 6) / 1;
-                        }
-                        else if (users.Frequency == "YEARLY")
-                        {
-                            var amountpercentage = (decimal)(Convert.ToInt32(subscriptions.Amount) / 100) * Convert.ToDecimal(subscriptions.Discount);
-                            var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
-                            finalamount = final_amount_percentage * 12;
-                            Discount = amountpercentage * 12;
-                        }
-                        if (subscriptions.VAT == null || subscriptions.VAT == "0")
-                        {
-                            Vat = 0;
-                        }
-                        else
-                        {
-
-                            decimal totala = finalamount;
-                            Vat = (decimal)((totala / 100) * Convert.ToInt32(subscriptions.VAT));
-                        }
-                        decimal after_vat_totalamount = finalamount + Vat;
-                        chargeDetail.Frequency = users.Frequency;
-                        chargeDetail.finalamount = finalamount.ToString();
-                        chargeDetail.VAT = Vat.ToString();
-                        chargeDetail.InvoiceID = getinvoiceinfo.InvoiceId.ToString();
-                        chargeDetail.Subscriptions = subscriptions;
-                        chargeDetail.IsFirstInvoice = getinvoiceinfo.IsFirstInvoice;
-                        chargeDetail.gymname = users.GYMName;
-                        chargeDetail.remarks = string.IsNullOrEmpty(getinvoiceinfo.Remarks) ? "------" : getinvoiceinfo.Remarks;
-                        chargeDetail.customer = Deserialized_savecard.customer;
-                        chargeDetail.reference = Deserialized_savecard.reference;
-                        chargeDetail.Created_date = Deserialized_savecard.created;
-                        chargeDetail.Paymentname = Deserialized_savecard.payment_methods.First();
-                        chargeDetail.amount = Convert.ToDouble(after_vat_totalamount);
-                    }
+                    //chargeDetail.Created_date = ConvertToUnixTimeMilliseconds(invoiceinfo.AddedDate);
                     return View(chargeDetail);
                 }
             }
@@ -2831,6 +2841,11 @@ namespace TapPaymentIntegration.Controllers
                 ViewBag.Details = ex.StackTrace;
                 return View("DashboardError");
             }
+        }
+        public static long ConvertToUnixTimeMilliseconds(DateTime dateTime)
+        {
+            DateTimeOffset dateTimeOffset = new DateTimeOffset(dateTime);
+            return dateTimeOffset.ToUnixTimeMilliseconds();
         }
         public IActionResult ShowInvoice(string PaymentStatus, string messages = null)
         {

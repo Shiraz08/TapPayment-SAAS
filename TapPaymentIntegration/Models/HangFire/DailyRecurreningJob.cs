@@ -40,7 +40,7 @@ namespace TapPaymentIntegration.Models.HangFire
         public async Task AutoChargeJob()
         {
             CreateCharge deserialized_CreateCharge = null;
-            var recurringCharges_list = _context.recurringCharges.Where(x => x.JobRunDate.Date == DateTime.UtcNow.Date && x.IsRun == false && x.IsFreeze != true).ToList();
+            var recurringCharges_list = _context.recurringCharges.Where(x => x.JobRunDate.Date == DateTime.UtcNow.Date && x.IsRun == false && x.IsFreeze != true && (x.ChargeId != null || x.ChargeId != "")).ToList();
             foreach (var item in recurringCharges_list)
             {
                 string[] result = item.ChargeId.Split('_').ToArray();
@@ -976,7 +976,7 @@ namespace TapPaymentIntegration.Models.HangFire
         public async Task AutoChargeJobForBenefit()
         {
             CreateCharge deserialized_CreateCharge = null;
-            var recurringCharges_list = _context.recurringCharges.Where(x => x.JobRunDate.Date == DateTime.UtcNow.Date && x.IsRun == false && x.IsFreeze != true).ToList();
+            var recurringCharges_list = _context.recurringCharges.Where(x => x.JobRunDate.Date == DateTime.UtcNow.Date && x.IsRun == false && x.IsFreeze != true && (x.ChargeId != null || x.ChargeId != "")).ToList();
             //var recurringCharges_list = _context.recurringCharges.Where(x => x.IsRun == false).ToList();
             foreach (var item in recurringCharges_list)
             {
@@ -2815,7 +2815,7 @@ namespace TapPaymentIntegration.Models.HangFire
                 var ev = emailinvoicematch.Groups[2].Value.ToString();
 
                 var invoice = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(ev)).FirstOrDefault();
-
+                int max_id = _context.invoices.Max(x => x.InvoiceId) + 1;
                 var users =_context.Users.Where(x=>x.Id == item.UserID).FirstOrDefault();
                 var max_invoice_id = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(invoice.InvoiceId)).FirstOrDefault();
                 var subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == Convert.ToInt32(invoice.SubscriptionId)).FirstOrDefault();
@@ -2893,7 +2893,7 @@ namespace TapPaymentIntegration.Models.HangFire
                 recurringCharge.UserID = users.Id;
                 recurringCharge.Tap_CustomerId = null;
                 recurringCharge.ChargeId = null;
-                recurringCharge.Invoice = "Inv" + max_invoice_id.InvoiceId;
+                recurringCharge.Invoice = "Inv" + max_id;
                 recurringCharge.IsRun = false;
                 if (users.Frequency == "DAILY")
                 {
