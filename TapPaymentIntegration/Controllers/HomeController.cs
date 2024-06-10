@@ -2488,7 +2488,7 @@ namespace TapPaymentIntegration.Controllers
                     body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
                 }
                 var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
-                var bodyemail = EmailBodyFill.EmailBodyForPaymentReceipt(users, subscriptions);
+                var bodyemail = EmailBodyFill.EmailBodyForManuallyPaymentReceipt(users, subscriptions);
                 var emailSubject = "Tamarran – Payment Receipt - " + " Inv" + max_invoice_id.InvoiceId;
                 _ = _emailSender.SendEmailWithFIle(bytes, users.Email, emailSubject, bodyemail);
                 return RedirectToAction("ShowInvoice", "Home", new { PaymentStatus = "All" });

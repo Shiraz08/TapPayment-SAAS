@@ -2815,7 +2815,6 @@ namespace TapPaymentIntegration.Models.HangFire
                 var ev = emailinvoicematch.Groups[2].Value.ToString();
 
                 var invoice = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(ev)).FirstOrDefault();
-                int max_id = _context.invoices.Max(x => x.InvoiceId) + 1;
                 var users =_context.Users.Where(x=>x.Id == item.UserID).FirstOrDefault();
                 var max_invoice_id = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(invoice.InvoiceId)).FirstOrDefault();
                 var subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == Convert.ToInt32(invoice.SubscriptionId)).FirstOrDefault();
@@ -2892,13 +2891,42 @@ namespace TapPaymentIntegration.Models.HangFire
                 _context.recurringCharges.Update(rc);
                 _context.SaveChanges();
 
+                //Craete New Invoice
+                Invoice invoices = new Invoice
+                {
+                    InvoiceStartDate = DateTime.UtcNow,
+                    InvoiceEndDate = DateTime.UtcNow,
+                    Currency = subscriptions.Currency,
+                    AddedDate = DateTime.UtcNow,
+                    AddedBy = "System",
+                    SubscriptionAmount = Convert.ToDouble(after_vat_totalamount.ToString("0.00")),
+                    SubscriptionId = Convert.ToInt32(subscriptions.SubscriptionId),
+                    Status = "Un-Paid",
+                    PaidBy = "Manual",
+                    IsDeleted = false,
+                    VAT = Vat.ToString(),
+                    Discount = Discount.ToString(),
+                    Description = "Invoice Create - Frequency(" + users.Frequency + ")",
+                    SubscriptionName = subscriptions.Name,
+                    UserId = users.Id,
+                    ChargeId = null,
+                    GymName = users.GYMName,
+                    Country = subscriptions.Countries,
+                    IsFirstInvoice = true
+                };
+                _context.invoices.Add(invoices);
+                _context.SaveChanges();
+
+                int newInvoiceId = _context.invoices.Max(x => x.InvoiceId);
+
+
                 RecurringCharge recurringCharge = new RecurringCharge();
                 recurringCharge.Amount = Convert.ToDecimal(invoice.SubscriptionAmount);
                 recurringCharge.SubscriptionId = invoice.SubscriptionId;
                 recurringCharge.UserID = users.Id;
                 recurringCharge.Tap_CustomerId = null;
                 recurringCharge.ChargeId = null;
-                recurringCharge.Invoice = "Inv" + max_id;
+                recurringCharge.Invoice = "Inv" + newInvoiceId;
                 recurringCharge.IsRun = false;
                 if (users.Frequency == "DAILY")
                 {
@@ -2939,7 +2967,7 @@ namespace TapPaymentIntegration.Models.HangFire
                 // Send Email
                 string body = string.Empty;
                 _environment.WebRootPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-                string contentRootPath = _environment.WebRootPath + "/htmltopdf.html";
+                string contentRootPath = _environment.WebRootPath + "/htmltopdfRecurreningM.html";
                 string contentRootPath1 = _environment.WebRootPath + "/css/bootstrap.min.css";
                 //Generate PDF
                 var sub_info = _context.subscriptions.Where(x => x.SubscriptionId == Convert.ToInt32(invoice.SubscriptionId)).FirstOrDefault();
@@ -2952,7 +2980,7 @@ namespace TapPaymentIntegration.Models.HangFire
                 body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
 
                 body = body.Replace("{InvocieStatus}", "Unpaid");
-                body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id.InvoiceId);
+                body = body.Replace("{InvoiceID}", "Inv" + newInvoiceId);
 
 
                 body = body.Replace("{User_Name}", users.FullName);
@@ -2985,8 +3013,8 @@ namespace TapPaymentIntegration.Models.HangFire
                     body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
                 }
                 var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
-                var bodyemail = EmailBodyFill.EmailBodyForManuallyPaymentReceipt(users, subscriptions); 
-                var emailSubject = "Tamarran – Payment Receipt - " + " Inv" + max_invoice_id.InvoiceId;
+                var bodyemail = EmailBodyFill.ManuallyPaymentRequest(users, subscriptions); 
+                var emailSubject = "Tamarran – Payment Receipt - " + " Inv" + newInvoiceId;
                 _ = _emailSender.SendEmailWithFIle(bytes, users.Email, emailSubject, bodyemail);
             }
 
