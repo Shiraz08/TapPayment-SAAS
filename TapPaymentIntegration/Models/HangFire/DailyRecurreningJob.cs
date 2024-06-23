@@ -119,7 +119,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     recurringCharge.Tap_CustomerId = getuserinfo.Tap_CustomerID;
                                     recurringCharge.ChargeId = deserialized_CreateCharge.id;
                                     recurringCharge.JobRunDate = invoice.InvoiceEndDate;
-                                    recurringCharge.Invoice = "Inv" + max_invoice_id;
+                                    recurringCharge.Invoice = "Inv" + max_invoice_id.ToString();
                                     _context.recurringCharges.Add(recurringCharge);
                                     _context.SaveChanges();
 
@@ -216,8 +216,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     _context.invoices.Update(i);
                                     _context.SaveChanges();
 
-                                    var nameinvoice = "Inv" + max_invoice_id;
-                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id;
+                                    var nameinvoice = "Inv" + max_invoice_id.ToString();
+                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id.ToString();
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
                                     _ = _emailSender.SendEmailAsync(user_Email, emailSubject, bodyemail);
                                 }
@@ -268,7 +268,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     recurringCharge.Tap_CustomerId = getuserinfo.Tap_CustomerID;
                                     recurringCharge.ChargeId = deserialized_CreateCharge.id;
                                     recurringCharge.JobRunDate = invoice.InvoiceEndDate.AddDays(1);
-                                    recurringCharge.Invoice = "Inv" + max_invoice_id;
+                                    recurringCharge.Invoice = "Inv" + max_invoice_id.ToString();
                                     _context.recurringCharges.Add(recurringCharge);
                                     _context.SaveChanges();
 
@@ -294,7 +294,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
 
                                     body = body.Replace("{InvocieStatus}", "Payment Captured");
-                                    body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id);
+                                    body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id.ToString());
 
 
                                     body = body.Replace("{User_Name}", getuserinfo.FullName);
@@ -365,8 +365,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     _context.invoices.Update(i);
                                     _context.SaveChanges();
 
-                                    var nameinvoice = "Inv" + max_invoice_id;
-                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id;
+                                    var nameinvoice = "Inv" + max_invoice_id.ToString();
+                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id.ToString();
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
                                     _ = _emailSender.SendEmailAsync(user_Email, emailSubject, bodyemail);
                                 }
@@ -418,7 +418,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     recurringCharge.ChargeId = deserialized_CreateCharge.id;
                                     recurringCharge.JobRunDate = invoice.InvoiceEndDate.AddDays(1);
                                     _context.recurringCharges.Add(recurringCharge);
-                                    recurringCharge.Invoice = "Inv" + max_invoice_id;
+                                    recurringCharge.Invoice = "Inv" + max_invoice_id.ToString();
                                     _context.SaveChanges();
 
                                     // Update Job Table
@@ -443,7 +443,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
 
                                     body = body.Replace("{InvocieStatus}", "Payment Captured");
-                                    body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id);
+                                    body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id.ToString());
 
 
                                     body = body.Replace("{User_Name}", getuserinfo.FullName);
@@ -514,8 +514,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     _context.invoices.Update(i);
                                     _context.SaveChanges();
 
-                                    var nameinvoice = "Inv" + max_invoice_id;
-                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id;
+                                    var nameinvoice = "Inv" + max_invoice_id.ToString();
+                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id.ToString();
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
                                     _ = _emailSender.SendEmailAsync(user_Email, emailSubject, bodyemail);
                                 }
@@ -566,7 +566,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     recurringCharge.Tap_CustomerId = getuserinfo.Tap_CustomerID;
                                     recurringCharge.ChargeId = deserialized_CreateCharge.id;
                                     recurringCharge.JobRunDate = invoice.InvoiceEndDate.AddDays(1);
-                                    recurringCharge.Invoice = "Inv" + max_invoice_id;
+                                    recurringCharge.Invoice = "Inv" + max_invoice_id.ToString();
                                     _context.recurringCharges.Add(recurringCharge);
                                     _context.SaveChanges();
 
@@ -592,7 +592,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
 
                                     body = body.Replace("{InvocieStatus}", "Payment Captured");
-                                    body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id);
+                                    body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id.ToString());
 
 
                                     body = body.Replace("{User_Name}", getuserinfo.FullName);
@@ -663,8 +663,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     _context.invoices.Update(i);
                                     _context.SaveChanges();
 
-                                    var nameinvoice = "Inv" + max_invoice_id;
-                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id;
+                                    var nameinvoice = "Inv" + max_invoice_id.ToString();
+                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id.ToString();
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
                                     _ = _emailSender.SendEmailAsync(user_Email, emailSubject, bodyemail);
                                 }
@@ -741,7 +741,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
 
                                     body = body.Replace("{InvocieStatus}", "Payment Captured");
-                                    body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id);
+                                    body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id.ToString());
 
 
                                     body = body.Replace("{User_Name}", getuserinfo.FullName);
@@ -812,8 +812,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     _context.invoices.Update(i);
                                     _context.SaveChanges();
 
-                                    var nameinvoice = "Inv" + max_invoice_id;
-                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id;
+                                    var nameinvoice = "Inv" + max_invoice_id.ToString();
+                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id.ToString();
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
                                     _ = _emailSender.SendEmailAsync(user_Email, emailSubject, bodyemail);
                                 }
@@ -864,7 +864,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     recurringCharge.Tap_CustomerId = getuserinfo.Tap_CustomerID;
                                     recurringCharge.ChargeId = deserialized_CreateCharge.id;
                                     recurringCharge.JobRunDate = invoice.InvoiceEndDate.AddDays(1);
-                                    recurringCharge.Invoice = "Inv" + max_invoice_id;
+                                    recurringCharge.Invoice = "Inv" + max_invoice_id.ToString();
                                     _context.recurringCharges.Add(recurringCharge);
                                     _context.SaveChanges();
 
@@ -890,7 +890,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
 
                                     body = body.Replace("{InvocieStatus}", "Payment Captured");
-                                    body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id);
+                                    body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id.ToString());
 
 
                                     body = body.Replace("{User_Name}", getuserinfo.FullName);
@@ -961,8 +961,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     _context.invoices.Update(i);
                                     _context.SaveChanges();
 
-                                    var nameinvoice = "Inv" + max_invoice_id;
-                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id;
+                                    var nameinvoice = "Inv" + max_invoice_id.ToString();
+                                    var emailSubject = "Tamarran - Your subscription renewal in Tamarran failed - " + " Inv" + max_invoice_id.ToString();
                                     var bodyemail = EmailBodyFill.EmailBodyForSubscriptionrenewalinTamarranfailed(getsubinfo, getuserinfo, nameinvoice, Constants.RedirectURL);
                                     _ = _emailSender.SendEmailAsync(user_Email, emailSubject, bodyemail);
                                 }
