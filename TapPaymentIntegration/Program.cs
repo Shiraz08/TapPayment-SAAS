@@ -1,8 +1,10 @@
+using Google.Api;
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
 using System;
@@ -72,6 +74,7 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ContractResolver = new DefaultContractResolver();
 });
+builder.Services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {

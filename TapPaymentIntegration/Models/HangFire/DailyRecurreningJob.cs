@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Security.Policy;
+using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
 using TapPaymentIntegration.Areas.Identity.Data;
 using TapPaymentIntegration.Controllers;
 using TapPaymentIntegration.Data;
+using TapPaymentIntegration.Migrations;
 using TapPaymentIntegration.Models.Card;
 using TapPaymentIntegration.Models.Email;
 using TapPaymentIntegration.Models.InvoiceDTO;
@@ -27,8 +29,9 @@ namespace TapPaymentIntegration.Models.HangFire
         private readonly IUserStore<ApplicationUser> _userStore;
         private IWebHostEnvironment _environment;
         EmailSender _emailSender = new EmailSender();
+        private readonly IUrlHelper _urlHelper;
 
-        public DailyRecurreningJob(IWebHostEnvironment Environment, ILogger<HomeController> logger, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, TapPaymentIntegrationContext context, IUserStore<ApplicationUser> userStore)
+        public DailyRecurreningJob(IUrlHelper urlHelper,IWebHostEnvironment Environment, ILogger<HomeController> logger, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, TapPaymentIntegrationContext context, IUserStore<ApplicationUser> userStore)
         {
             _logger = logger;
             _signInManager = signInManager;
@@ -36,6 +39,7 @@ namespace TapPaymentIntegration.Models.HangFire
             _context = context;
             _userStore = userStore;
             _environment = Environment;
+            _urlHelper = urlHelper;
         }
         public async Task AutoChargeJob()
         {
@@ -2806,7 +2810,7 @@ namespace TapPaymentIntegration.Models.HangFire
                 }
             }
         }
-        public async Task ManuallyRecurringJob()
+         public async Task ManuallyRecurringJob()
         {
             var recurringCharges_list = _context.recurringCharges.Where(x => x.JobRunDate.Date == DateTime.UtcNow.Date && x.IsRun == false && x.IsFreeze != true && (x.ChargeId == null || x.ChargeId == "")).ToList();
             foreach (var item in recurringCharges_list)
@@ -2866,7 +2870,7 @@ namespace TapPaymentIntegration.Models.HangFire
                     Vat = (decimal)((totala / 100) * Convert.ToInt32(subscriptions.VAT));
                     VatwithoutSetupFee = (decimal)((finalamount / 100) * Convert.ToInt32(subscriptions.VAT));
                 }
-                decimal after_vat_totalamount = finalamount + Convert.ToDecimal(subscriptions.SetupFee) + Vat;
+               // decimal after_vat_totalamount = finalamount + Convert.ToDecimal(subscriptions.SetupFee) + Vat;
                 var userinfo = _context.Users.Where(x => x.Id == users.Id).FirstOrDefault();
                 //update user 
                 users.Tap_CustomerID = null;
@@ -2879,17 +2883,15 @@ namespace TapPaymentIntegration.Models.HangFire
                 _context.Users.Update(users);
                 _context.SaveChanges();
 
-                UserSubscriptions userSubscriptions = new UserSubscriptions();
-                userSubscriptions.SubID = Convert.ToInt32(invoice.SubscriptionId);
-                userSubscriptions.Userid = users.Id;
-                _context.userSubscriptions.Add(userSubscriptions);
-                _context.SaveChanges();
-
 
                 var rc = _context.recurringCharges.Where(x => x.RecurringChargeId == item.RecurringChargeId).FirstOrDefault();
                 rc.IsRun = true;
                 _context.recurringCharges.Update(rc);
                 _context.SaveChanges();
+
+                InvoiceHelper.GetDiscountAndFinalAmountBySubscriptionFrequency(users.Frequency, subscriptions.Amount, subscriptions.Discount, days, out decimal discount, out decimal finalAmount);
+                InvoiceHelper.CalculdateInvoiceDetails(finalAmount, subscriptions, out string subscriptionAmount, out decimal after_vat_totalamount, out decimal vat, out string vat_str, out string total, out string invoiceAmount, out string Totalinvoicewithoutvat);
+
 
                 //Craete New Invoice
                 Invoice invoices = new Invoice
@@ -2919,58 +2921,13 @@ namespace TapPaymentIntegration.Models.HangFire
 
                 int newInvoiceId = _context.invoices.Max(x => x.InvoiceId);
 
-
-                RecurringCharge recurringCharge = new RecurringCharge();
-                recurringCharge.Amount = Convert.ToDecimal(invoice.SubscriptionAmount);
-                recurringCharge.SubscriptionId = invoice.SubscriptionId;
-                recurringCharge.UserID = users.Id;
-                recurringCharge.Tap_CustomerId = null;
-                recurringCharge.ChargeId = null;
-                recurringCharge.Invoice = "Inv" + newInvoiceId;
-                recurringCharge.IsRun = false;
-                if (users.Frequency == "DAILY")
-                {
-                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddDays(1);
-                }
-                else if (users.Frequency == "WEEKLY")
-                {
-                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddDays(7);
-                }
-                else if (users.Frequency == "MONTHLY")
-                {
-                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(1);
-                }
-                else if (users.Frequency == "QUARTERLY")
-                {
-                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(3);
-                }
-                else if (users.Frequency == "HALFYEARLY")
-                {
-                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(6);
-                }
-                else if (users.Frequency == "YEARLY")
-                {
-                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddYears(1);
-                }
-                _context.recurringCharges.Add(recurringCharge);
-                _context.SaveChanges();
-
-                invoice.Remarks = null;
-                invoice.ChargeId = "";
-                invoice.PaidBy = "Manual";
-                invoice.UserId = users.Id;
-                invoice.Status = "Payment Captured";
-                invoice.ChargeResponseId = 0;
-                _context.invoices.Update(invoice);
-                _context.SaveChanges();
-
+              
                 // Send Email
                 string body = string.Empty;
                 _environment.WebRootPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-                string contentRootPath = _environment.WebRootPath + "/htmltopdfRecurreningM.html";
+                string contentRootPath = _environment.WebRootPath + "/htmltopdfP.html";
                 string contentRootPath1 = _environment.WebRootPath + "/css/bootstrap.min.css";
                 //Generate PDF
-                var sub_info = _context.subscriptions.Where(x => x.SubscriptionId == Convert.ToInt32(invoice.SubscriptionId)).FirstOrDefault();
                 using (StreamReader reader = new StreamReader(contentRootPath))
                 {
                     body = reader.ReadToEnd();
@@ -2980,44 +2937,247 @@ namespace TapPaymentIntegration.Models.HangFire
                 body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
 
                 body = body.Replace("{InvocieStatus}", "Unpaid");
-                body = body.Replace("{InvoiceID}", "Inv" + newInvoiceId);
-
+                body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id);
 
                 body = body.Replace("{User_Name}", users.FullName);
                 body = body.Replace("{User_Email}", users.Email);
                 body = body.Replace("{User_GYM}", users.GYMName);
                 body = body.Replace("{User_Phone}", users.PhoneNumber);
 
-
                 body = body.Replace("{SubscriptionName}", subscriptions.Name);
                 body = body.Replace("{Discount}", Discount.ToString());
-                body = body.Replace("{SubscriptionPeriod}", userinfo.Frequency);
+                body = body.Replace("{SubscriptionPeriod}", users.Frequency);
                 body = body.Replace("{SetupFee}", subscriptions.SetupFee + " " + subscriptions.Currency);
-                var amount = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
-                body = body.Replace("{SubscriptionAmount}", finalamount.ToString("0.00") + " " + subscriptions.Currency);
+
+                body = body.Replace("{SubscriptionAmount}", subscriptionAmount);
                 //Calculate VAT
-                if (subscriptions.VAT == null || subscriptions.VAT == "0")
-                {
-                    body = body.Replace("{VAT}", "0.00" + " " + subscriptions.Currency);
-                    body = body.Replace("{Total}", amount.ToString("0.00") + " " + subscriptions.Currency);
-                    body = body.Replace("{InvoiceAmount}", amount.ToString("0.00") + " " + subscriptions.Currency);
-                    var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(subscriptions.SetupFee);
-                    body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
-                }
-                else
-                {
-                    body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + subscriptions.Currency);
-                    body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
-                    body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
-                    var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(subscriptions.SetupFee);
-                    body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
-                }
+                body = body.Replace("{VAT}", Vat.ToString());
+                body = body.Replace("{Total}", total);
+                body = body.Replace("{InvoiceAmount}", invoiceAmount);
+                body = body.Replace("{Totalinvoicewithoutvat}", Totalinvoicewithoutvat);
+
                 var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
-                var bodyemail = EmailBodyFill.ManuallyPaymentRequest(users, subscriptions); 
-                var emailSubject = "Tamarran – Payment Receipt - " + " Inv" + newInvoiceId;
+                var callbackUrl = _urlHelper.Action("SubscriptionAdmin", "Home", new { id = users.SubscribeID, link = "Yes", userid = users.Id, invoiceid = max_invoice_id, After_vat_totalamount = after_vat_totalamount, isfirstinvoice = "true" });
+                var websiteurl = HtmlEncoder.Default.Encode(Constants.RedirectURL + callbackUrl);
+
+                var emailSubject = "Tamarran – Payment Request - " + " Inv" + max_invoice_id;
+                var bodyemail = EmailBodyFill.EmailBodyForPaymentRequest(users, websiteurl);
                 _ = _emailSender.SendEmailWithFIle(bytes, users.Email, emailSubject, bodyemail);
             }
 
         }
+        //public async Task ManuallyRecurringJob()
+        //{
+        //    var recurringCharges_list = _context.recurringCharges.Where(x => x.JobRunDate.Date == DateTime.UtcNow.Date && x.IsRun == false && x.IsFreeze != true && (x.ChargeId == null || x.ChargeId == "")).ToList();
+        //    foreach (var item in recurringCharges_list)
+        //    {
+        //        Match emailinvoicematch = Regex.Match(item.Invoice, @"([A-Za-z]+)(\d+)");
+        //        var ev = emailinvoicematch.Groups[2].Value.ToString();
+
+        //        var invoice = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(ev)).FirstOrDefault();
+        //        var users =_context.Users.Where(x=>x.Id == item.UserID).FirstOrDefault();
+        //        var max_invoice_id = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(invoice.InvoiceId)).FirstOrDefault();
+        //        var subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == Convert.ToInt32(invoice.SubscriptionId)).FirstOrDefault();
+        //        var Amount = subscriptions.Amount;
+        //        int days = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
+        //        decimal finalamount = 0;
+        //        decimal Discount = 0;
+        //        decimal Vat = 0;
+        //        decimal VatwithoutSetupFee = 0;
+        //        if (users.Frequency == "DAILY")
+        //        {
+        //            Discount = 0;
+        //            finalamount = (decimal)Convert.ToInt32(subscriptions.Amount) / (int)days;
+        //        }
+        //        else if (users.Frequency == "WEEKLY")
+        //        {
+        //            Discount = 0;
+        //            finalamount = (decimal)Convert.ToInt32(subscriptions.Amount) / 4;
+        //        }
+        //        else if (users.Frequency == "MONTHLY")
+        //        {
+        //            Discount = 0;
+        //            finalamount = (decimal)Convert.ToInt32(subscriptions.Amount);
+        //        }
+        //        else if (users.Frequency == "QUARTERLY")
+        //        {
+        //            Discount = 0;
+        //            finalamount = (decimal)(Convert.ToInt32(subscriptions.Amount) * 3) / 1;
+        //        }
+        //        else if (users.Frequency == "HALFYEARLY")
+        //        {
+        //            Discount = 0;
+        //            finalamount = (decimal)(Convert.ToInt32(subscriptions.Amount) * 6) / 1;
+        //        }
+        //        else if (users.Frequency == "YEARLY")
+        //        {
+        //            var amountpercentage = (decimal)(Convert.ToInt32(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
+        //            var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
+        //            finalamount = final_amount_percentage * 12;
+        //            Discount = amountpercentage * 12;
+        //        }
+        //        if (subscriptions.VAT == null || subscriptions.VAT == "0")
+        //        {
+        //            Vat = 0;
+        //        }
+        //        else
+        //        {
+        //            decimal totala = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
+        //            Vat = (decimal)((totala / 100) * Convert.ToInt32(subscriptions.VAT));
+        //            VatwithoutSetupFee = (decimal)((finalamount / 100) * Convert.ToInt32(subscriptions.VAT));
+        //        }
+        //        decimal after_vat_totalamount = finalamount + Convert.ToDecimal(subscriptions.SetupFee) + Vat;
+        //        var userinfo = _context.Users.Where(x => x.Id == users.Id).FirstOrDefault();
+        //        //update user 
+        //        users.Tap_CustomerID = null;
+        //        users.Tap_Card_ID = null;
+        //        users.SubscribeID = Convert.ToInt32(invoice.SubscriptionId);
+        //        users.Tap_Agreement_ID = null;
+        //        users.PaymentSource = null;
+        //        users.First_Six = null;
+        //        users.Last_Four = null;
+        //        _context.Users.Update(users);
+        //        _context.SaveChanges();
+
+        //        UserSubscriptions userSubscriptions = new UserSubscriptions();
+        //        userSubscriptions.SubID = Convert.ToInt32(invoice.SubscriptionId);
+        //        userSubscriptions.Userid = users.Id;
+        //        _context.userSubscriptions.Add(userSubscriptions);
+        //        _context.SaveChanges();
+
+
+        //        var rc = _context.recurringCharges.Where(x => x.RecurringChargeId == item.RecurringChargeId).FirstOrDefault();
+        //        rc.IsRun = true;
+        //        _context.recurringCharges.Update(rc);
+        //        _context.SaveChanges();
+
+        //        //Craete New Invoice
+        //        Invoice invoices = new Invoice
+        //        {
+        //            InvoiceStartDate = DateTime.UtcNow,
+        //            InvoiceEndDate = DateTime.UtcNow,
+        //            Currency = subscriptions.Currency,
+        //            AddedDate = DateTime.UtcNow,
+        //            AddedBy = "System",
+        //            SubscriptionAmount = Convert.ToDouble(after_vat_totalamount.ToString("0.00")),
+        //            SubscriptionId = Convert.ToInt32(subscriptions.SubscriptionId),
+        //            Status = "Un-Paid",
+        //            PaidBy = "Manual",
+        //            IsDeleted = false,
+        //            VAT = Vat.ToString(),
+        //            Discount = Discount.ToString(),
+        //            Description = "Invoice Create - Frequency(" + users.Frequency + ")",
+        //            SubscriptionName = subscriptions.Name,
+        //            UserId = users.Id,
+        //            ChargeId = null,
+        //            GymName = users.GYMName,
+        //            Country = subscriptions.Countries,
+        //            IsFirstInvoice = true
+        //        };
+        //        _context.invoices.Add(invoices);
+        //        _context.SaveChanges();
+
+        //        int newInvoiceId = _context.invoices.Max(x => x.InvoiceId);
+
+
+        //        RecurringCharge recurringCharge = new RecurringCharge();
+        //        recurringCharge.Amount = Convert.ToDecimal(invoice.SubscriptionAmount);
+        //        recurringCharge.SubscriptionId = invoice.SubscriptionId;
+        //        recurringCharge.UserID = users.Id;
+        //        recurringCharge.Tap_CustomerId = null;
+        //        recurringCharge.ChargeId = null;
+        //        recurringCharge.Invoice = "Inv" + newInvoiceId;
+        //        recurringCharge.IsRun = false;
+        //        if (users.Frequency == "DAILY")
+        //        {
+        //            recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddDays(1);
+        //        }
+        //        else if (users.Frequency == "WEEKLY")
+        //        {
+        //            recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddDays(7);
+        //        }
+        //        else if (users.Frequency == "MONTHLY")
+        //        {
+        //            recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(1);
+        //        }
+        //        else if (users.Frequency == "QUARTERLY")
+        //        {
+        //            recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(3);
+        //        }
+        //        else if (users.Frequency == "HALFYEARLY")
+        //        {
+        //            recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(6);
+        //        }
+        //        else if (users.Frequency == "YEARLY")
+        //        {
+        //            recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddYears(1);
+        //        }
+        //        _context.recurringCharges.Add(recurringCharge);
+        //        _context.SaveChanges();
+
+        //        invoice.Remarks = null;
+        //        invoice.ChargeId = "";
+        //        invoice.PaidBy = "Manual";
+        //        invoice.UserId = users.Id;
+        //        invoice.Status = "Payment Captured";
+        //        invoice.ChargeResponseId = 0;
+        //        _context.invoices.Update(invoice);
+        //        _context.SaveChanges();
+
+        //        // Send Email
+        //        string body = string.Empty;
+        //        _environment.WebRootPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+        //        string contentRootPath = _environment.WebRootPath + "/htmltopdfRecurreningM.html";
+        //        string contentRootPath1 = _environment.WebRootPath + "/css/bootstrap.min.css";
+        //        //Generate PDF
+        //        var sub_info = _context.subscriptions.Where(x => x.SubscriptionId == Convert.ToInt32(invoice.SubscriptionId)).FirstOrDefault();
+        //        using (StreamReader reader = new StreamReader(contentRootPath))
+        //        {
+        //            body = reader.ReadToEnd();
+        //        }
+        //        //Fill EMail By Parameter
+        //        body = body.Replace("{title}", "Tamarran Payment Invoice");
+        //        body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+
+        //        body = body.Replace("{InvocieStatus}", "Unpaid");
+        //        body = body.Replace("{InvoiceID}", "Inv" + newInvoiceId);
+
+
+        //        body = body.Replace("{User_Name}", users.FullName);
+        //        body = body.Replace("{User_Email}", users.Email);
+        //        body = body.Replace("{User_GYM}", users.GYMName);
+        //        body = body.Replace("{User_Phone}", users.PhoneNumber);
+
+
+        //        body = body.Replace("{SubscriptionName}", subscriptions.Name);
+        //        body = body.Replace("{Discount}", Discount.ToString());
+        //        body = body.Replace("{SubscriptionPeriod}", userinfo.Frequency);
+        //        body = body.Replace("{SetupFee}", subscriptions.SetupFee + " " + subscriptions.Currency);
+        //        var amount = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
+        //        body = body.Replace("{SubscriptionAmount}", finalamount.ToString("0.00") + " " + subscriptions.Currency);
+        //        //Calculate VAT
+        //        if (subscriptions.VAT == null || subscriptions.VAT == "0")
+        //        {
+        //            body = body.Replace("{VAT}", "0.00" + " " + subscriptions.Currency);
+        //            body = body.Replace("{Total}", amount.ToString("0.00") + " " + subscriptions.Currency);
+        //            body = body.Replace("{InvoiceAmount}", amount.ToString("0.00") + " " + subscriptions.Currency);
+        //            var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(subscriptions.SetupFee);
+        //            body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
+        //        }
+        //        else
+        //        {
+        //            body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + subscriptions.Currency);
+        //            body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
+        //            body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
+        //            var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(subscriptions.SetupFee);
+        //            body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
+        //        }
+        //        var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
+        //        var bodyemail = EmailBodyFill.ManuallyPaymentRequest(users, subscriptions); 
+        //        var emailSubject = "Tamarran – Payment Receipt - " + " Inv" + newInvoiceId;
+        //        _ = _emailSender.SendEmailWithFIle(bytes, users.Email, emailSubject, bodyemail);
+        //    }
+
+        //}
     }
 }
