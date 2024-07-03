@@ -2055,29 +2055,163 @@ namespace TapPaymentIntegration.Controllers
                 var result = await _userManager.CreateAsync(applicationUser, applicationUser.Password);
                 if (result.Succeeded)
                 {
-                    Invoice invoices = new Invoice()
+                    if (applicationUser.Frequency == "DAILY")
                     {
-                        InvoiceStartDate = DateTime.UtcNow,
-                        InvoiceEndDate = DateTime.UtcNow,
-                        Currency = subscriptions.Currency,
-                        AddedDate = DateTime.UtcNow,
-                        VAT = subscriptions.VAT == null ? "0" : subscriptions.VAT,
-                        Discount = subscriptions.Discount == null ? "0" : subscriptions.Discount,
-                        AddedBy = "Super Admin",
-                        SubscriptionAmount = 0,
-                        SubscriptionId = Convert.ToInt32(subscriptions.SubscriptionId),
-                        Status = "Un-Paid",
-                        IsDeleted = false,
-                        Description = "Invoice Create - Frequency(" + applicationUser.Frequency + ")",
-                        SubscriptionName = subscriptions.Name,
-                        UserId = "",
-                        ChargeId = "",
-                        GymName = applicationUser.GYMName,
-                        Country = subscriptions.Countries,
-                        IsFirstInvoice = true
-                    };
-                    _context.invoices.Add(invoices);
-                    _context.SaveChanges();
+                        Invoice invoices = new Invoice()
+                        {
+                            InvoiceStartDate = DateTime.UtcNow,
+                            InvoiceEndDate = DateTime.UtcNow.AddDays(1),
+                            Currency = subscriptions.Currency,
+                            AddedDate = DateTime.UtcNow,
+                            VAT = subscriptions.VAT == null ? "0" : subscriptions.VAT,
+                            Discount = subscriptions.Discount == null ? "0" : subscriptions.Discount,
+                            AddedBy = "Super Admin",
+                            SubscriptionAmount = 0,
+                            SubscriptionId = Convert.ToInt32(subscriptions.SubscriptionId),
+                            Status = "Un-Paid",
+                            IsDeleted = false,
+                            Description = "Invoice Create - Frequency(" + applicationUser.Frequency + ")",
+                            SubscriptionName = subscriptions.Name,
+                            UserId = "",
+                            ChargeId = "",
+                            GymName = applicationUser.GYMName,
+                            Country = subscriptions.Countries,
+                            IsFirstInvoice = true
+                        };
+                        _context.invoices.Add(invoices);
+                        _context.SaveChanges();
+                    }
+                    else if (applicationUser.Frequency == "WEEKLY")
+                    {
+                        Invoice invoices = new Invoice()
+                        {
+                            InvoiceStartDate = DateTime.UtcNow,
+                            InvoiceEndDate = DateTime.UtcNow.AddDays(7),
+                            Currency = subscriptions.Currency,
+                            AddedDate = DateTime.UtcNow,
+                            VAT = subscriptions.VAT == null ? "0" : subscriptions.VAT,
+                            Discount = subscriptions.Discount == null ? "0" : subscriptions.Discount,
+                            AddedBy = "Super Admin",
+                            SubscriptionAmount = 0,
+                            SubscriptionId = Convert.ToInt32(subscriptions.SubscriptionId),
+                            Status = "Un-Paid",
+                            IsDeleted = false,
+                            Description = "Invoice Create - Frequency(" + applicationUser.Frequency + ")",
+                            SubscriptionName = subscriptions.Name,
+                            UserId = "",
+                            ChargeId = "",
+                            GymName = applicationUser.GYMName,
+                            Country = subscriptions.Countries,
+                            IsFirstInvoice = true
+                        };
+                        _context.invoices.Add(invoices);
+                        _context.SaveChanges();
+                    }
+                    else if (applicationUser.Frequency == "MONTHLY")
+                    {
+                        Invoice invoices = new Invoice()
+                        {
+                            InvoiceStartDate = DateTime.UtcNow,
+                            InvoiceEndDate = DateTime.UtcNow.AddMonths(1),
+                            Currency = subscriptions.Currency,
+                            AddedDate = DateTime.UtcNow,
+                            VAT = subscriptions.VAT == null ? "0" : subscriptions.VAT,
+                            Discount = subscriptions.Discount == null ? "0" : subscriptions.Discount,
+                            AddedBy = "Super Admin",
+                            SubscriptionAmount = 0,
+                            SubscriptionId = Convert.ToInt32(subscriptions.SubscriptionId),
+                            Status = "Un-Paid",
+                            IsDeleted = false,
+                            Description = "Invoice Create - Frequency(" + applicationUser.Frequency + ")",
+                            SubscriptionName = subscriptions.Name,
+                            UserId = "",
+                            ChargeId = "",
+                            GymName = applicationUser.GYMName,
+                            Country = subscriptions.Countries,
+                            IsFirstInvoice = true
+                        };
+                        _context.invoices.Add(invoices);
+                        _context.SaveChanges();
+                    }
+                    else if (applicationUser.Frequency == "QUARTERLY")
+                    {
+                        Invoice invoices = new Invoice()
+                        {
+                            InvoiceStartDate = DateTime.UtcNow,
+                            InvoiceEndDate = DateTime.UtcNow.AddMonths(3),
+                            Currency = subscriptions.Currency,
+                            AddedDate = DateTime.UtcNow,
+                            VAT = subscriptions.VAT == null ? "0" : subscriptions.VAT,
+                            Discount = subscriptions.Discount == null ? "0" : subscriptions.Discount,
+                            AddedBy = "Super Admin",
+                            SubscriptionAmount = 0,
+                            SubscriptionId = Convert.ToInt32(subscriptions.SubscriptionId),
+                            Status = "Un-Paid",
+                            IsDeleted = false,
+                            Description = "Invoice Create - Frequency(" + applicationUser.Frequency + ")",
+                            SubscriptionName = subscriptions.Name,
+                            UserId = "",
+                            ChargeId = "",
+                            GymName = applicationUser.GYMName,
+                            Country = subscriptions.Countries,
+                            IsFirstInvoice = true
+                        };
+                        _context.invoices.Add(invoices);
+                        _context.SaveChanges();
+                    }
+                    else if (applicationUser.Frequency == "HALFYEARLY")
+                    {
+                        Invoice invoices = new Invoice()
+                        {
+                            InvoiceStartDate = DateTime.UtcNow,
+                            InvoiceEndDate = DateTime.UtcNow.AddMonths(6),
+                            Currency = subscriptions.Currency,
+                            AddedDate = DateTime.UtcNow,
+                            VAT = subscriptions.VAT == null ? "0" : subscriptions.VAT,
+                            Discount = subscriptions.Discount == null ? "0" : subscriptions.Discount,
+                            AddedBy = "Super Admin",
+                            SubscriptionAmount = 0,
+                            SubscriptionId = Convert.ToInt32(subscriptions.SubscriptionId),
+                            Status = "Un-Paid",
+                            IsDeleted = false,
+                            Description = "Invoice Create - Frequency(" + applicationUser.Frequency + ")",
+                            SubscriptionName = subscriptions.Name,
+                            UserId = "",
+                            ChargeId = "",
+                            GymName = applicationUser.GYMName,
+                            Country = subscriptions.Countries,
+                            IsFirstInvoice = true
+                        };
+                        _context.invoices.Add(invoices);
+                        _context.SaveChanges();
+                    }
+                    else if (applicationUser.Frequency == "YEARLY")
+                    {
+                        Invoice invoices = new Invoice()
+                        {
+                            InvoiceStartDate = DateTime.UtcNow,
+                            InvoiceEndDate = DateTime.UtcNow.AddYears(1),
+                            Currency = subscriptions.Currency,
+                            AddedDate = DateTime.UtcNow,
+                            VAT = subscriptions.VAT == null ? "0" : subscriptions.VAT,
+                            Discount = subscriptions.Discount == null ? "0" : subscriptions.Discount,
+                            AddedBy = "Super Admin",
+                            SubscriptionAmount = 0,
+                            SubscriptionId = Convert.ToInt32(subscriptions.SubscriptionId),
+                            Status = "Un-Paid",
+                            IsDeleted = false,
+                            Description = "Invoice Create - Frequency(" + applicationUser.Frequency + ")",
+                            SubscriptionName = subscriptions.Name,
+                            UserId = "",
+                            ChargeId = "",
+                            GymName = applicationUser.GYMName,
+                            Country = subscriptions.Countries,
+                            IsFirstInvoice = true
+                        };
+                        _context.invoices.Add(invoices);
+                        _context.SaveChanges();
+                    } 
+
 
                     int max_invoice_id = _context.invoices.Max(x => x.InvoiceId);
                     applicationUser.Benefit_Invoice = max_invoice_id.ToString();
