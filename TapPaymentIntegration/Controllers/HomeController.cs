@@ -1172,32 +1172,9 @@ namespace TapPaymentIntegration.Controllers
                                 recurringCharge.UserID = users.Id;
                                 recurringCharge.Tap_CustomerId = Deserialized_savecard.payment_agreement.contract.customer_id;
                                 recurringCharge.ChargeId = tap_id;
-                                recurringCharge.Invoice = "Inv" + max_invoice_id;
+                                recurringCharge.Invoice = "Inv" + max_invoice_id.InvoiceId.ToString();
                                 recurringCharge.IsRun = false;
-                                if (log_user.Frequency == "DAILY")
-                                {
-                                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddDays(1);
-                                }
-                                else if (log_user.Frequency == "WEEKLY")
-                                {
-                                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddDays(7);
-                                }
-                                else if (log_user.Frequency == "MONTHLY")
-                                {
-                                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(1);
-                                }
-                                else if (log_user.Frequency == "QUARTERLY")
-                                {
-                                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(3);
-                                }
-                                else if (log_user.Frequency == "HALFYEARLY")
-                                {
-                                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(6);
-                                }
-                                else if (log_user.Frequency == "YEARLY")
-                                {
-                                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddYears(1);
-                                }
+                                recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate;
                                 _context.recurringCharges.Add(recurringCharge);
                                 _context.SaveChanges();
 
@@ -1336,7 +1313,7 @@ namespace TapPaymentIntegration.Controllers
                         recurringCharge.UserID = users.Id;
                         recurringCharge.Tap_CustomerId = Deserialized_savecard.payment_agreement.contract.customer_id;
                         recurringCharge.ChargeId = tap_id;
-                        recurringCharge.Invoice = "Inv" + max_invoice_id;
+                        recurringCharge.Invoice = "Inv" + max_invoice_id.InvoiceId.ToString();
                         recurringCharge.IsRun = false;
                         if (log_user.Frequency == "DAILY")
                         {
@@ -2809,30 +2786,31 @@ namespace TapPaymentIntegration.Controllers
                 recurringCharge.ChargeId = null;
                 recurringCharge.Invoice = "Inv" + max_invoice_id.InvoiceId;
                 recurringCharge.IsRun = false;
-                if (users.Frequency == "DAILY")
-                {
-                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddDays(1);
-                }
-                else if (users.Frequency == "WEEKLY")
-                {
-                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddDays(7);
-                }
-                else if (users.Frequency == "MONTHLY")
-                {
-                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(1);
-                }
-                else if (users.Frequency == "QUARTERLY")
-                {
-                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(3);
-                }
-                else if (users.Frequency == "HALFYEARLY")
-                {
-                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(6);
-                }
-                else if (users.Frequency == "YEARLY")
-                {
-                    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddYears(1);
-                }
+                recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate;
+                //if (users.Frequency == "DAILY")
+                //{
+                //    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddDays(1);
+                //}
+                //else if (users.Frequency == "WEEKLY")
+                //{
+                //    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddDays(7);
+                //}
+                //else if (users.Frequency == "MONTHLY")
+                //{
+                //    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(1);
+                //}
+                //else if (users.Frequency == "QUARTERLY")
+                //{
+                //    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(3);
+                //}
+                //else if (users.Frequency == "HALFYEARLY")
+                //{
+                //    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddMonths(6);
+                //}
+                //else if (users.Frequency == "YEARLY")
+                //{
+                //    recurringCharge.JobRunDate = max_invoice_id.InvoiceEndDate.AddYears(1);
+                //}
                 _context.recurringCharges.Add(recurringCharge);
                 _context.SaveChanges();
 
@@ -2861,7 +2839,7 @@ namespace TapPaymentIntegration.Controllers
                 body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
 
                 body = body.Replace("{InvocieStatus}", "Payment Captured");
-                body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id.InvoiceId);
+                body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id.InvoiceId.ToString());
 
 
                 body = body.Replace("{User_Name}", users.FullName);
@@ -2895,7 +2873,7 @@ namespace TapPaymentIntegration.Controllers
                 }
                 var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                 var bodyemail = EmailBodyFill.EmailBodyForManuallyPaymentReceipt(users, subscriptions);
-                var emailSubject = "Tamarran – Payment Receipt - " + " Inv" + max_invoice_id.InvoiceId;
+                var emailSubject = "Tamarran – Payment Receipt - " + " Inv" + max_invoice_id.InvoiceId.ToString();
                 _ = _emailSender.SendEmailWithFIle(bytes, users.Email, emailSubject, bodyemail);
                 return RedirectToAction("ShowInvoice", "Home", new { PaymentStatus = "All" });
             }

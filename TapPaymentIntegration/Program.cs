@@ -4,6 +4,7 @@ using Hangfire.SqlServer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
@@ -32,6 +33,7 @@ builder.Services.AddDataProtection()
                 .PersistKeysToFileSystem(new System.IO.DirectoryInfo(@"/var/38be6598-5608-4b68-9e5e-bc825c61c522/"));
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 // Configure Ajax settings
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
@@ -74,7 +76,7 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ContractResolver = new DefaultContractResolver();
 });
-builder.Services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
+
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {

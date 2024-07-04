@@ -29,9 +29,8 @@ namespace TapPaymentIntegration.Models.HangFire
         private readonly IUserStore<ApplicationUser> _userStore;
         private IWebHostEnvironment _environment;
         EmailSender _emailSender = new EmailSender();
-        private readonly IUrlHelper _urlHelper;
 
-        public DailyRecurreningJob(IUrlHelper urlHelper,IWebHostEnvironment Environment, ILogger<HomeController> logger, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, TapPaymentIntegrationContext context, IUserStore<ApplicationUser> userStore)
+        public DailyRecurreningJob(IWebHostEnvironment Environment, ILogger<HomeController> logger, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, TapPaymentIntegrationContext context, IUserStore<ApplicationUser> userStore)
         {
             _logger = logger;
             _signInManager = signInManager;
@@ -39,7 +38,6 @@ namespace TapPaymentIntegration.Models.HangFire
             _context = context;
             _userStore = userStore;
             _environment = Environment;
-            _urlHelper = urlHelper;
         }
         public async Task AutoChargeJob()
         {
@@ -2892,19 +2890,45 @@ namespace TapPaymentIntegration.Models.HangFire
                 InvoiceHelper.GetDiscountAndFinalAmountBySubscriptionFrequency(users.Frequency, subscriptions.Amount, subscriptions.Discount, days, out decimal discount, out decimal finalAmount);
                 InvoiceHelper.CalculdateInvoiceDetails(finalAmount, subscriptions, out string subscriptionAmount, out decimal after_vat_totalamount, out decimal vat, out string vat_str, out string total, out string invoiceAmount, out string Totalinvoicewithoutvat);
 
+                DateTime? JobRunDate = null;
+                if (users.Frequency == "DAILY")
+                {
+                    JobRunDate = item.JobRunDate.AddDays(1);
+                }
+                else if (users.Frequency == "WEEKLY")
+                {
+                    JobRunDate = item.JobRunDate.AddDays(7);
+                }
+                else if (users.Frequency == "MONTHLY")
+                {
+                    JobRunDate = item.JobRunDate.AddMonths(1);
+                }
+                else if (users.Frequency == "QUARTERLY")
+                {
+                    JobRunDate = item.JobRunDate.AddMonths(3);
+                }
+                else if (users.Frequency == "HALFYEARLY")
+                {
+                    JobRunDate = item.JobRunDate.AddMonths(6);
+                }
+                else if (users.Frequency == "YEARLY")
+                {
+                    JobRunDate = item.JobRunDate.AddYears(1);
+                }
 
                 //Craete New Invoice
                 Invoice invoices = new Invoice
                 {
                     InvoiceStartDate = DateTime.UtcNow,
-                    InvoiceEndDate = DateTime.UtcNow,
+                    InvoiceEndDate = JobRunDate.Value,
                     Currency = subscriptions.Currency,
                     AddedDate = DateTime.UtcNow,
+                    InvoiceLink = $"https://billing.tamarran.com/Home/SubscriptionAdmin/{users.SubscribeID}?link=Yes&userid={users.Id}&invoiceid={max_invoice_id.InvoiceId}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice=true",
                     AddedBy = "System",
                     SubscriptionAmount = Convert.ToDouble(after_vat_totalamount.ToString("0.00")),
                     SubscriptionId = Convert.ToInt32(subscriptions.SubscriptionId),
                     Status = "Un-Paid",
-                    PaidBy = "Manual",
+                    PaidBy = null,
                     IsDeleted = false,
                     VAT = Vat.ToString(),
                     Discount = Discount.ToString(),
@@ -2921,7 +2945,7 @@ namespace TapPaymentIntegration.Models.HangFire
 
                 int newInvoiceId = _context.invoices.Max(x => x.InvoiceId);
 
-              
+
                 // Send Email
                 string body = string.Empty;
                 _environment.WebRootPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
@@ -2937,7 +2961,7 @@ namespace TapPaymentIntegration.Models.HangFire
                 body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
 
                 body = body.Replace("{InvocieStatus}", "Unpaid");
-                body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id);
+                body = body.Replace("{InvoiceID}", "Inv" + newInvoiceId.ToString());
 
                 body = body.Replace("{User_Name}", users.FullName);
                 body = body.Replace("{User_Email}", users.Email);
@@ -2957,10 +2981,11 @@ namespace TapPaymentIntegration.Models.HangFire
                 body = body.Replace("{Totalinvoicewithoutvat}", Totalinvoicewithoutvat);
 
                 var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
-                var callbackUrl = _urlHelper.Action("SubscriptionAdmin", "Home", new { id = users.SubscribeID, link = "Yes", userid = users.Id, invoiceid = max_invoice_id, After_vat_totalamount = after_vat_totalamount, isfirstinvoice = "true" });
-                var websiteurl = HtmlEncoder.Default.Encode(Constants.RedirectURL + callbackUrl);
+                var callbackUrl = $"/Home/SubscriptionAdmin/{users.SubscribeID}?link=Yes&userid={users.Id}&invoiceid={newInvoiceId}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice=true";
 
-                var emailSubject = "Tamarran – Payment Request - " + " Inv" + max_invoice_id;
+                var websiteurl = HtmlEncoder.Default.Encode(Constants.RedirectURL + callbackUrl);
+                 
+                var emailSubject = "Tamarran – Payment Request - " + " Inv" + newInvoiceId.ToString();
                 var bodyemail = EmailBodyFill.EmailBodyForPaymentRequest(users, websiteurl);
                 _ = _emailSender.SendEmailWithFIle(bytes, users.Email, emailSubject, bodyemail);
             }
