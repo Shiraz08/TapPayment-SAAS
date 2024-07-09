@@ -165,7 +165,7 @@ namespace TapPaymentIntegration.Utility
             }
             else if (user.Frequency == "YEARLY")
             {
-                var amountpercentage = (decimal)(Convert.ToDecimal(subscription.Amount) / 100) * decimal.Parse(subscription.Discount);
+                decimal amountpercentage = (decimal.Parse(subscription.Amount) / 100) * decimal.Parse(subscription.Discount);
                 var final_amount_percentage = Convert.ToInt32(subscription.Amount) - amountpercentage;
                 finalamount = final_amount_percentage * 12;
                 Discount = amountpercentage * 12;
