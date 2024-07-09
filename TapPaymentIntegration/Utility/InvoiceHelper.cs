@@ -123,7 +123,7 @@ namespace TapPaymentIntegration.Utility
                     finalAmount = (decimal)(Convert.ToInt32(subscriptionsAmount) * 6);
                     break;
                 case "YEARLY":
-                    var amountpercentage = (decimal)(Convert.ToInt32(subscriptionsAmount) / 100) * decimal.Parse(Discount);
+                    decimal amountpercentage = (decimal.Parse(subscriptionsAmount) / 100) * decimal.Parse(Discount);
                     var final_amount_percentage = Convert.ToInt32(subscriptionsAmount) - amountpercentage;
                     finalAmount = final_amount_percentage * 12;
                     discount = amountpercentage * 12;

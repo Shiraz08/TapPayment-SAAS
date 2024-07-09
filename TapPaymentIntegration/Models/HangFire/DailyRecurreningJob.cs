@@ -156,11 +156,13 @@ namespace TapPaymentIntegration.Models.HangFire
                                     body = body.Replace("{User_GYM}", getuserinfo.GYMName);
                                     body = body.Replace("{User_Phone}", getuserinfo.PhoneNumber);
 
+
+                                    var discount = Convert.ToDecimal(Discount).ToString("0.00") + " " + getsubinfo.Currency;
+
                                     body = body.Replace("{SubscriptionName}", getsubinfo.Name);
-                                    body = body.Replace("{Discount}", Discount.ToString());
+                                    body = body.Replace("{Discount}", discount);
                                     body = body.Replace("{SubscriptionPeriod}", getuserinfo.Frequency);
-                                    body = body.Replace("{SetupFee}", getsubinfo.SetupFee + " " + getsubinfo.Currency);
-                                    //body = body.Replace("{SetupFee}", "0.0" + " " + getsubinfo.Currency);
+                                    body = body.Replace("{SetupFee}", "0.00" + " " + getsubinfo.Currency);
                                     body = body.Replace("{SubscriptionAmount}", sun_amount.ToString("0.00") + " " + getsubinfo.Currency);
                                     //Calculate VAT
                                     if (getsubinfo.VAT == null || getsubinfo.VAT == "0")
@@ -304,10 +306,12 @@ namespace TapPaymentIntegration.Models.HangFire
                                     body = body.Replace("{User_GYM}", getuserinfo.GYMName);
                                     body = body.Replace("{User_Phone}", getuserinfo.PhoneNumber);
 
+                                    var discount = Convert.ToDecimal(Discount).ToString("0.00") + " " + getsubinfo.Currency;
+
                                     body = body.Replace("{SubscriptionName}", getsubinfo.Name);
-                                    body = body.Replace("{Discount}", Discount.ToString());
+                                    body = body.Replace("{Discount}", discount);
                                     body = body.Replace("{SubscriptionPeriod}", getuserinfo.Frequency);
-                                    body = body.Replace("{SetupFee}", "0.0" + " " + getsubinfo.Currency);
+                                    body = body.Replace("{SetupFee}", "0.00" + " " + getsubinfo.Currency);
                                     var amount = Convert.ToDecimal(incoice_info.SubscriptionAmount);// + Convert.ToDecimal(getsubinfo.SetupFee);
                                     body = body.Replace("{SubscriptionAmount}", sun_amount.ToString("0.00").ToString() + " " + getsubinfo.Currency);
                                     //Calculate VAT
@@ -452,9 +456,9 @@ namespace TapPaymentIntegration.Models.HangFire
                                     body = body.Replace("{User_Email}", user_Email);
                                     body = body.Replace("{User_GYM}", getuserinfo.GYMName);
                                     body = body.Replace("{User_Phone}", getuserinfo.PhoneNumber);
-
+                                    var discount = Convert.ToDecimal(Discount).ToString("0.00") + " " + getsubinfo.Currency;
                                     body = body.Replace("{SubscriptionName}", getsubinfo.Name);
-                                    body = body.Replace("{Discount}", Discount.ToString());
+                                    body = body.Replace("{Discount}", discount);
                                     body = body.Replace("{SubscriptionPeriod}", getuserinfo.Frequency);
                                     body = body.Replace("{SetupFee}", "0.0" + " " + getsubinfo.Currency);
                                     var amount = Convert.ToDecimal(incoice_info.SubscriptionAmount);// + Convert.ToDecimal(getsubinfo.SetupFee);
@@ -596,14 +600,14 @@ namespace TapPaymentIntegration.Models.HangFire
                                     body = body.Replace("{InvocieStatus}", "Payment Captured");
                                     body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id.ToString());
 
-
+                                    var discount = Convert.ToDecimal(Discount).ToString("0.00") + " " + getsubinfo.Currency;
                                     body = body.Replace("{User_Name}", getuserinfo.FullName);
                                     body = body.Replace("{User_Email}", user_Email);
                                     body = body.Replace("{User_GYM}", getuserinfo.GYMName);
                                     body = body.Replace("{User_Phone}", getuserinfo.PhoneNumber);
 
                                     body = body.Replace("{SubscriptionName}", getsubinfo.Name);
-                                    body = body.Replace("{Discount}", Discount.ToString());
+                                    body = body.Replace("{Discount}", discount);
                                     body = body.Replace("{SubscriptionPeriod}", getuserinfo.Frequency);
                                     body = body.Replace("{SetupFee}", "0.0" + " " + getsubinfo.Currency);
                                     var amount = Convert.ToDecimal(incoice_info.SubscriptionAmount);// + Convert.ToDecimal(getsubinfo.SetupFee);
@@ -750,9 +754,9 @@ namespace TapPaymentIntegration.Models.HangFire
                                     body = body.Replace("{User_Email}", user_Email);
                                     body = body.Replace("{User_GYM}", getuserinfo.GYMName);
                                     body = body.Replace("{User_Phone}", getuserinfo.PhoneNumber);
-
+                                    var discount = Convert.ToDecimal(Discount).ToString("0.00") + " " + getsubinfo.Currency;
                                     body = body.Replace("{SubscriptionName}", getsubinfo.Name);
-                                    body = body.Replace("{Discount}", Discount.ToString());
+                                    body = body.Replace("{Discount}", discount);
                                     body = body.Replace("{SubscriptionPeriod}", getuserinfo.Frequency);
                                     body = body.Replace("{SetupFee}", "0.0" + " " + getsubinfo.Currency);
                                     var amount = Convert.ToDecimal(incoice_info.SubscriptionAmount);// + Convert.ToDecimal(getsubinfo.SetupFee);
@@ -899,9 +903,9 @@ namespace TapPaymentIntegration.Models.HangFire
                                     body = body.Replace("{User_Email}", user_Email);
                                     body = body.Replace("{User_GYM}", getuserinfo.GYMName);
                                     body = body.Replace("{User_Phone}", getuserinfo.PhoneNumber);
-
+                                    var discount = Convert.ToDecimal(Discount).ToString("0.00") + " " + getsubinfo.Currency;
                                     body = body.Replace("{SubscriptionName}", getsubinfo.Name);
-                                    body = body.Replace("{Discount}", Discount.ToString());
+                                    body = body.Replace("{Discount}", discount);
                                     body = body.Replace("{SubscriptionPeriod}", getuserinfo.Frequency);
                                     body = body.Replace("{SetupFee}", "0.0" + " " + getsubinfo.Currency);
                                     var amount = Convert.ToDecimal(incoice_info.SubscriptionAmount);// + Convert.ToDecimal(getsubinfo.SetupFee);
@@ -1045,7 +1049,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 }
                                 else if (getuserinfo.Frequency == "YEARLY")
                                 {
-                                    var amountpercentage = (decimal)(Convert.ToInt32(getsubinfo.Amount) / 100) * Convert.ToDecimal(getsubinfo.Discount);
+                                    decimal amountpercentage = (decimal.Parse(getsubinfo.Amount) / 100) * decimal.Parse(getsubinfo.Discount);
                                     var final_amount_percentage = Convert.ToInt32(getsubinfo.Amount) - amountpercentage;
                                     finalamount = final_amount_percentage * 12;
                                     Discount = amountpercentage * 12;
@@ -1259,9 +1263,9 @@ namespace TapPaymentIntegration.Models.HangFire
                                     body = body.Replace("{User_Email}", user_Email);
                                     body = body.Replace("{User_GYM}", getuserinfo.GYMName);
                                     body = body.Replace("{User_Phone}", getuserinfo.PhoneNumber);
-
+                                    var discount = Convert.ToDecimal(Discount).ToString("0.00") + " " + getsubinfo.Currency;
                                     body = body.Replace("{SubscriptionName}", getsubinfo.Name);
-                                    body = body.Replace("{Discount}", Discount.ToString());
+                                    body = body.Replace("{Discount}", discount);
                                     body = body.Replace("{SubscriptionPeriod}", getuserinfo.Frequency);
                                     body = body.Replace("{SetupFee}", "0.0" + " " + getsubinfo.Currency);
                                     var amount = Convert.ToDecimal(incoice_info.SubscriptionAmount);// + Convert.ToDecimal(getsubinfo.SetupFee);
@@ -1347,7 +1351,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 }
                                 else if (getuserinfo.Frequency == "YEARLY")
                                 {
-                                    var amountpercentage = (decimal)(Convert.ToInt32(getsubinfo.Amount) / 100) * Convert.ToDecimal(getsubinfo.Discount);
+                                    decimal amountpercentage = (decimal.Parse(getsubinfo.Amount) / 100) * decimal.Parse(getsubinfo.Discount);
                                     var final_amount_percentage = Convert.ToInt32(getsubinfo.Amount) - amountpercentage;
                                     finalamount = final_amount_percentage * 12;
                                     Discount = amountpercentage * 12;
@@ -1562,8 +1566,10 @@ namespace TapPaymentIntegration.Models.HangFire
                                     body = body.Replace("{User_GYM}", getuserinfo.GYMName);
                                     body = body.Replace("{User_Phone}", getuserinfo.PhoneNumber);
 
+                                    var discount = Convert.ToDecimal(Discount).ToString("0.00") + " " + getsubinfo.Currency;
                                     body = body.Replace("{SubscriptionName}", getsubinfo.Name);
-                                    body = body.Replace("{Discount}", Discount.ToString());
+                                    body = body.Replace("{Discount}", discount);
+
                                     body = body.Replace("{SubscriptionPeriod}", getuserinfo.Frequency);
                                     body = body.Replace("{SetupFee}", "0.0" + " " + getsubinfo.Currency);
                                     var amount = Convert.ToDecimal(incoice_info.SubscriptionAmount);// + Convert.ToDecimal(getsubinfo.SetupFee);
@@ -1649,7 +1655,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 }
                                 else if (getuserinfo.Frequency == "YEARLY")
                                 {
-                                    var amountpercentage = (decimal)(Convert.ToInt32(getsubinfo.Amount) / 100) * Convert.ToDecimal(getsubinfo.Discount);
+                                    decimal amountpercentage = (decimal.Parse(getsubinfo.Amount) / 100) * decimal.Parse(getsubinfo.Discount);
                                     var final_amount_percentage = Convert.ToInt32(getsubinfo.Amount) - amountpercentage;
                                     finalamount = final_amount_percentage * 12;
                                     Discount = amountpercentage * 12;
@@ -1863,8 +1869,9 @@ namespace TapPaymentIntegration.Models.HangFire
                                     body = body.Replace("{User_GYM}", getuserinfo.GYMName);
                                     body = body.Replace("{User_Phone}", getuserinfo.PhoneNumber);
 
+                                    var discount = Convert.ToDecimal(Discount).ToString("0.00") + " " + getsubinfo.Currency;
                                     body = body.Replace("{SubscriptionName}", getsubinfo.Name);
-                                    body = body.Replace("{Discount}", Discount.ToString());
+                                    body = body.Replace("{Discount}", discount);
                                     body = body.Replace("{SubscriptionPeriod}", getuserinfo.Frequency);
                                     body = body.Replace("{SetupFee}", "0.0" + " " + getsubinfo.Currency);
                                     var amount = Convert.ToDecimal(incoice_info.SubscriptionAmount);// + Convert.ToDecimal(getsubinfo.SetupFee);
@@ -1950,7 +1957,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 }
                                 else if (getuserinfo.Frequency == "YEARLY")
                                 {
-                                    var amountpercentage = (decimal)(Convert.ToInt32(getsubinfo.Amount) / 100) * Convert.ToDecimal(getsubinfo.Discount);
+                                    decimal amountpercentage = (decimal.Parse(getsubinfo.Amount) / 100) * decimal.Parse(getsubinfo.Discount);
                                     var final_amount_percentage = Convert.ToInt32(getsubinfo.Amount) - amountpercentage;
                                     finalamount = final_amount_percentage * 12;
                                     Discount = amountpercentage * 12;
@@ -2164,8 +2171,10 @@ namespace TapPaymentIntegration.Models.HangFire
                                     body = body.Replace("{User_GYM}", getuserinfo.GYMName);
                                     body = body.Replace("{User_Phone}", getuserinfo.PhoneNumber);
 
+                                    var discount = Convert.ToDecimal(Discount).ToString("0.00") + " " + getsubinfo.Currency;
                                     body = body.Replace("{SubscriptionName}", getsubinfo.Name);
-                                    body = body.Replace("{Discount}", Discount.ToString());
+                                    body = body.Replace("{Discount}", discount);
+
                                     body = body.Replace("{SubscriptionPeriod}", getuserinfo.Frequency);
                                     body = body.Replace("{SetupFee}", "0.0" + " " + getsubinfo.Currency);
                                     var amount = Convert.ToDecimal(incoice_info.SubscriptionAmount);// + Convert.ToDecimal(getsubinfo.SetupFee);
@@ -2251,7 +2260,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 }
                                 else if (getuserinfo.Frequency == "YEARLY")
                                 {
-                                    var amountpercentage = (decimal)(Convert.ToInt32(getsubinfo.Amount) / 100) * Convert.ToDecimal(getsubinfo.Discount);
+                                    decimal amountpercentage = (decimal.Parse(getsubinfo.Amount) / 100) * decimal.Parse(getsubinfo.Discount);
                                     var final_amount_percentage = Convert.ToInt32(getsubinfo.Amount) - amountpercentage;
                                     finalamount = final_amount_percentage * 12;
                                     Discount = amountpercentage * 12;
@@ -2465,8 +2474,10 @@ namespace TapPaymentIntegration.Models.HangFire
                                     body = body.Replace("{User_GYM}", getuserinfo.GYMName);
                                     body = body.Replace("{User_Phone}", getuserinfo.PhoneNumber);
 
+                                    var discount = Convert.ToDecimal(Discount).ToString("0.00") + " " + getsubinfo.Currency;
                                     body = body.Replace("{SubscriptionName}", getsubinfo.Name);
-                                    body = body.Replace("{Discount}", Discount.ToString());
+                                    body = body.Replace("{Discount}", discount);
+
                                     body = body.Replace("{SubscriptionPeriod}", getuserinfo.Frequency);
                                     body = body.Replace("{SetupFee}", "0.0" + " " + getsubinfo.Currency);
                                     var amount = Convert.ToDecimal(incoice_info.SubscriptionAmount);// + Convert.ToDecimal(getsubinfo.SetupFee);
@@ -2552,7 +2563,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 }
                                 else if (getuserinfo.Frequency == "YEARLY")
                                 {
-                                    var amountpercentage = (decimal)(Convert.ToInt32(getsubinfo.Amount) / 100) * Convert.ToDecimal(getsubinfo.Discount);
+                                    decimal amountpercentage = (decimal.Parse(getsubinfo.Amount) / 100) * decimal.Parse(getsubinfo.Discount);
                                     var final_amount_percentage = Convert.ToInt32(getsubinfo.Amount) - amountpercentage;
                                     finalamount = final_amount_percentage * 12;
                                     Discount = amountpercentage * 12;
@@ -2767,8 +2778,10 @@ namespace TapPaymentIntegration.Models.HangFire
                                     body = body.Replace("{User_GYM}", getuserinfo.GYMName);
                                     body = body.Replace("{User_Phone}", getuserinfo.PhoneNumber);
 
+                                    var discount = Convert.ToDecimal(Discount).ToString("0.00") + " " + getsubinfo.Currency;
                                     body = body.Replace("{SubscriptionName}", getsubinfo.Name);
-                                    body = body.Replace("{Discount}", Discount.ToString());
+                                    body = body.Replace("{Discount}", discount);
+
                                     body = body.Replace("{SubscriptionPeriod}", getuserinfo.Frequency);
                                     body = body.Replace("{SetupFee}", "0.0" + " " + getsubinfo.Currency);
                                     var amount = Convert.ToDecimal(incoice_info.SubscriptionAmount);// + Convert.ToDecimal(getsubinfo.SetupFee);
@@ -2853,7 +2866,7 @@ namespace TapPaymentIntegration.Models.HangFire
                 }
                 else if (users.Frequency == "YEARLY")
                 {
-                    var amountpercentage = (decimal)(Convert.ToInt32(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
+                    decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                     var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
                     finalamount = final_amount_percentage * 12;
                     Discount = amountpercentage * 12;
@@ -2968,10 +2981,13 @@ namespace TapPaymentIntegration.Models.HangFire
                 body = body.Replace("{User_GYM}", users.GYMName);
                 body = body.Replace("{User_Phone}", users.PhoneNumber);
 
+                var setupFree = Convert.ToDecimal(subscriptions.SetupFee).ToString("0.00");
+                var discounts = Convert.ToDecimal(Discount).ToString("0.00");
+
                 body = body.Replace("{SubscriptionName}", subscriptions.Name);
-                body = body.Replace("{Discount}", Discount.ToString());
+                body = body.Replace("{Discount}", discounts);
                 body = body.Replace("{SubscriptionPeriod}", users.Frequency);
-                body = body.Replace("{SetupFee}", subscriptions.SetupFee + " " + subscriptions.Currency);
+                body = body.Replace("{SetupFee}", setupFree + " " + subscriptions.Currency);
 
                 body = body.Replace("{SubscriptionAmount}", subscriptionAmount);
                 //Calculate VAT

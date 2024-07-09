@@ -388,7 +388,7 @@ namespace TapPaymentIntegration.Controllers
                     }
                     else if (Frequency == "YEARLY")
                     {
-                        var amountpercentage = (decimal)(Convert.ToInt32(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
+                        decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                         var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
                         finalamount = final_amount_percentage * 12;
                         Discount = amountpercentage * 12;
@@ -798,7 +798,7 @@ namespace TapPaymentIntegration.Controllers
                                 }
                                 else if (users.Frequency == "YEARLY")
                                 {
-                                    var amountpercentage = (decimal)(Convert.ToInt32(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
+                                    decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                                     var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
                                     finalamount = final_amount_percentage * 12;
                                     Discount = amountpercentage * 12;
@@ -1059,12 +1059,14 @@ namespace TapPaymentIntegration.Controllers
                                 body = body.Replace("{User_GYM}", userinfo.GYMName);
                                 body = body.Replace("{User_Phone}", userinfo.PhoneNumber);
 
+                                var setupFree = Convert.ToDecimal(subscriptions.SetupFee).ToString("0.00");
+                                var discount = Convert.ToDecimal(Discount).ToString("0.00");
 
                                 body = body.Replace("{SubscriptionName}", subscriptions.Name);
-                                body = body.Replace("{Discount}", Discount.ToString());
+                                body = body.Replace("{Discount}", discount + " " + subscriptions.Currency);
                                 body = body.Replace("{SubscriptionPeriod}", userinfo.Frequency);
-                                body = body.Replace("{SetupFee}", subscriptions.SetupFee + " " + subscriptions.Currency);
-                                var amount = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
+                                body = body.Replace("{SetupFee}", setupFree + " " + subscriptions.Currency);
+                                var amount = finalamount + Convert.ToDecimal(setupFree);
                                 body = body.Replace("{SubscriptionAmount}", finalamount.ToString("0.00") + " " + subscriptions.Currency);
                                 //Calculate VAT
                                 if (subscriptions.VAT == null || subscriptions.VAT == "0")
@@ -1072,7 +1074,7 @@ namespace TapPaymentIntegration.Controllers
                                     body = body.Replace("{VAT}", "0.00" + " " + subscriptions.Currency);
                                     body = body.Replace("{Total}", amount.ToString("0.00") + " " + subscriptions.Currency);
                                     body = body.Replace("{InvoiceAmount}", amount.ToString("0.00") + " " + subscriptions.Currency);
-                                    var without_vat = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
+                                    var without_vat = finalamount + Convert.ToDecimal(setupFree);
                                     body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
                                 }
                                 else
@@ -1080,7 +1082,7 @@ namespace TapPaymentIntegration.Controllers
                                     body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + subscriptions.Currency);
                                     body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
                                     body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
-                                    var without_vat = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
+                                    var without_vat = finalamount + Convert.ToDecimal(setupFree);
                                     body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
                                 }
 
@@ -1128,7 +1130,7 @@ namespace TapPaymentIntegration.Controllers
                                 }
                                 else if (users.Frequency == "YEARLY")
                                 {
-                                    var amountpercentage = (decimal)(Convert.ToInt32(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
+                                    decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                                     var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
                                     finalamount = final_amount_percentage * 12;
                                     Discount = amountpercentage * 12;
@@ -1201,22 +1203,21 @@ namespace TapPaymentIntegration.Controllers
                                 //Fill EMail By Parameter
                                 body = body.Replace("{title}", "Tamarran Payment Invoice");
                                 body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
-
                                 body = body.Replace("{InvocieStatus}", "Payment Captured");
                                 body = body.Replace("{InvoiceID}", "Inv" + invoice_info.InvoiceId.ToString());
 
+                                var setupFree = Convert.ToDecimal(subscriptions.SetupFee).ToString("0.00");
+                                var discount = Convert.ToDecimal(Discount).ToString("0.00");
 
                                 body = body.Replace("{User_Name}", userinfo.FullName);
                                 body = body.Replace("{User_Email}", userinfo.Email);
                                 body = body.Replace("{User_GYM}", userinfo.GYMName);
                                 body = body.Replace("{User_Phone}", userinfo.PhoneNumber);
-
-
                                 body = body.Replace("{SubscriptionName}", subscriptions.Name);
-                                body = body.Replace("{Discount}", Discount.ToString());
+                                body = body.Replace("{Discount}", discount + " " + subscriptions.Currency);
                                 body = body.Replace("{SubscriptionPeriod}", userinfo.Frequency);
-                                body = body.Replace("{SetupFee}", subscriptions.SetupFee + " " + subscriptions.Currency);
-                                var amount = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
+                                body = body.Replace("{SetupFee}", setupFree + " " + subscriptions.Currency);
+                                var amount = finalamount + Convert.ToDecimal(setupFree);
                                 body = body.Replace("{SubscriptionAmount}", finalamount.ToString("0.00") + " " + subscriptions.Currency);
                                 //Calculate VAT
                                 if (subscriptions.VAT == null || subscriptions.VAT == "0")
@@ -1224,7 +1225,7 @@ namespace TapPaymentIntegration.Controllers
                                     body = body.Replace("{VAT}", "0.00" + " " + subscriptions.Currency);
                                     body = body.Replace("{Total}", amount.ToString("0.00") + " " + subscriptions.Currency);
                                     body = body.Replace("{InvoiceAmount}", amount.ToString("0.00") + " " + subscriptions.Currency);
-                                    var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(subscriptions.SetupFee);
+                                    var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(setupFree);
                                     body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
                                 }
                                 else
@@ -1232,7 +1233,7 @@ namespace TapPaymentIntegration.Controllers
                                     body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + subscriptions.Currency);
                                     body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
                                     body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
-                                    var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(subscriptions.SetupFee);
+                                    var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(setupFree);
                                     body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
                                 }
                                 var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
@@ -1288,7 +1289,7 @@ namespace TapPaymentIntegration.Controllers
                         }
                         else if (users.Frequency == "YEARLY")
                         {
-                            var amountpercentage = (decimal)(Convert.ToInt32(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
+                            decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                             var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
                             finalamount = final_amount_percentage * 12;
                             Discount = amountpercentage * 12;
@@ -1375,12 +1376,15 @@ namespace TapPaymentIntegration.Controllers
                         body = body.Replace("{User_GYM}", userinfo.GYMName);
                         body = body.Replace("{User_Phone}", userinfo.PhoneNumber);
 
+                        var setupFree = Convert.ToDecimal(subscriptions.SetupFee).ToString("0.00");
+                        var discount = Convert.ToDecimal(Discount).ToString("0.00");
+
 
                         body = body.Replace("{SubscriptionName}", subscriptions.Name);
-                        body = body.Replace("{Discount}", Discount.ToString());
+                        body = body.Replace("{Discount}", discount + " " + subscriptions.Currency);
                         body = body.Replace("{SubscriptionPeriod}", userinfo.Frequency);
-                        body = body.Replace("{SetupFee}", subscriptions.SetupFee + " " + subscriptions.Currency);
-                        var amount = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
+                        body = body.Replace("{SetupFee}", setupFree + " " + subscriptions.Currency);
+                        var amount = finalamount + Convert.ToDecimal(setupFree);
                         body = body.Replace("{SubscriptionAmount}", finalamount.ToString("0.00") + " " + subscriptions.Currency);
                         //Calculate VAT
                         if (subscriptions.VAT == null || subscriptions.VAT == "0")
@@ -1388,7 +1392,7 @@ namespace TapPaymentIntegration.Controllers
                             body = body.Replace("{VAT}", "0.00" + " " + subscriptions.Currency);
                             body = body.Replace("{Total}", amount.ToString("0.00") + " " + subscriptions.Currency);
                             body = body.Replace("{InvoiceAmount}", amount.ToString("0.00") + " " + subscriptions.Currency);
-                            var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(subscriptions.SetupFee);
+                            var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(setupFree);
                             body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
                         }
                         else
@@ -1396,7 +1400,7 @@ namespace TapPaymentIntegration.Controllers
                             body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + subscriptions.Currency);
                             body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
                             body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
-                            var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(subscriptions.SetupFee);
+                            var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(setupFree);
                             body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
                         }
                         var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
@@ -1488,7 +1492,7 @@ namespace TapPaymentIntegration.Controllers
                 }
                 else if (users.Frequency == "YEARLY")
                 {
-                    var amountpercentage = (decimal)(Convert.ToDecimal(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
+                    decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                     var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
                     finalamount = final_amount_percentage * 12;
                     Discount = amountpercentage * 12;
@@ -1832,13 +1836,15 @@ namespace TapPaymentIntegration.Controllers
                 body = body.Replace("{User_Email}", users.Email);
                 body = body.Replace("{User_GYM}", users.GYMName);
                 body = body.Replace("{User_Phone}", users.PhoneNumber);
+                var setupFree = Convert.ToDecimal(subscriptions.SetupFee).ToString("0.00");
+                var discount = Convert.ToDecimal(Discount).ToString("0.00");
 
 
                 body = body.Replace("{SubscriptionName}", subscriptions.Name);
-                body = body.Replace("{Discount}", Discount.ToString());
+                body = body.Replace("{Discount}", discount + " " + subscriptions.Currency);
                 body = body.Replace("{SubscriptionPeriod}", users.Frequency);
-                body = body.Replace("{SetupFee}", subscriptions.SetupFee + " " + subscriptions.Currency);
-                var amount = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
+                body = body.Replace("{SetupFee}", setupFree + " " + subscriptions.Currency);
+                var amount = finalamount + Convert.ToDecimal(setupFree);
                 body = body.Replace("{SubscriptionAmount}", finalamount.ToString("0.00") + " " + subscriptions.Currency);
                 //Calculate VAT
                 if (subscriptions.VAT == null || subscriptions.VAT == "0")
@@ -1846,15 +1852,15 @@ namespace TapPaymentIntegration.Controllers
                     body = body.Replace("{VAT}", "0.00" + " " + subscriptions.Currency);
                     body = body.Replace("{Total}", amount.ToString("0.00") + " " + subscriptions.Currency);
                     body = body.Replace("{InvoiceAmount}", amount.ToString("0.00") + " " + subscriptions.Currency);
-                    var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(subscriptions.SetupFee);
+                    var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(setupFree);
                     body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
                 }
                 else
                 {
-                    body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + subscriptions.Currency);
+                    body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + subscriptions.Currency); 
                     body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
                     body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
-                    var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(subscriptions.SetupFee);
+                    var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(setupFree);
                     body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
                 }
 
@@ -2217,15 +2223,18 @@ namespace TapPaymentIntegration.Controllers
                     body = body.Replace("{InvocieStatus}", "Unpaid");
                     body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id);
 
+                    var setupFree = Convert.ToDecimal(subscriptions.SetupFee).ToString("0.00");
+                    var discounts = Convert.ToDecimal(discount).ToString("0.00");
+
                     body = body.Replace("{User_Name}", applicationUser.FullName);
                     body = body.Replace("{User_Email}", applicationUser.Email);
                     body = body.Replace("{User_GYM}", applicationUser.GYMName);
                     body = body.Replace("{User_Phone}", applicationUser.PhoneNumber);
 
                     body = body.Replace("{SubscriptionName}", subscriptions.Name);
-                    body = body.Replace("{Discount}", discount.ToString());
+                    body = body.Replace("{Discount}", discounts + " " + subscriptions.Currency);
                     body = body.Replace("{SubscriptionPeriod}", applicationUser.Frequency);
-                    body = body.Replace("{SetupFee}", subscriptions.SetupFee + " " + subscriptions.Currency);
+                    body = body.Replace("{SetupFee}", setupFree + " " + subscriptions.Currency);
 
                     body = body.Replace("{SubscriptionAmount}", subscriptionAmount);
                     //Calculate VAT
@@ -2743,7 +2752,7 @@ namespace TapPaymentIntegration.Controllers
                 }
                 else if (users.Frequency == "YEARLY")
                 {
-                    var amountpercentage = (decimal)(Convert.ToInt32(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
+                    decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                     var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
                     finalamount = final_amount_percentage * 12;
                     Discount = amountpercentage * 12;
@@ -2847,12 +2856,14 @@ namespace TapPaymentIntegration.Controllers
                 body = body.Replace("{User_GYM}", users.GYMName);
                 body = body.Replace("{User_Phone}", users.PhoneNumber);
 
+                var setupFree = Convert.ToDecimal(subscriptions.SetupFee).ToString("0.00");
+                var discount = Convert.ToDecimal(Discount).ToString("0.00");
 
                 body = body.Replace("{SubscriptionName}", subscriptions.Name);
-                body = body.Replace("{Discount}", Discount.ToString());
+                body = body.Replace("{Discount}", discount + " " + subscriptions.Currency);
                 body = body.Replace("{SubscriptionPeriod}", userinfo.Frequency);
-                body = body.Replace("{SetupFee}", subscriptions.SetupFee + " " + subscriptions.Currency);
-                var amount = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
+                body = body.Replace("{SetupFee}", setupFree + " " + subscriptions.Currency);
+                var amount = finalamount + Convert.ToDecimal(setupFree);
                 body = body.Replace("{SubscriptionAmount}", finalamount.ToString("0.00") + " " + subscriptions.Currency);
                 //Calculate VAT
                 if (subscriptions.VAT == null || subscriptions.VAT == "0")
@@ -2860,7 +2871,7 @@ namespace TapPaymentIntegration.Controllers
                     body = body.Replace("{VAT}", "0.00" + " " + subscriptions.Currency);
                     body = body.Replace("{Total}", amount.ToString("0.00") + " " + subscriptions.Currency);
                     body = body.Replace("{InvoiceAmount}", amount.ToString("0.00") + " " + subscriptions.Currency);
-                    var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(subscriptions.SetupFee);
+                    var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(setupFree);
                     body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
                 }
                 else
@@ -2868,7 +2879,7 @@ namespace TapPaymentIntegration.Controllers
                     body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + subscriptions.Currency);
                     body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
                     body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
-                    var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(subscriptions.SetupFee);
+                    var without_vat = Convert.ToDecimal(finalamount) + Convert.ToDecimal(setupFree);
                     body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
                 }
                 var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
@@ -2966,7 +2977,7 @@ namespace TapPaymentIntegration.Controllers
                                 }
                                 else if (users.Frequency == "YEARLY")
                                 {
-                                    var amountpercentage = (decimal)(Convert.ToInt32(subscriptions.Amount) / 100) * Convert.ToDecimal(subscriptions.Discount);
+                                    decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                                     var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
                                     finalamount = final_amount_percentage * 12;
                                     Discount = amountpercentage * 12;
@@ -3022,7 +3033,7 @@ namespace TapPaymentIntegration.Controllers
                                 }
                                 else if (users.Frequency == "YEARLY")
                                 {
-                                    var amountpercentage = (decimal)(Convert.ToInt32(subscriptions.Amount) / 100) * Convert.ToDecimal(subscriptions.Discount);
+                                    decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                                     var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
                                     finalamount = final_amount_percentage * 12;
                                     Discount = amountpercentage * 12;
@@ -3115,7 +3126,7 @@ namespace TapPaymentIntegration.Controllers
                             }
                             else if (users.Frequency == "YEARLY")
                             {
-                                var amountpercentage = (decimal)(Convert.ToInt32(subscriptions.Amount) / 100) * Convert.ToDecimal(subscriptions.Discount);
+                                decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                                 var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
                                 finalamount = final_amount_percentage * 12;
                                 Discount = amountpercentage * 12;
@@ -3178,7 +3189,7 @@ namespace TapPaymentIntegration.Controllers
                             }
                             else if (users.Frequency == "YEARLY")
                             {
-                                var amountpercentage = (decimal)(Convert.ToInt32(subscriptions.Amount) / 100) * Convert.ToDecimal(subscriptions.Discount);
+                                decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                                 var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
                                 finalamount = final_amount_percentage * 12;
                                 Discount = amountpercentage * 12;
@@ -3277,7 +3288,7 @@ namespace TapPaymentIntegration.Controllers
                     }
                     else if (userinfo.Frequency == "YEARLY")
                     {
-                        var amountpercentage = (decimal)(Convert.ToInt32(sub_info.Amount) / 100) * Convert.ToDecimal(sub_info.Discount);
+                        decimal amountpercentage = (decimal.Parse(sub_info.Amount) / 100) * decimal.Parse(sub_info.Discount);
                         var final_amount_percentage = Convert.ToInt32(sub_info.Amount) - amountpercentage;
                         finalamount = final_amount_percentage * 12;
                         Discount = amountpercentage * 12;
