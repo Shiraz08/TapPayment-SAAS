@@ -21,6 +21,7 @@ using Google.Cloud.RecaptchaEnterprise.V1;
 using System.Text.RegularExpressions;
 using System.Security.Policy;
 using Card = TapPaymentIntegration.Models.Card.Card;
+using SixLabors.ImageSharp;
 
 namespace TapPaymentIntegration.Controllers
 {
@@ -733,6 +734,10 @@ namespace TapPaymentIntegration.Controllers
                 return View("Error");
             }
         }
+        public static decimal CalculatePercentage(decimal num, decimal percent)
+        {
+            return (num / 100) * percent;
+        }
         public async Task<IActionResult> CardVerify(int invoiceid, string IsFirstInvoice)
         {
             try
@@ -810,7 +815,17 @@ namespace TapPaymentIntegration.Controllers
                                 else
                                 {
                                     decimal totala = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
-                                    Vat = (decimal)((totala / 100) * Convert.ToInt32(subscriptions.VAT));
+                                    Decimal finalTotal = 0;
+                                    if (Discount != 0)
+                                    {
+                                        finalTotal = Decimal.Subtract(totala, Discount);
+                                        Vat = CalculatePercentage(finalTotal, Convert.ToDecimal(subscriptions.VAT));
+                                    }
+                                    else
+                                    {
+                                        Vat = CalculatePercentage(totala, Convert.ToDecimal(subscriptions.VAT));
+                                    }
+
                                     VatwithoutSetupFee = (decimal)((finalamount / 100) * Convert.ToInt32(subscriptions.VAT));
                                 }
                                 decimal after_vat_totalamount = finalamount + Convert.ToDecimal(subscriptions.SetupFee) + Vat;
@@ -1001,30 +1016,7 @@ namespace TapPaymentIntegration.Controllers
                                 recurringCharge.ChargeId = tap_id;
                                 recurringCharge.Invoice = "Inv" + max_invoice_id;
                                 recurringCharge.IsRun = false;
-                                if (log_user.Frequency == "DAILY")
-                                {
-                                    recurringCharge.JobRunDate = nextrecurringdate.AddDays(1);
-                                }
-                                else if (log_user.Frequency == "WEEKLY")
-                                {
-                                    recurringCharge.JobRunDate = nextrecurringdate.AddDays(7);
-                                }
-                                else if (log_user.Frequency == "MONTHLY")
-                                {
-                                    recurringCharge.JobRunDate = nextrecurringdate.AddMonths(1);
-                                }
-                                else if (log_user.Frequency == "QUARTERLY")
-                                {
-                                    recurringCharge.JobRunDate = nextrecurringdate.AddMonths(3);
-                                }
-                                else if (log_user.Frequency == "HALFYEARLY")
-                                {
-                                    recurringCharge.JobRunDate = nextrecurringdate.AddMonths(6);
-                                }
-                                else if (log_user.Frequency == "YEARLY")
-                                {
-                                    recurringCharge.JobRunDate = nextrecurringdate.AddYears(1);
-                                }
+                                recurringCharge.JobRunDate = nextrecurringdate;
                                 _context.recurringCharges.Add(recurringCharge);
                                 _context.SaveChanges();
 
@@ -1180,7 +1172,16 @@ namespace TapPaymentIntegration.Controllers
                                 else
                                 {
                                     decimal totala = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
-                                    Vat = (decimal)((totala / 100) * Convert.ToInt32(subscriptions.VAT));
+                                    Decimal finalTotal = 0;
+                                    if (Discount != 0)
+                                    {
+                                        finalTotal = Decimal.Subtract(totala, Discount);
+                                        Vat = CalculatePercentage(finalTotal, Convert.ToDecimal(subscriptions.VAT));
+                                    }
+                                    else
+                                    {
+                                        Vat = CalculatePercentage(totala, Convert.ToDecimal(subscriptions.VAT));
+                                    }
                                     VatwithoutSetupFee = (decimal)((finalamount / 100) * Convert.ToInt32(subscriptions.VAT));
                                 }
                                 decimal after_vat_totalamount = finalamount + Convert.ToDecimal(subscriptions.SetupFee) + Vat;
@@ -1377,7 +1378,16 @@ namespace TapPaymentIntegration.Controllers
                         else
                         {
                             decimal totala = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
-                            Vat = (decimal)((totala / 100) * Convert.ToInt32(subscriptions.VAT));
+                            Decimal finalTotal = 0;
+                            if (Discount != 0)
+                            {
+                                finalTotal = Decimal.Subtract(totala, Discount);
+                                Vat = CalculatePercentage(finalTotal, Convert.ToDecimal(subscriptions.VAT));
+                            }
+                            else
+                            {
+                                Vat = CalculatePercentage(totala, Convert.ToDecimal(subscriptions.VAT));
+                            }
                             VatwithoutSetupFee = (decimal)((finalamount / 100) * Convert.ToInt32(subscriptions.VAT));
                         }
                         decimal after_vat_totalamount = finalamount + Convert.ToDecimal(subscriptions.SetupFee) + Vat;
@@ -1618,7 +1628,16 @@ namespace TapPaymentIntegration.Controllers
                 else
                 {
                     decimal totala = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
-                    Vat = (decimal)((totala / 100) * Convert.ToDecimal(subscriptions.VAT));
+                    Decimal finalTotal = 0;
+                    if (Discount != 0)
+                    {
+                        finalTotal = Decimal.Subtract(totala, Discount);
+                        Vat = CalculatePercentage(finalTotal, Convert.ToDecimal(subscriptions.VAT));
+                    }
+                    else
+                    {
+                        Vat = CalculatePercentage(totala, Convert.ToDecimal(subscriptions.VAT));
+                    }
                 }
                 decimal after_vat_totalamount = finalamount + Convert.ToDecimal(subscriptions.SetupFee) + Vat;
 
@@ -2345,7 +2364,7 @@ namespace TapPaymentIntegration.Controllers
                         };
                         _context.invoices.Add(invoices);
                         _context.SaveChanges();
-                    } 
+                    }
 
 
                     int max_invoice_id = _context.invoices.Max(x => x.InvoiceId);
@@ -2391,12 +2410,21 @@ namespace TapPaymentIntegration.Controllers
                     body = body.Replace("{SubscriptionAmount}", subscriptionAmount);
                     //Calculate VAT
 
-
+                    //Decimal vats = 0;
+                    //if (discount != 0)
+                    //{
+                    //    vats = Decimal.Subtract(Convert.ToDecimal(vat), discount); 
+                    //    body = body.Replace("{Total}", vats.ToString("0.00") + " " + subscriptions.Currency); 
+                    //}
+                    //else
+                    //{
+                    //    body = body.Replace("{VAT}", vat_str);
+                    //}
                     body = body.Replace("{VAT}", vat_str);
                     Decimal finalTotal = 0;
                     if (discount != 0)
                     {
-                        finalTotal = Decimal.Subtract(Convert.ToDecimal(total), discount);
+                        finalTotal = Decimal.Subtract(after_vat_totalamount, discount);
                         body = body.Replace("{Total}", finalTotal.ToString("0.00") + " " + subscriptions.Currency);
                     }
                     else
@@ -2404,10 +2432,10 @@ namespace TapPaymentIntegration.Controllers
                         body = body.Replace("{Total}", total);
                     }
 
-                    
+
                     body = body.Replace("{InvoiceAmount}", invoiceAmount);
                     Decimal finalValueWithOutVAT = 0;
-                    if (discount != 0) 
+                    if (discount != 0)
                     {
                         finalValueWithOutVAT = Decimal.Subtract(finalValueWithOutVAT, discount);
                         body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString());
@@ -2416,12 +2444,12 @@ namespace TapPaymentIntegration.Controllers
                     {
                         body = body.Replace("{Totalinvoicewithoutvat}", Totalinvoicewithoutvat);
                     }
-                    
+
                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                     var callbackUrl = @Url.Action("SubscriptionAdmin", "Home", new { id = applicationUser.SubscribeID, link = "Yes", userid = max_user_id, invoiceid = max_invoice_id, After_vat_totalamount = after_vat_totalamount, isfirstinvoice = "true" });
                     var websiteurl = HtmlEncoder.Default.Encode(Constants.RedirectURL + callbackUrl);
 
-                    var emailSubject = "Tamarran – Payment Request - " + " Inv" + max_invoice_id; 
+                    var emailSubject = "Tamarran – Payment Request - " + " Inv" + max_invoice_id;
                     var bodyemail = EmailBodyFill.EmailBodyForPaymentRequest(applicationUser, websiteurl);
                     _ = _emailSender.SendEmailWithFIle(bytes, applicationUser.Email, emailSubject, bodyemail);
 
@@ -3201,7 +3229,16 @@ namespace TapPaymentIntegration.Controllers
                                 else
                                 {
                                     decimal totala = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
-                                    Vat = (decimal)((totala / 100) * Convert.ToDecimal(subscriptions.VAT));
+                                    Decimal finalTotal = 0;
+                                    if (Discount != 0)
+                                    {
+                                        finalTotal = Decimal.Subtract(totala, Discount);
+                                        Vat = CalculatePercentage(finalTotal, Convert.ToDecimal(subscriptions.VAT));
+                                    }
+                                    else
+                                    {
+                                        Vat = CalculatePercentage(totala, Convert.ToDecimal(subscriptions.VAT));
+                                    }
                                 }
                                 decimal after_vat_totalamount = finalamount + Convert.ToDecimal(subscriptions.SetupFee) + Vat;
                                 Deserialized_savecard.amount = Convert.ToDouble(after_vat_totalamount);
@@ -3257,7 +3294,16 @@ namespace TapPaymentIntegration.Controllers
                                 else
                                 {
                                     decimal totala = finalamount;
-                                    Vat = (decimal)((totala / 100) * Convert.ToDecimal(subscriptions.VAT));
+                                    Decimal finalTotal = 0;
+                                    if (Discount != 0)
+                                    {
+                                        finalTotal = Decimal.Subtract(totala, Discount);
+                                        Vat = CalculatePercentage(finalTotal, Convert.ToDecimal(subscriptions.VAT));
+                                    }
+                                    else
+                                    {
+                                        Vat = CalculatePercentage(totala, Convert.ToDecimal(subscriptions.VAT));
+                                    }
                                 }
                                 decimal after_vat_totalamount = finalamount + Vat;
                                 Deserialized_savecard.amount = Convert.ToDouble(after_vat_totalamount);
@@ -3350,7 +3396,16 @@ namespace TapPaymentIntegration.Controllers
                             else
                             {
                                 decimal totala = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
-                                Vat = (decimal)((totala / 100) * Convert.ToInt32(subscriptions.VAT));
+                                Decimal finalTotal = 0;
+                                if (Discount != 0)
+                                {
+                                    finalTotal = Decimal.Subtract(totala, Discount);
+                                    Vat = CalculatePercentage(finalTotal, Convert.ToDecimal(subscriptions.VAT));
+                                }
+                                else
+                                {
+                                    Vat = CalculatePercentage(totala, Convert.ToDecimal(subscriptions.VAT));
+                                }
                             }
                             decimal after_vat_totalamount = finalamount + Convert.ToDecimal(subscriptions.SetupFee) + Vat;
                             chargeDetail.Frequency = users.Frequency;
@@ -3414,7 +3469,16 @@ namespace TapPaymentIntegration.Controllers
                             {
 
                                 decimal totala = finalamount;
-                                Vat = (decimal)((totala / 100) * Convert.ToInt32(subscriptions.VAT));
+                                Decimal finalTotal = 0;
+                                if (Discount != 0)
+                                {
+                                    finalTotal = Decimal.Subtract(totala, Discount);
+                                    Vat = CalculatePercentage(finalTotal, Convert.ToDecimal(subscriptions.VAT));
+                                }
+                                else
+                                {
+                                    Vat = CalculatePercentage(totala, Convert.ToDecimal(subscriptions.VAT));
+                                }
                             }
                             decimal after_vat_totalamount = finalamount + Vat;
                             chargeDetail.Frequency = users.Frequency;
@@ -3512,7 +3576,16 @@ namespace TapPaymentIntegration.Controllers
                     else
                     {
                         decimal totala = finalamount + Convert.ToDecimal(sub_info.SetupFee);
-                        Vat = (decimal)((totala / 100) * Convert.ToDecimal(sub_info.VAT));
+                        Decimal finalTotal = 0;
+                        if (Discount != 0)
+                        {
+                            finalTotal = Decimal.Subtract(totala, Discount);
+                            Vat = CalculatePercentage(finalTotal, Convert.ToDecimal(sub_info.VAT));
+                        }
+                        else
+                        {
+                            Vat = CalculatePercentage(totala, Convert.ToDecimal(sub_info.VAT));
+                        }
                     }
                     decimal after_vat_totalamount = finalamount + Convert.ToDecimal(sub_info.SetupFee) + Vat;
 

@@ -168,20 +168,46 @@ namespace TapPaymentIntegration.Models.HangFire
                                     if (getsubinfo.VAT == null || getsubinfo.VAT == "0")
                                     {
                                         body = body.Replace("{VAT}", "0.00");
-                                        body = body.Replace("{Total}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
+
+
+                                        Decimal finalTotal = 0;
+                                        if (Discount != 0)
+                                        {
+                                            finalTotal = Decimal.Subtract(Convert.ToDecimal(incoice_info.SubscriptionAmount), Discount);
+                                            body = body.Replace("{Total}", finalTotal.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+                                        else
+                                        {
+                                            body = body.Replace("{Total}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
+                                        }
+
                                         body = body.Replace("{InvoiceAmount}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
                                         var without_vat = Convert.ToDecimal(finalamount);
                                         Decimal finalValueWithOutVAT = 0;
                                         if (Discount != 0)
                                         {
                                             finalValueWithOutVAT = Decimal.Subtract(without_vat, Discount);
+                                            body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                         }
-                                        body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
+                                        else
+                                        {
+                                            body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+                                        
                                     }
                                     else
                                     {
                                         body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
+                                        Decimal finalTotal = 0;
+                                        if (Discount != 0)
+                                        {
+                                            finalTotal = Decimal.Subtract(Convert.ToDecimal(incoice_info.SubscriptionAmount), Discount);
+                                            body = body.Replace("{Total}", finalTotal.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+                                        else
+                                        {
+                                            body = body.Replace("{Total}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
+                                        }
                                         body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
                                         var without_vat = Convert.ToDecimal(finalamount);
 
@@ -189,8 +215,12 @@ namespace TapPaymentIntegration.Models.HangFire
                                         if (Discount != 0)
                                         {
                                             finalValueWithOutVAT = Decimal.Subtract(without_vat, Discount);
+                                            body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                         }
-                                        body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
+                                        else
+                                        {
+                                            body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
                                     }
                                     var emailSubject = "Tamarran - Automatic Payment Confirmation - "+" Inv" + incoice_info.InvoiceId;
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
@@ -330,29 +360,59 @@ namespace TapPaymentIntegration.Models.HangFire
                                     if (getsubinfo.VAT == null || getsubinfo.VAT == "0")
                                     {
                                         body = body.Replace("{VAT}", "0.00");
-                                        body = body.Replace("{Total}", amount.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{InvoiceAmount}", amount.ToString("0.00") + " " + getsubinfo.Currency);
+
+
+                                        Decimal finalTotal = 0;
+                                        if (Discount != 0)
+                                        {
+                                            finalTotal = Decimal.Subtract(Convert.ToDecimal(incoice_info.SubscriptionAmount), Discount);
+                                            body = body.Replace("{Total}", finalTotal.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+                                        else
+                                        {
+                                            body = body.Replace("{Total}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
+                                        }
+
+                                        body = body.Replace("{InvoiceAmount}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
+                                        var without_vat = Convert.ToDecimal(finalamount);
+                                        Decimal finalValueWithOutVAT = 0;
+                                        if (Discount != 0)
+                                        {
+                                            finalValueWithOutVAT = Decimal.Subtract(without_vat, Discount);
+                                            body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+                                        else
+                                        {
+                                            body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + getsubinfo.Currency);
+                                        Decimal finalTotal = 0;
+                                        if (Discount != 0)
+                                        {
+                                            finalTotal = Decimal.Subtract(Convert.ToDecimal(incoice_info.SubscriptionAmount), Discount);
+                                            body = body.Replace("{Total}", finalTotal.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+                                        else
+                                        {
+                                            body = body.Replace("{Total}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
+                                        }
+                                        body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
                                         var without_vat = Convert.ToDecimal(finalamount);
 
                                         Decimal finalValueWithOutVAT = 0;
                                         if (Discount != 0)
                                         {
                                             finalValueWithOutVAT = Decimal.Subtract(without_vat, Discount);
+                                            body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                         }
-                                        body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
-                                    }
-                                    else
-                                    {
-                                        body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
-                                        var without_vat = Convert.ToDecimal(finalamount);
-                                        Decimal finalValueWithOutVAT = 0;
-                                        if (Discount != 0)
+                                        else
                                         {
-                                            finalValueWithOutVAT = Decimal.Subtract(without_vat, Discount);
+                                            body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
                                         }
-                                        body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                     }
                                     var emailSubject = "Tamarran - Automatic Payment Confirmation - " + " Inv" + incoice_info.InvoiceId;
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
@@ -490,28 +550,59 @@ namespace TapPaymentIntegration.Models.HangFire
                                     if (getsubinfo.VAT == null || getsubinfo.VAT == "0")
                                     {
                                         body = body.Replace("{VAT}", "0.00");
-                                        body = body.Replace("{Total}", amount.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{InvoiceAmount}", amount.ToString("0.00") + " " + getsubinfo.Currency);
+
+
+                                        Decimal finalTotal = 0;
+                                        if (Discount != 0)
+                                        {
+                                            finalTotal = Decimal.Subtract(Convert.ToDecimal(incoice_info.SubscriptionAmount), Discount);
+                                            body = body.Replace("{Total}", finalTotal.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+                                        else
+                                        {
+                                            body = body.Replace("{Total}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
+                                        }
+
+                                        body = body.Replace("{InvoiceAmount}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
                                         var without_vat = Convert.ToDecimal(finalamount);
                                         Decimal finalValueWithOutVAT = 0;
                                         if (Discount != 0)
                                         {
                                             finalValueWithOutVAT = Decimal.Subtract(without_vat, Discount);
+                                            body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                         }
-                                        body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
+                                        else
+                                        {
+                                            body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+
                                     }
                                     else
                                     {
                                         body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
+                                        Decimal finalTotal = 0;
+                                        if (Discount != 0)
+                                        {
+                                            finalTotal = Decimal.Subtract(Convert.ToDecimal(incoice_info.SubscriptionAmount), Discount);
+                                            body = body.Replace("{Total}", finalTotal.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+                                        else
+                                        {
+                                            body = body.Replace("{Total}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
+                                        }
                                         body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
                                         var without_vat = Convert.ToDecimal(finalamount);
+
                                         Decimal finalValueWithOutVAT = 0;
                                         if (Discount != 0)
                                         {
                                             finalValueWithOutVAT = Decimal.Subtract(without_vat, Discount);
+                                            body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                         }
-                                        body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
+                                        else
+                                        {
+                                            body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
                                     }
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                                     var bodyemail = EmailBodyFill.EmailBodyForAutomaticPaymentConfirmation(getsubinfo, getuserinfo);
@@ -649,28 +740,59 @@ namespace TapPaymentIntegration.Models.HangFire
                                     if (getsubinfo.VAT == null || getsubinfo.VAT == "0")
                                     {
                                         body = body.Replace("{VAT}", "0.00");
-                                        body = body.Replace("{Total}", amount.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{InvoiceAmount}", amount.ToString("0.00") + " " + getsubinfo.Currency);
+
+
+                                        Decimal finalTotal = 0;
+                                        if (Discount != 0)
+                                        {
+                                            finalTotal = Decimal.Subtract(Convert.ToDecimal(incoice_info.SubscriptionAmount), Discount);
+                                            body = body.Replace("{Total}", finalTotal.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+                                        else
+                                        {
+                                            body = body.Replace("{Total}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
+                                        }
+
+                                        body = body.Replace("{InvoiceAmount}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
                                         var without_vat = Convert.ToDecimal(finalamount);
                                         Decimal finalValueWithOutVAT = 0;
                                         if (Discount != 0)
                                         {
                                             finalValueWithOutVAT = Decimal.Subtract(without_vat, Discount);
+                                            body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                         }
-                                        body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
+                                        else
+                                        {
+                                            body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+
                                     }
                                     else
                                     {
                                         body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
+                                        Decimal finalTotal = 0;
+                                        if (Discount != 0)
+                                        {
+                                            finalTotal = Decimal.Subtract(Convert.ToDecimal(incoice_info.SubscriptionAmount), Discount);
+                                            body = body.Replace("{Total}", finalTotal.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+                                        else
+                                        {
+                                            body = body.Replace("{Total}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
+                                        }
                                         body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
                                         var without_vat = Convert.ToDecimal(finalamount);
+
                                         Decimal finalValueWithOutVAT = 0;
                                         if (Discount != 0)
                                         {
                                             finalValueWithOutVAT = Decimal.Subtract(without_vat, Discount);
+                                            body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                         }
-                                        body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
+                                        else
+                                        {
+                                            body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
                                     }
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                                     var bodyemail = EmailBodyFill.EmailBodyForAutomaticPaymentConfirmation(getsubinfo, getuserinfo);
@@ -808,28 +930,59 @@ namespace TapPaymentIntegration.Models.HangFire
                                     if (getsubinfo.VAT == null || getsubinfo.VAT == "0")
                                     {
                                         body = body.Replace("{VAT}", "0.00");
-                                        body = body.Replace("{Total}", amount.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{InvoiceAmount}", amount.ToString("0.00") + " " + getsubinfo.Currency);
+
+
+                                        Decimal finalTotal = 0;
+                                        if (Discount != 0)
+                                        {
+                                            finalTotal = Decimal.Subtract(Convert.ToDecimal(incoice_info.SubscriptionAmount), Discount);
+                                            body = body.Replace("{Total}", finalTotal.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+                                        else
+                                        {
+                                            body = body.Replace("{Total}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
+                                        }
+
+                                        body = body.Replace("{InvoiceAmount}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
                                         var without_vat = Convert.ToDecimal(finalamount);
                                         Decimal finalValueWithOutVAT = 0;
                                         if (Discount != 0)
                                         {
                                             finalValueWithOutVAT = Decimal.Subtract(without_vat, Discount);
+                                            body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                         }
-                                        body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
+                                        else
+                                        {
+                                            body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+
                                     }
                                     else
                                     {
                                         body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
+                                        Decimal finalTotal = 0;
+                                        if (Discount != 0)
+                                        {
+                                            finalTotal = Decimal.Subtract(Convert.ToDecimal(incoice_info.SubscriptionAmount), Discount);
+                                            body = body.Replace("{Total}", finalTotal.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+                                        else
+                                        {
+                                            body = body.Replace("{Total}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
+                                        }
                                         body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
                                         var without_vat = Convert.ToDecimal(finalamount);
+
                                         Decimal finalValueWithOutVAT = 0;
                                         if (Discount != 0)
                                         {
                                             finalValueWithOutVAT = Decimal.Subtract(without_vat, Discount);
+                                            body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                         }
-                                        body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
+                                        else
+                                        {
+                                            body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
                                     }
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                                     var bodyemail = EmailBodyFill.EmailBodyForAutomaticPaymentConfirmation(getsubinfo, getuserinfo);
@@ -967,28 +1120,59 @@ namespace TapPaymentIntegration.Models.HangFire
                                     if (getsubinfo.VAT == null || getsubinfo.VAT == "0")
                                     {
                                         body = body.Replace("{VAT}", "0.00");
-                                        body = body.Replace("{Total}", amount.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{InvoiceAmount}", amount.ToString("0.00") + " " + getsubinfo.Currency);
+
+
+                                        Decimal finalTotal = 0;
+                                        if (Discount != 0)
+                                        {
+                                            finalTotal = Decimal.Subtract(Convert.ToDecimal(incoice_info.SubscriptionAmount), Discount);
+                                            body = body.Replace("{Total}", finalTotal.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+                                        else
+                                        {
+                                            body = body.Replace("{Total}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
+                                        }
+
+                                        body = body.Replace("{InvoiceAmount}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
                                         var without_vat = Convert.ToDecimal(finalamount);
                                         Decimal finalValueWithOutVAT = 0;
                                         if (Discount != 0)
                                         {
                                             finalValueWithOutVAT = Decimal.Subtract(without_vat, Discount);
+                                            body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                         }
-                                        body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
+                                        else
+                                        {
+                                            body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+
                                     }
                                     else
                                     {
                                         body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
+                                        Decimal finalTotal = 0;
+                                        if (Discount != 0)
+                                        {
+                                            finalTotal = Decimal.Subtract(Convert.ToDecimal(incoice_info.SubscriptionAmount), Discount);
+                                            body = body.Replace("{Total}", finalTotal.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
+                                        else
+                                        {
+                                            body = body.Replace("{Total}", incoice_info.SubscriptionAmount.ToString() + " " + getsubinfo.Currency);
+                                        }
                                         body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
                                         var without_vat = Convert.ToDecimal(finalamount);
+
                                         Decimal finalValueWithOutVAT = 0;
                                         if (Discount != 0)
                                         {
                                             finalValueWithOutVAT = Decimal.Subtract(without_vat, Discount);
+                                            body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                         }
-                                        body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
+                                        else
+                                        {
+                                            body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
+                                        }
                                     }
                                     var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
                                     var bodyemail = EmailBodyFill.EmailBodyForAutomaticPaymentConfirmation(getsubinfo, getuserinfo);
@@ -1126,7 +1310,16 @@ namespace TapPaymentIntegration.Models.HangFire
                                 {
                                     decimal totala = finalamount;// + Convert.ToDecimal(getsubinfo.SetupFee);
                                     sun_amount = totala;
-                                    Vat = (decimal)((totala / 100) * Convert.ToDecimal(getsubinfo.VAT));
+                                    Decimal finalTotal = 0;
+                                    if (Discount != 0)
+                                    {
+                                        finalTotal = Decimal.Subtract(totala, Discount);
+                                        Vat = CalculatePercentage(finalTotal, Convert.ToDecimal(getsubinfo.VAT));
+                                    }
+                                    else
+                                    {
+                                        Vat = CalculatePercentage(totala, Convert.ToDecimal(getsubinfo.VAT));
+                                    }
                                 }
                                 decimal after_vat_totalamount = finalamount + Vat;// Convert.ToDecimal(getsubinfo.SetupFee) + Vat;
 
@@ -2941,10 +3134,20 @@ namespace TapPaymentIntegration.Models.HangFire
                 else
                 {
                     decimal totala = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
-                    Vat = (decimal)((totala / 100) * Convert.ToInt32(subscriptions.VAT));
+                    Decimal finalTotal = 0;
+                    if (Discount != 0)
+                    {
+                        finalTotal = Decimal.Subtract(totala, Discount);
+                        Vat = CalculatePercentage(finalTotal, Convert.ToDecimal(subscriptions.VAT));
+                    }
+                    else
+                    {
+                        Vat = CalculatePercentage(totala, Convert.ToDecimal(subscriptions.VAT));
+                    }
+
                     VatwithoutSetupFee = (decimal)((finalamount / 100) * Convert.ToInt32(subscriptions.VAT));
                 }
-               // decimal after_vat_totalamount = finalamount + Convert.ToDecimal(subscriptions.SetupFee) + Vat;
+                // decimal after_vat_totalamount = finalamount + Convert.ToDecimal(subscriptions.SetupFee) + Vat;
                 var userinfo = _context.Users.Where(x => x.Id == users.Id).FirstOrDefault();
                 //update user 
                 users.Tap_CustomerID = null;
@@ -3069,6 +3272,10 @@ namespace TapPaymentIntegration.Models.HangFire
                 _ = _emailSender.SendEmailWithFIle(bytes, users.Email, emailSubject, bodyemail);
             }
 
+        }
+        public static decimal CalculatePercentage(decimal num, decimal percent)
+        {
+            return (num / 100) * percent;
         }
         //public async Task ManuallyRecurringJob()
         //{

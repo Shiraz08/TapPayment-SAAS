@@ -33,7 +33,6 @@
                                     <th>Invoice Start Date</th>
                                     <th>Invoice End Date</th>
                                     <th>Subscription Currency</th>
-                                    <th>Subscription Amount</th>
                                     <th>VAT</th>
                                     <th>Discount</th>
                                     <th>Status</th>
@@ -67,7 +66,6 @@
                                             }
                                         </td>
                                         <td style="text-align:center!important">@invoice.Currency</td>
-                                        <td style="text-align:center!important">@invoice.SubscriptionAmount</td>
                                         <td style="text-align:center!important">@decimal.Round(Convert.ToDecimal(InvoiceHelper.TruncateAfterSpace(invoice.VAT)), 2)</td>
                                         <td style="text-align:center!important">@invoice.Discount</td>
                                         @if (invoice.Status == "Payment Captured")

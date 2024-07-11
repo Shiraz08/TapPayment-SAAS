@@ -178,11 +178,23 @@ namespace TapPaymentIntegration.Utility
             {
                 decimal totala = finalamount;// + Convert.ToDecimal(subscription.SetupFee);
                 sun_amount = finalamount;
-                Vat = (decimal)((totala / 100) * Convert.ToDecimal(subscription.VAT));
+                Decimal finalTotal = 0;
+                if (Discount != 0)
+                {
+                    finalTotal = Decimal.Subtract(totala, Discount);
+                    Vat = CalculatePercentage(finalTotal, Convert.ToDecimal(subscription.VAT));
+                }
+                else
+                {
+                    Vat = CalculatePercentage(totala, Convert.ToDecimal(subscription.VAT));
+                }
             }
             after_vat_totalamount = finalamount + Vat;// Convert.ToDecimal(subscription.SetupFee) + Vat;
         }
-
+        public static decimal CalculatePercentage(decimal num, decimal percent)
+        {
+            return (num / 100) * percent;
+        }
         public static string TruncateAfterSpace(string input)
         {
             int spaceIndex = input.IndexOf(' ');

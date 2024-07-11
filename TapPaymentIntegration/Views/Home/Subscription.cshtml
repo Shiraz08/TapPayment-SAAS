@@ -217,36 +217,36 @@ html {
                                     <div class="form-group">
                                         <label style="color:black!important">Frequency:&nbsp;<span style="color:red!important"><b>*</b></span></label>
                                         @{
-                                            <select class="form-control" id="Frequency" name="Frequency" tabindex="1" required="required">
-                                                <option value="0">Please Select Frequency</option>
-                                                @foreach (var item in Model.Frequency.Split(','))
+                                                        <select class="form-control" id="Frequency" name="Frequency" tabindex="1" required="required">
+                                                            <option value="0">Please Select Frequency</option>
+                                                            @foreach (var item in Model.Frequency.Split(','))
                                             {
                                                 if (item == "DAILY")
                                                 {
-                                                        <option value="DAILY">Daily</option>
+                                                                    <option value="DAILY">Daily</option>
                                                 }
                                                 else if (item == "WEEKLY")
                                                 {
-                                                        <option value="WEEKLY">Weekly</option>
+                                                                    <option value="WEEKLY">Weekly</option>
                                                 }
                                                 else if (item == "MONTHLY")
                                                 {
-                                                        <option value="MONTHLY">Monthly</option>
+                                                                    <option value="MONTHLY">Monthly</option>
                                                 }
                                                 else if (item == "QUARTERLY")
                                                 {
-                                                        <option value="QUARTERLY">Quarterly</option>
+                                                                    <option value="QUARTERLY">Quarterly</option>
                                                 }
                                                 else if (item == "HALFYEARLY")
                                                 {
-                                                        <option value="HALFYEARLY">Semi Annual</option>
+                                                                    <option value="HALFYEARLY">Semi Annual</option>
                                                 }
                                                 else if (item == "YEARLY")
                                                 {
-                                                        <option value="YEARLY">Annually</option>
+                                                                    <option value="YEARLY">Annually</option>
                                                 }                            
                                             }
-                                            </select>
+                                                        </select>
                                         }
                                     </div>
                                 </div>
@@ -332,7 +332,7 @@ html {
                                         @{
                                             if (Model.Currency == "BHD")
                                             {
-                                                    <option value="Debit Card">Debit Card</option>
+                                                                <option value="Debit Card">Debit Card</option>
                                             }
                                         }
                                     </select>
@@ -361,12 +361,12 @@ html {
                             @{
                                 if (Model.Currency == "BHD")
                                 {
-                                            <br />
-                                            <h3><center>Pay with Benefit</center></h3>
-                                            <div class="input-group mb-3 group-end">
-                                            <a class="btn btn-danger btnPrevious" id="Previous">Previous</a>
-                                            <button class="btn btn-success" type="button" onclick="tapBanafit();" id="Proceed">Proceed</button>
-                                            </div>
+                                                        <br />
+                                                        <h3><center>Pay with Benefit</center></h3>
+                                                        <div class="input-group mb-3 group-end">
+                                                        <a class="btn btn-danger btnPrevious" id="Previous">Previous</a>
+                                                        <button class="btn btn-success" type="button" onclick="tapBanafit();" id="Proceed">Proceed</button>
+                                                        </div>
                                 }
                             }
                         </div>
@@ -662,14 +662,31 @@ html {
         }
         else 
         {
-            calculate_vat = (totala / 100) * parseFloat(@Model.VAT);
+            if (dis != 0)
+            {
+                var abc = parseFloat(totala) - parseFloat(dis);
+                calculate_vat = (abc / 100) * parseFloat(@Model.VAT);
+            }
+            else 
+            {
+                calculate_vat = (totala / 100) * parseFloat(@Model.VAT);
+            }
             $("#VAT").val(calculate_vat.toFixed(2));
         }
         $("#planamount").val(@Model.Amount);
         $("#subamount").val(subscriptionamount.toFixed(2));
         $("#subamount2").val(subscriptionamount.toFixed(2));
         var subscriptionSetupFee = @Model.SetupFee;
-        var totalamount = parseFloat(subscriptionamount) + parseFloat(subscriptionSetupFee) + parseFloat(calculate_vat);
+        var allamount = parseFloat(subscriptionamount) + parseFloat(subscriptionSetupFee) + parseFloat(calculate_vat);
+        var totalamount = "";
+        if (dis != 0) 
+        {
+            totalamount = parseFloat(allamount) - parseFloat(dis);
+        }
+        else {
+            totalamount = allamount;
+        }
+
         $("#TotalPlanfee").val(totalamount.toFixed(2));
         $("#TotalPlanfee2").val(totalamount.toFixed(2));
     });
