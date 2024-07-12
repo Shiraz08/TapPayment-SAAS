@@ -1321,8 +1321,16 @@ namespace TapPaymentIntegration.Models.HangFire
                                         Vat = CalculatePercentage(totala, Convert.ToDecimal(getsubinfo.VAT));
                                     }
                                 }
-                                decimal after_vat_totalamount = finalamount + Vat;// Convert.ToDecimal(getsubinfo.SetupFee) + Vat;
-
+                                decimal finalValueWithOutVATs = finalamount + Vat;// Convert.ToDecimal(getsubinfo.SetupFee) + Vat;
+                                Decimal finalValueWithOutVAT = 0;
+                                if (Discount != 0)
+                                {
+                                    finalValueWithOutVAT = Decimal.Subtract(finalValueWithOutVATs, Discount);
+                                }
+                                else
+                                {
+                                    finalValueWithOutVAT = finalValueWithOutVATs;;
+                                }
                                 Invoice invoice = new Invoice
                                 {
                                     InvoiceStartDate = DateTime.UtcNow,
@@ -1330,7 +1338,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     Currency = getsubinfo.Currency,
                                     AddedDate = DateTime.UtcNow,
                                     AddedBy = getuserinfo.FullName,
-                                    SubscriptionAmount = Convert.ToDouble(after_vat_totalamount.ToString("0.00")),
+                                    SubscriptionAmount = Convert.ToDouble(finalValueWithOutVAT.ToString("0.00")),
                                     SubscriptionId = Convert.ToInt32(getsubinfo.SubscriptionId),
                                     Status = "Un-Paid",
                                     IsDeleted = false,
@@ -1413,12 +1421,12 @@ namespace TapPaymentIntegration.Models.HangFire
                                 itemss.image = "";
                                 itemss.quantity = 1;
                                 itemss.name = "Invoice Amount";
-                                itemss.amount = after_vat_totalamount.ToString("0.00");
+                                itemss.amount = finalValueWithOutVAT.ToString("0.00");
                                 itemss.currency = getsubinfo.Currency;
                                 items.Add(itemss);
 
                                 Order order = new Order();
-                                order.amount = after_vat_totalamount.ToString("0.00");
+                                order.amount = finalValueWithOutVAT.ToString("0.00");
                                 order.currency = getsubinfo.Currency;
                                 order.items = items;
 
@@ -1468,7 +1476,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 }
                                 if (myDeserializedClass.status == "CREATED")
                                 {
-                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice={"false"}";
+                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&finalValueWithOutVAT={finalValueWithOutVAT}&isfirstinvoice={"false"}";
 
                                     Invoice i = _context.invoices.FirstOrDefault(a => a.InvoiceId == max_invoice_id);
 
@@ -1479,7 +1487,7 @@ namespace TapPaymentIntegration.Models.HangFire
 
                                     //Next Recurrening Job Date
                                     RecurringCharge recurringCharge = new RecurringCharge();
-                                    recurringCharge.Amount = Convert.ToDecimal(after_vat_totalamount.ToString("0.00"));
+                                    recurringCharge.Amount = Convert.ToDecimal(finalValueWithOutVAT.ToString("0.00"));
                                     recurringCharge.SubscriptionId = getsubinfo.SubscriptionId;
                                     recurringCharge.UserID = getuserinfo.Id;
                                     recurringCharge.Tap_CustomerId = getuserinfo.Tap_CustomerID;
@@ -1538,8 +1546,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     else
                                     {
                                         body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
+                                        body = body.Replace("{Total}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
+                                        body = body.Replace("{InvoiceAmount}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                         var without_vat = Convert.ToDecimal(finalamount);
                                         body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
                                     }
@@ -1623,8 +1631,16 @@ namespace TapPaymentIntegration.Models.HangFire
                                     sun_amount = totala;
                                     Vat = (decimal)((totala / 100) * Convert.ToDecimal(getsubinfo.VAT));
                                 }
-                                decimal after_vat_totalamount = finalamount + Vat;// Convert.ToDecimal(getsubinfo.SetupFee) + Vat;
-
+                                decimal finalValueWithOutVATs = finalamount + Vat;// Convert.ToDecimal(getsubinfo.SetupFee) + Vat;
+                                Decimal finalValueWithOutVAT = 0;
+                                if (Discount != 0)
+                                {
+                                    finalValueWithOutVAT = Decimal.Subtract(finalValueWithOutVATs, Discount);
+                                }
+                                else
+                                {
+                                    finalValueWithOutVAT = finalValueWithOutVATs;;
+                                }
                                 Invoice invoice = new Invoice
                                 {
                                     InvoiceStartDate = DateTime.UtcNow,
@@ -1632,7 +1648,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     Currency = getsubinfo.Currency,
                                     AddedDate = DateTime.UtcNow,
                                     AddedBy = getuserinfo.FullName,
-                                    SubscriptionAmount = Convert.ToDouble(after_vat_totalamount.ToString("0.00")),
+                                    SubscriptionAmount = Convert.ToDouble(finalValueWithOutVAT.ToString("0.00")),
                                     SubscriptionId = Convert.ToInt32(getsubinfo.SubscriptionId),
                                     Status = "Un-Paid",
                                     IsDeleted = false,
@@ -1715,12 +1731,12 @@ namespace TapPaymentIntegration.Models.HangFire
                                 itemss.image = "";
                                 itemss.quantity = 1;
                                 itemss.name = "Invoice Amount";
-                                itemss.amount = after_vat_totalamount.ToString("0.00");
+                                itemss.amount = finalValueWithOutVAT.ToString("0.00");
                                 itemss.currency = getsubinfo.Currency;
                                 items.Add(itemss);
 
                                 Order order = new Order();
-                                order.amount = after_vat_totalamount.ToString("0.00");
+                                order.amount = finalValueWithOutVAT.ToString("0.00");
                                 order.currency = getsubinfo.Currency;
                                 order.items = items;
 
@@ -1770,7 +1786,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 }
                                 if (myDeserializedClass.status == "CREATED")
                                 {
-                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice={"false"}";
+                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&finalValueWithOutVAT={finalValueWithOutVAT}&isfirstinvoice={"false"}";
 
                                     Invoice i = _context.invoices.FirstOrDefault(a => a.InvoiceId == max_invoice_id);
 
@@ -1781,7 +1797,7 @@ namespace TapPaymentIntegration.Models.HangFire
 
                                     //Next Recurrening Job Date
                                     RecurringCharge recurringCharge = new RecurringCharge();
-                                    recurringCharge.Amount = Convert.ToDecimal(after_vat_totalamount.ToString("0.00"));
+                                    recurringCharge.Amount = Convert.ToDecimal(finalValueWithOutVAT.ToString("0.00"));
                                     recurringCharge.SubscriptionId = getsubinfo.SubscriptionId;
                                     recurringCharge.UserID = getuserinfo.Id;
                                     recurringCharge.Tap_CustomerId = getuserinfo.Tap_CustomerID;
@@ -1842,8 +1858,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     else
                                     {
                                         body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
+                                        body = body.Replace("{Total}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
+                                        body = body.Replace("{InvoiceAmount}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                         var without_vat = Convert.ToDecimal(finalamount);
                                         body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
                                     }
@@ -1927,8 +1943,16 @@ namespace TapPaymentIntegration.Models.HangFire
                                     sun_amount = totala;
                                     Vat = (decimal)((totala / 100) * Convert.ToDecimal(getsubinfo.VAT));
                                 }
-                                decimal after_vat_totalamount = finalamount + Vat;// Convert.ToDecimal(getsubinfo.SetupFee) + Vat;
-
+                                decimal finalValueWithOutVATs = finalamount + Vat;// Convert.ToDecimal(getsubinfo.SetupFee) + Vat;
+                                Decimal finalValueWithOutVAT = 0;
+                                if (Discount != 0)
+                                {
+                                    finalValueWithOutVAT = Decimal.Subtract(finalValueWithOutVATs, Discount);
+                                }
+                                else
+                                {
+                                    finalValueWithOutVAT = finalValueWithOutVATs;
+                                }
                                 Invoice invoice = new Invoice
                                 {
                                     InvoiceStartDate = DateTime.UtcNow,
@@ -1936,7 +1960,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     Currency = getsubinfo.Currency,
                                     AddedDate = DateTime.UtcNow,
                                     AddedBy = getuserinfo.FullName,
-                                    SubscriptionAmount = Convert.ToDouble(after_vat_totalamount.ToString("0.00")),
+                                    SubscriptionAmount = Convert.ToDouble(finalValueWithOutVAT.ToString("0.00")),
                                     SubscriptionId = Convert.ToInt32(getsubinfo.SubscriptionId),
                                     Status = "Un-Paid",
                                     IsDeleted = false,
@@ -2018,12 +2042,12 @@ namespace TapPaymentIntegration.Models.HangFire
                                 itemss.image = "";
                                 itemss.quantity = 1;
                                 itemss.name = "Invoice Amount";
-                                itemss.amount = after_vat_totalamount.ToString("0.00");
+                                itemss.amount = finalValueWithOutVAT.ToString("0.00");
                                 itemss.currency = getsubinfo.Currency;
                                 items.Add(itemss);
 
                                 Order order = new Order();
-                                order.amount = after_vat_totalamount.ToString("0.00");
+                                order.amount = finalValueWithOutVAT.ToString("0.00");
                                 order.currency = getsubinfo.Currency;
                                 order.items = items;
 
@@ -2073,7 +2097,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 }
                                 if (myDeserializedClass.status == "CREATED")
                                 {
-                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice={"false"}";
+                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&finalValueWithOutVAT={finalValueWithOutVAT}&isfirstinvoice={"false"}";
 
                                     Invoice i = _context.invoices.FirstOrDefault(a => a.InvoiceId == max_invoice_id);
 
@@ -2084,7 +2108,7 @@ namespace TapPaymentIntegration.Models.HangFire
 
                                     //Next Recurrening Job Date
                                     RecurringCharge recurringCharge = new RecurringCharge();
-                                    recurringCharge.Amount = Convert.ToDecimal(after_vat_totalamount.ToString("0.00"));
+                                    recurringCharge.Amount = Convert.ToDecimal(finalValueWithOutVAT.ToString("0.00"));
                                     recurringCharge.SubscriptionId = getsubinfo.SubscriptionId;
                                     recurringCharge.UserID = getuserinfo.Id;
                                     recurringCharge.Tap_CustomerId = getuserinfo.Tap_CustomerID;
@@ -2144,8 +2168,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     else
                                     {
                                         body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
+                                        body = body.Replace("{Total}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
+                                        body = body.Replace("{InvoiceAmount}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                         var without_vat = Convert.ToDecimal(finalamount);
                                         body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
                                     }
@@ -2229,8 +2253,16 @@ namespace TapPaymentIntegration.Models.HangFire
                                     sun_amount = totala;
                                     Vat = (decimal)((totala / 100) * Convert.ToDecimal(getsubinfo.VAT));
                                 }
-                                decimal after_vat_totalamount = finalamount + Vat;// Convert.ToDecimal(getsubinfo.SetupFee) + Vat;
-
+                                decimal finalValueWithOutVATs = finalamount + Vat;// Convert.ToDecimal(getsubinfo.SetupFee) + Vat;
+                                Decimal finalValueWithOutVAT = 0;
+                                if (Discount != 0)
+                                {
+                                    finalValueWithOutVAT = Decimal.Subtract(finalValueWithOutVATs, Discount);
+                                }
+                                else
+                                {
+                                    finalValueWithOutVAT = finalValueWithOutVATs;;
+                                }
                                 Invoice invoice = new Invoice
                                 {
                                     InvoiceStartDate = DateTime.UtcNow,
@@ -2238,7 +2270,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     Currency = getsubinfo.Currency,
                                     AddedDate = DateTime.UtcNow,
                                     AddedBy = getuserinfo.FullName,
-                                    SubscriptionAmount = Convert.ToDouble(after_vat_totalamount.ToString("0.00")),
+                                    SubscriptionAmount = Convert.ToDouble(finalValueWithOutVAT.ToString("0.00")),
                                     SubscriptionId = Convert.ToInt32(getsubinfo.SubscriptionId),
                                     Status = "Un-Paid",
                                     IsDeleted = false,
@@ -2320,12 +2352,12 @@ namespace TapPaymentIntegration.Models.HangFire
                                 itemss.image = "";
                                 itemss.quantity = 1;
                                 itemss.name = "Invoice Amount";
-                                itemss.amount = after_vat_totalamount.ToString("0.00");
+                                itemss.amount = finalValueWithOutVAT.ToString("0.00");
                                 itemss.currency = getsubinfo.Currency;
                                 items.Add(itemss);
 
                                 Order order = new Order();
-                                order.amount = after_vat_totalamount.ToString("0.00");
+                                order.amount = finalValueWithOutVAT.ToString("0.00");
                                 order.currency = getsubinfo.Currency;
                                 order.items = items;
 
@@ -2375,7 +2407,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 }
                                 if (myDeserializedClass.status == "CREATED")
                                 {
-                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice={"false"}";
+                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&finalValueWithOutVAT={finalValueWithOutVAT}&isfirstinvoice={"false"}";
 
                                     Invoice i = _context.invoices.FirstOrDefault(a => a.InvoiceId == max_invoice_id);
 
@@ -2386,7 +2418,7 @@ namespace TapPaymentIntegration.Models.HangFire
 
                                     //Next Recurrening Job Date
                                     RecurringCharge recurringCharge = new RecurringCharge();
-                                    recurringCharge.Amount = Convert.ToDecimal(after_vat_totalamount.ToString("0.00"));
+                                    recurringCharge.Amount = Convert.ToDecimal(finalValueWithOutVAT.ToString("0.00"));
                                     recurringCharge.SubscriptionId = getsubinfo.SubscriptionId;
                                     recurringCharge.UserID = getuserinfo.Id;
                                     recurringCharge.Tap_CustomerId = getuserinfo.Tap_CustomerID;
@@ -2447,8 +2479,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     else
                                     {
                                         body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
+                                        body = body.Replace("{Total}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
+                                        body = body.Replace("{InvoiceAmount}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                         var without_vat = Convert.ToDecimal(finalamount);
                                         body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
                                     }
@@ -2532,8 +2564,16 @@ namespace TapPaymentIntegration.Models.HangFire
                                     sun_amount = totala;
                                     Vat = (decimal)((totala / 100) * Convert.ToDecimal(getsubinfo.VAT));
                                 }
-                                decimal after_vat_totalamount = finalamount + Vat;// Convert.ToDecimal(getsubinfo.SetupFee) + Vat;
-
+                                decimal finalValueWithOutVATs = finalamount + Vat;// Convert.ToDecimal(getsubinfo.SetupFee) + Vat;
+                                Decimal finalValueWithOutVAT = 0;
+                                if (Discount != 0)
+                                {
+                                    finalValueWithOutVAT = Decimal.Subtract(finalValueWithOutVATs, Discount);
+                                }
+                                else
+                                {
+                                    finalValueWithOutVAT = finalValueWithOutVATs;;
+                                }
                                 Invoice invoice = new Invoice
                                 {
                                     InvoiceStartDate = DateTime.UtcNow,
@@ -2541,7 +2581,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     Currency = getsubinfo.Currency,
                                     AddedDate = DateTime.UtcNow,
                                     AddedBy = getuserinfo.FullName,
-                                    SubscriptionAmount = Convert.ToDouble(after_vat_totalamount.ToString("0.00")),
+                                    SubscriptionAmount = Convert.ToDouble(finalValueWithOutVAT.ToString("0.00")),
                                     SubscriptionId = Convert.ToInt32(getsubinfo.SubscriptionId),
                                     Status = "Un-Paid",
                                     IsDeleted = false,
@@ -2623,12 +2663,12 @@ namespace TapPaymentIntegration.Models.HangFire
                                 itemss.image = "";
                                 itemss.quantity = 1;
                                 itemss.name = "Invoice Amount";
-                                itemss.amount = after_vat_totalamount.ToString("0.00");
+                                itemss.amount = finalValueWithOutVAT.ToString("0.00");
                                 itemss.currency = getsubinfo.Currency;
                                 items.Add(itemss);
 
                                 Order order = new Order();
-                                order.amount = after_vat_totalamount.ToString("0.00");
+                                order.amount = finalValueWithOutVAT.ToString("0.00");
                                 order.currency = getsubinfo.Currency;
                                 order.items = items;
 
@@ -2678,7 +2718,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 }
                                 if (myDeserializedClass.status == "CREATED")
                                 {
-                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice={"false"}";
+                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&finalValueWithOutVAT={finalValueWithOutVAT}&isfirstinvoice={"false"}";
 
                                     Invoice i = _context.invoices.FirstOrDefault(a => a.InvoiceId == max_invoice_id);
 
@@ -2689,7 +2729,7 @@ namespace TapPaymentIntegration.Models.HangFire
 
                                     //Next Recurrening Job Date
                                     RecurringCharge recurringCharge = new RecurringCharge();
-                                    recurringCharge.Amount = Convert.ToDecimal(after_vat_totalamount.ToString("0.00"));
+                                    recurringCharge.Amount = Convert.ToDecimal(finalValueWithOutVAT.ToString("0.00"));
                                     recurringCharge.SubscriptionId = getsubinfo.SubscriptionId;
                                     recurringCharge.UserID = getuserinfo.Id;
                                     recurringCharge.Tap_CustomerId = getuserinfo.Tap_CustomerID;
@@ -2750,8 +2790,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     else
                                     {
                                         body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
+                                        body = body.Replace("{Total}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
+                                        body = body.Replace("{InvoiceAmount}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                         var without_vat = Convert.ToDecimal(finalamount);
                                         body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
                                     }
@@ -2835,8 +2875,16 @@ namespace TapPaymentIntegration.Models.HangFire
                                     sun_amount = totala;
                                     Vat = (decimal)((totala / 100) * Convert.ToDecimal(getsubinfo.VAT));
                                 }
-                                decimal after_vat_totalamount = finalamount + Vat;// Convert.ToDecimal(getsubinfo.SetupFee) + Vat;
-
+                                decimal finalValueWithOutVATs = finalamount + Vat;// Convert.ToDecimal(getsubinfo.SetupFee) + Vat;
+                                Decimal finalValueWithOutVAT = 0;
+                                if (Discount != 0)
+                                {
+                                    finalValueWithOutVAT = Decimal.Subtract(finalValueWithOutVATs, Discount);
+                                }
+                                else
+                                {
+                                    finalValueWithOutVAT = finalValueWithOutVATs;;
+                                }
 
                                 Invoice invoice = new Invoice
                                 {
@@ -2845,7 +2893,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     Currency = getsubinfo.Currency,
                                     AddedDate = DateTime.UtcNow,
                                     AddedBy = getuserinfo.FullName,
-                                    SubscriptionAmount = Convert.ToDouble(after_vat_totalamount.ToString("0.00")),
+                                    SubscriptionAmount = Convert.ToDouble(finalValueWithOutVAT.ToString("0.00")),
                                     SubscriptionId = Convert.ToInt32(getsubinfo.SubscriptionId),
                                     Status = "Un-Paid",
                                     IsDeleted = false,
@@ -2927,12 +2975,12 @@ namespace TapPaymentIntegration.Models.HangFire
                                 itemss.image = "";
                                 itemss.quantity = 1;
                                 itemss.name = "Invoice Amount";
-                                itemss.amount = after_vat_totalamount.ToString("0.00");
+                                itemss.amount = finalValueWithOutVAT.ToString("0.00");
                                 itemss.currency = getsubinfo.Currency;
                                 items.Add(itemss);
 
                                 Order order = new Order();
-                                order.amount = after_vat_totalamount.ToString("0.00");
+                                order.amount = finalValueWithOutVAT.ToString("0.00");
                                 order.currency = getsubinfo.Currency;
                                 order.items = items;
 
@@ -2982,7 +3030,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 }
                                 if (myDeserializedClass.status == "CREATED")
                                 {
-                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice={"false"}";
+                                    var callbackUrl = $"{Constants.RedirectURL}/Home/SubscriptionAdmin/{getuserinfo.SubscribeID}?link=Yes&userid={getuserinfo.Id}&invoiceid={max_invoice_id}&finalValueWithOutVAT={finalValueWithOutVAT}&isfirstinvoice={"false"}";
 
                                     Invoice i = _context.invoices.FirstOrDefault(a => a.InvoiceId == max_invoice_id);
 
@@ -2993,11 +3041,11 @@ namespace TapPaymentIntegration.Models.HangFire
 
                                     //Next Recurrening Job Date
                                     RecurringCharge recurringCharge = new RecurringCharge();
-                                    recurringCharge.Amount = Convert.ToDecimal(after_vat_totalamount.ToString("0.00"));
+                                    recurringCharge.Amount = Convert.ToDecimal(finalValueWithOutVAT.ToString("0.00"));
                                     recurringCharge.SubscriptionId = getsubinfo.SubscriptionId;
                                     recurringCharge.UserID = getuserinfo.Id;
                                     recurringCharge.Tap_CustomerId = getuserinfo.Tap_CustomerID;
-                                    recurringCharge.ChargeId = deserialized_CreateCharge.id;
+                                    recurringCharge.ChargeId = myDeserializedClass.id;
                                     recurringCharge.JobRunDate = invoice.InvoiceEndDate.AddDays(1);
                                     recurringCharge.Invoice = "Inv" + max_invoice_id;
                                     _context.recurringCharges.Add(recurringCharge);
@@ -3054,8 +3102,8 @@ namespace TapPaymentIntegration.Models.HangFire
                                     else
                                     {
                                         body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
-                                        body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + getsubinfo.Currency);
+                                        body = body.Replace("{Total}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
+                                        body = body.Replace("{InvoiceAmount}", finalValueWithOutVAT.ToString("0.00") + " " + getsubinfo.Currency);
                                         var without_vat = Convert.ToDecimal(finalamount);
                                         body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + getsubinfo.Currency);
                                     }
