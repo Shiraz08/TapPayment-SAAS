@@ -51,12 +51,12 @@
                         <div class="inner">
                             <h3>@ViewBag.InvoiceCount</h3>
 
-                            <p>Received Payment</p>
+                            <p>All Invoices</p>
                         </div>
                         <div class="icon">
                             <i class="ion ion-card"></i>
                         </div>
-                        <a href="@Url.Action("GetAllCharges","Home")" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <a href="@Url.Action("ShowInvoice", "Home", new { PaymentStatus = "All" })" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
                 <!-- ./col -->
@@ -90,6 +90,37 @@
                     </div>
                 </div>
                 <!-- ./col -->
+            </div>
+            <div class="row">
+                <div class="col-lg-3 col-6">
+                    <!-- small box -->
+                    <div class="small-box bg-primary">
+                        <div class="inner">
+                            <h3>@ViewBag.Paid</h3>
+
+                            <p>Paid Invoices</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-card"></i>
+                        </div>
+                        <a href="@Url.Action("ShowInvoice", "Home", new { PaymentStatus = "Payment Captured" })" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+                <div class="col-lg-3 col-6">
+                    <!-- small box -->
+                    <div class="small-box bg-secondary">
+                        <div class="inner">
+                            <h3>@ViewBag.UnPaid</h3>
+
+                            <p>UnPaid Invoices</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-card"></i>
+                        </div>
+                        <a href="@Url.Action("ShowInvoice", "Home", new { PaymentStatus = "Un-Paid" })" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
