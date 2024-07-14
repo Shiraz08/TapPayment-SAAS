@@ -391,7 +391,7 @@ namespace TapPaymentIntegration.Controllers
                     {
                         decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                         var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
-                        finalamount = final_amount_percentage * 12;
+                        finalamount = decimal.Parse(subscriptions.Amount) * 12;
                         Discount = amountpercentage * 12;
                         Due = new DateTimeOffset(DateTime.UtcNow.AddYears(1).AddDays(1)).ToUnixTimeMilliseconds();
                     }
@@ -824,7 +824,7 @@ namespace TapPaymentIntegration.Controllers
                                 {
                                     decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                                     var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
-                                    finalamount = final_amount_percentage * 12;
+                                    finalamount = decimal.Parse(subscriptions.Amount) * 12;
                                     Discount = amountpercentage * 12;
                                 }
                                 if (subscriptions.VAT == null || subscriptions.VAT == "0")
@@ -1181,7 +1181,7 @@ namespace TapPaymentIntegration.Controllers
                                 {
                                     decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                                     var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
-                                    finalamount = final_amount_percentage * 12;
+                                    finalamount = decimal.Parse(subscriptions.Amount) * 12;
                                     Discount = amountpercentage * 12;
                                 }
                                 if (subscriptions.VAT == null || subscriptions.VAT == "0")
@@ -1387,7 +1387,7 @@ namespace TapPaymentIntegration.Controllers
                         {
                             decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                             var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
-                            finalamount = final_amount_percentage * 12;
+                            finalamount = decimal.Parse(subscriptions.Amount) * 12;
                             Discount = amountpercentage * 12;
                         }
                         if (subscriptions.VAT == null || subscriptions.VAT == "0")
@@ -1638,7 +1638,7 @@ namespace TapPaymentIntegration.Controllers
                 {
                     decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                     var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
-                    finalamount = final_amount_percentage * 12;
+                    finalamount = decimal.Parse(subscriptions.Amount) * 12;
                     Discount = amountpercentage * 12;
                 }
                 if (subscriptions.VAT == null || subscriptions.VAT == "0")
@@ -2413,7 +2413,7 @@ namespace TapPaymentIntegration.Controllers
                     {
                         decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                         var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
-                        finalamount = final_amount_percentage * 12;
+                        finalamount = decimal.Parse(subscriptions.Amount) * 12;
                         Discount = amountpercentage * 12;
                     }
                     if (subscriptions.VAT == null || subscriptions.VAT == "0")
@@ -3042,7 +3042,7 @@ namespace TapPaymentIntegration.Controllers
                 {
                     decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                     var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
-                    finalamount = final_amount_percentage * 12;
+                    finalamount = decimal.Parse(subscriptions.Amount) * 12;
                     Discount = amountpercentage * 12;
                 }
                 if (subscriptions.VAT == null || subscriptions.VAT == "0")
@@ -3300,7 +3300,7 @@ namespace TapPaymentIntegration.Controllers
                                 {
                                     decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                                     var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
-                                    finalamount = final_amount_percentage * 12;
+                                    finalamount = decimal.Parse(subscriptions.Amount) * 12;
                                     Discount = amountpercentage * 12;
                                 }
                                 if (subscriptions.VAT == null || subscriptions.VAT == "0")
@@ -3365,7 +3365,7 @@ namespace TapPaymentIntegration.Controllers
                                 {
                                     decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                                     var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
-                                    finalamount = final_amount_percentage * 12;
+                                    finalamount = decimal.Parse(subscriptions.Amount) * 12;
                                     Discount = amountpercentage * 12;
                                 }
                                 if (subscriptions.VAT == null || subscriptions.VAT == "0")
@@ -3467,7 +3467,7 @@ namespace TapPaymentIntegration.Controllers
                             {
                                 decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                                 var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
-                                finalamount = final_amount_percentage * 12;
+                                finalamount = decimal.Parse(subscriptions.Amount) * 12;
                                 Discount = amountpercentage * 12;
                             }
                             if (subscriptions.VAT == null || subscriptions.VAT == "0")
@@ -3539,7 +3539,7 @@ namespace TapPaymentIntegration.Controllers
                             {
                                 decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                                 var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
-                                finalamount = final_amount_percentage * 12;
+                                finalamount = decimal.Parse(subscriptions.Amount) * 12;
                                 Discount = amountpercentage * 12;
                             }
                             if (subscriptions.VAT == null || subscriptions.VAT == "0")
@@ -3647,7 +3647,7 @@ namespace TapPaymentIntegration.Controllers
                     {
                         decimal amountpercentage = (decimal.Parse(sub_info.Amount) / 100) * decimal.Parse(sub_info.Discount);
                         var final_amount_percentage = Convert.ToInt32(sub_info.Amount) - amountpercentage;
-                        finalamount = final_amount_percentage * 12;
+                        finalamount = decimal.Parse(sub_info.Amount) * 12;
                         Discount = amountpercentage * 12;
                     }
                     if (sub_info.VAT == null || sub_info.VAT == "0")

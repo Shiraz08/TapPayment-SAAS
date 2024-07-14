@@ -71,7 +71,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label>Amount:&nbsp;<span style="color:red!important"><b>*</b></span></label>
+                                <label>Monthly Subscription Amount:&nbsp;<span style="color:red!important"><b>*</b></span></label>
                                 <input type="text" class="form-control" id="Amount" name="Amount" tabindex="7" required="required" value="@Model.Amount" />
                             </div>
                         </div>
@@ -83,7 +83,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label>Discount:&nbsp;<span style="color:red!important"><b>*</b></span></label>
+                                <label>Annual Discount %:&nbsp;<span style="color:red!important"><b style="font-size: 12px;">*(Discount on Setup Fee + Subscription Fee)</b></span></label>
                                 <input type="number" class="form-control" id="Discount"   value="@Model.Discount" name="Discount" required="required" min="0" oninput="validity.valid||(value='');" value="0" />
                             </div>
                         </div>

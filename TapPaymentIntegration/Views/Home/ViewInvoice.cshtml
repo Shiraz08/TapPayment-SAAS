@@ -151,7 +151,7 @@
                                                     {
                                                         decimal amountpercentage = (decimal.Parse(Model.Subscriptions.Amount) / 100) * decimal.Parse(Model.Subscriptions.Discount);
                                                         var final_amount_percentage = Convert.ToInt32(Model.Subscriptions.Amount) - amountpercentage;
-                                                        var finalamount = final_amount_percentage * 12;
+                                                        var finalamount = decimal.Parse(Model.Subscriptions.Amount) * 12;
                                                         var Discount = amountpercentage * 12;
                                                         var Discounts = Convert.ToDecimal(Discount).ToString("0.00");
                                                         <td style="text-align:center!important">@Model.Subscriptions.Currency @Discounts</td>
@@ -169,9 +169,9 @@
                                                     var total = Convert.ToDecimal(Model.finalamount) + ((bool)Model.IsFirstInvoice ? Convert.ToDecimal(Model.Subscriptions.SetupFee) : 0.00m);
                                                     if (@Model.Subscriptions.Discount != "0")
                                                     {
-                                                                                                                decimal amountpercentage = (decimal.Parse(Model.Subscriptions.Amount) / 100) * decimal.Parse(Model.Subscriptions.Discount);
+                                                        decimal amountpercentage = (decimal.Parse(Model.Subscriptions.Amount) / 100) * decimal.Parse(Model.Subscriptions.Discount);
                                                         var final_amount_percentage = Convert.ToInt32(Model.Subscriptions.Amount) - amountpercentage;
-                                                        var finalamount = final_amount_percentage * 12;
+                                                        var finalamount = decimal.Parse(Model.Subscriptions.Amount) * 12;
                                                         var Discount = amountpercentage * 12;
                                                         var subDiscount = Decimal.Subtract(total, Discount);
                                                         <td style="text-align:center!important">@Model.Subscriptions.Currency @Convert.ToDecimal(subDiscount).ToString("0.00")</td>
@@ -199,7 +199,7 @@
                                                     {
                                                         decimal amountpercentage = (decimal.Parse(Model.Subscriptions.Amount) / 100) * decimal.Parse(Model.Subscriptions.Discount);
                                                         var final_amount_percentage = Convert.ToInt32(Model.Subscriptions.Amount) - amountpercentage;
-                                                        var finalamount = final_amount_percentage * 12;
+                                                        var finalamount = decimal.Parse(Model.Subscriptions.Amount) * 12;
                                                         var Discount = amountpercentage * 12;
                                                         var subDiscount = Decimal.Subtract(gtotal, Discount);
                                                         <td style="text-align:center!important">@Model.Subscriptions.Currency @subDiscount.ToString("0.00")</td>

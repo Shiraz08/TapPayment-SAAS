@@ -293,13 +293,13 @@ html {
                                         </tr>
                                         <tr>
                                             <td style="width:800px;border: none;"></td>
-                                            <td style="text-align:center!important;color:black!important;width:365px">Discount</td>
-                                            <td style="text-align:center!important;color:black!important;width:153px"><input type="text" id="Discount" name="Discount" class="form-control" style="text-align:center" readonly="readonly" /></td>
+                                            <td style="text-align:center!important;color:black!important;width:365px">Setup Fee</td>
+                                            <td style="text-align:center!important;color:black!important;width:153px"><input type="text" id="setupfee" name="setupfee" class="form-control" value="@Model.SetupFee" style="text-align:center" readonly="readonly" /></td>
                                         </tr>
                                         <tr>
                                             <td style="width:800px;border: none;"></td>
-                                            <td style="text-align:center!important;color:black!important;width:365px">Setup Fee</td>
-                                            <td style="text-align:center!important;color:black!important;width:153px"><input type="text" id="setupfee" name="setupfee" class="form-control" value="@Model.SetupFee" style="text-align:center" readonly="readonly" /></td>
+                                            <td style="text-align:center!important;color:black!important;width:365px">Discount</td>
+                                            <td style="text-align:center!important;color:black!important;width:153px"><input type="text" id="Discount" name="Discount" class="form-control" style="text-align:center" readonly="readonly" /></td>
                                         </tr>
                                         <tr>
                                             <td style="width:800px;border: none;"></td>
@@ -626,9 +626,10 @@ html {
         var subscriptionamount = "";
         if (selValue == "YEARLY") 
         {
+            debugger
             var amountpercentage = (@Model.Amount / 100) * @Model.Discount;
             var final_amount_percentage = @Model.Amount - amountpercentage;
-            subscriptionamount = final_amount_percentage * 12;
+            subscriptionamount = @Model.Amount * 12;
             var dis = amountpercentage * 12;
             $("#Discount").val(dis.toFixed(2));
         }
@@ -662,12 +663,12 @@ html {
         }
         else 
         {
-            if (dis != 0)
+            if (dis && parseFloat(dis) != 0) 
             {
                 var abc = parseFloat(totala) - parseFloat(dis);
                 calculate_vat = (abc / 100) * parseFloat(@Model.VAT);
             }
-            else 
+            else
             {
                 calculate_vat = (totala / 100) * parseFloat(@Model.VAT);
             }
@@ -679,8 +680,7 @@ html {
         var subscriptionSetupFee = @Model.SetupFee;
         var allamount = parseFloat(subscriptionamount) + parseFloat(subscriptionSetupFee) + parseFloat(calculate_vat);
         var totalamount = "";
-        if (dis != 0) 
-        {
+        if (dis && parseFloat(dis) != 0) {
             totalamount = parseFloat(allamount) - parseFloat(dis);
         }
         else {
@@ -691,3 +691,4 @@ html {
         $("#TotalPlanfee2").val(totalamount.toFixed(2));
     });
 </script>
+@* || dis != "undefined" *@

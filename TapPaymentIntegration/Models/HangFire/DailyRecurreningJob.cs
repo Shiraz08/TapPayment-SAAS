@@ -42,7 +42,7 @@ namespace TapPaymentIntegration.Models.HangFire
         public async Task AutoChargeJob()
         {
             CreateCharge deserialized_CreateCharge = null;
-            var recurringCharges_list = _context.recurringCharges.Where(x => x.JobRunDate.Date == DateTime.UtcNow.Date && x.IsRun == false && x.IsFreeze != true && (x.ChargeId != null || x.ChargeId != "")).ToList();
+            var recurringCharges_list = _context.recurringCharges.Where(x => x.JobRunDate.Date == DateTime.UtcNow.Date && x.IsRun == false && x.IsFreeze != true && x.ChargeId != null).ToList();
             foreach (var item in recurringCharges_list)
             {
                 string[] result = item.ChargeId.Split('_').ToArray();
@@ -1229,8 +1229,7 @@ namespace TapPaymentIntegration.Models.HangFire
         public async Task AutoChargeJobForBenefit()
         {
             CreateCharge deserialized_CreateCharge = null;
-            var recurringCharges_list = _context.recurringCharges.Where(x => x.JobRunDate.Date == DateTime.UtcNow.Date && x.IsRun == false && x.IsFreeze != true && (x.ChargeId != null || x.ChargeId != "")).ToList();
-            //var recurringCharges_list = _context.recurringCharges.Where(x => x.IsRun == false).ToList();
+            var recurringCharges_list = _context.recurringCharges.Where(x => x.JobRunDate.Date == DateTime.UtcNow.Date && x.IsRun == false && x.IsFreeze != true && x.ChargeId != null).ToList();
             foreach (var item in recurringCharges_list)
             {
                 string[] result = item.ChargeId.Split('_').ToArray();
@@ -1298,7 +1297,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 {
                                     decimal amountpercentage = (decimal.Parse(getsubinfo.Amount) / 100) * decimal.Parse(getsubinfo.Discount);
                                     var final_amount_percentage = Convert.ToInt32(getsubinfo.Amount) - amountpercentage;
-                                    finalamount = final_amount_percentage * 12;
+                                    finalamount = decimal.Parse(getsubinfo.Amount) * 12;
                                     Discount = amountpercentage * 12;
                                     Due = new DateTimeOffset(DateTime.UtcNow.AddYears(1).AddDays(1)).ToUnixTimeMilliseconds();
                                 }
@@ -1617,7 +1616,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 {
                                     decimal amountpercentage = (decimal.Parse(getsubinfo.Amount) / 100) * decimal.Parse(getsubinfo.Discount);
                                     var final_amount_percentage = Convert.ToInt32(getsubinfo.Amount) - amountpercentage;
-                                    finalamount = final_amount_percentage * 12;
+                                    finalamount = decimal.Parse(getsubinfo.Amount) * 12;
                                     Discount = amountpercentage * 12;
                                     Due = new DateTimeOffset(DateTime.UtcNow.AddYears(1).AddDays(1)).ToUnixTimeMilliseconds();
                                 }
@@ -1929,7 +1928,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 {
                                     decimal amountpercentage = (decimal.Parse(getsubinfo.Amount) / 100) * decimal.Parse(getsubinfo.Discount);
                                     var final_amount_percentage = Convert.ToInt32(getsubinfo.Amount) - amountpercentage;
-                                    finalamount = final_amount_percentage * 12;
+                                    finalamount = decimal.Parse(getsubinfo.Amount) * 12;
                                     Discount = amountpercentage * 12;
                                     Due = new DateTimeOffset(DateTime.UtcNow.AddYears(1).AddDays(1)).ToUnixTimeMilliseconds();
                                 }
@@ -2239,7 +2238,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 {
                                     decimal amountpercentage = (decimal.Parse(getsubinfo.Amount) / 100) * decimal.Parse(getsubinfo.Discount);
                                     var final_amount_percentage = Convert.ToInt32(getsubinfo.Amount) - amountpercentage;
-                                    finalamount = final_amount_percentage * 12;
+                                    finalamount = decimal.Parse(getsubinfo.Amount) * 12;
                                     Discount = amountpercentage * 12;
                                     Due = new DateTimeOffset(DateTime.UtcNow.AddYears(1).AddDays(1)).ToUnixTimeMilliseconds();
                                 }
@@ -2550,7 +2549,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 {
                                     decimal amountpercentage = (decimal.Parse(getsubinfo.Amount) / 100) * decimal.Parse(getsubinfo.Discount);
                                     var final_amount_percentage = Convert.ToInt32(getsubinfo.Amount) - amountpercentage;
-                                    finalamount = final_amount_percentage * 12;
+                                    finalamount = decimal.Parse(getsubinfo.Amount) * 12;
                                     Discount = amountpercentage * 12;
                                     Due = new DateTimeOffset(DateTime.UtcNow.AddYears(1).AddDays(1)).ToUnixTimeMilliseconds();
                                 }
@@ -2861,7 +2860,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                 {
                                     decimal amountpercentage = (decimal.Parse(getsubinfo.Amount) / 100) * decimal.Parse(getsubinfo.Discount);
                                     var final_amount_percentage = Convert.ToInt32(getsubinfo.Amount) - amountpercentage;
-                                    finalamount = final_amount_percentage * 12;
+                                    finalamount = decimal.Parse(getsubinfo.Amount) * 12;
                                     Discount = amountpercentage * 12;
                                     Due = new DateTimeOffset(DateTime.UtcNow.AddYears(1).AddDays(1)).ToUnixTimeMilliseconds();
                                 }
@@ -3215,7 +3214,7 @@ namespace TapPaymentIntegration.Models.HangFire
                 {
                     decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
                     var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
-                    finalamount = final_amount_percentage * 12;
+                    finalamount = decimal.Parse(subscriptions.Amount) * 12;
                     Discount = amountpercentage * 12;
                 }
                 Decimal finalinvoicevalue = 0;
@@ -3423,7 +3422,7 @@ namespace TapPaymentIntegration.Models.HangFire
         //        {
         //            var amountpercentage = (decimal)(Convert.ToInt32(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
         //            var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
-        //            finalamount = final_amount_percentage * 12;
+        //            finalamount = decimal.Parse(subscriptions.Amount) * 12;
         //            Discount = amountpercentage * 12;
         //        }
         //        if (subscriptions.VAT == null || subscriptions.VAT == "0")
