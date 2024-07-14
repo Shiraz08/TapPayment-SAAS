@@ -3186,7 +3186,6 @@ namespace TapPaymentIntegration.Models.HangFire
                     JobRunDate = item.JobRunDate.AddYears(1);
                 }
 
-                int newInvoiceId = _context.invoices.Max(x => x.InvoiceId);
                 if (users.Frequency == "DAILY")
                 {
                     Discount = 0;
@@ -3219,27 +3218,31 @@ namespace TapPaymentIntegration.Models.HangFire
                     finalamount = final_amount_percentage * 12;
                     Discount = amountpercentage * 12;
                 }
+                Decimal finalinvoicevalue = 0;
                 if (subscriptions.VAT == null || subscriptions.VAT == "0")
                 {
                     Vat = 0;
                 }
                 else
                 {
-                    decimal totala = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
+                    decimal totala = finalamount;
                     Decimal finalTotal = 0;
                     if (Discount != 0)
                     {
                         finalTotal = Decimal.Subtract(totala, Discount);
+                        finalinvoicevalue = finalTotal;
                         Vat = CalculatePercentage(finalTotal, Convert.ToDecimal(subscriptions.VAT));
                     }
                     else
                     {
+                        finalinvoicevalue = totala;
                         Vat = CalculatePercentage(totala, Convert.ToDecimal(subscriptions.VAT));
                     }
 
                     VatwithoutSetupFee = (decimal)((finalamount / 100) * Convert.ToInt32(subscriptions.VAT));
                 }
-                decimal after_vat_totalamount = finalamount + Convert.ToDecimal(subscriptions.SetupFee) + Vat;
+                decimal after_vat_totalamount = finalinvoicevalue + Vat;
+                int newInvoiceId = _context.invoices.Max(x => x.InvoiceId) + 1;
                 //Craete New Invoice
                 Invoice invoices = new Invoice
                 {
@@ -3247,7 +3250,7 @@ namespace TapPaymentIntegration.Models.HangFire
                     InvoiceEndDate = JobRunDate.Value,
                     Currency = subscriptions.Currency,
                     AddedDate = DateTime.UtcNow,
-                    InvoiceLink = $"{Constants.RedirectURL}Home/SubscriptionAdmin/{users.SubscribeID}?link=Yes&userid={users.Id}&invoiceid={max_invoice_id.InvoiceId}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice=true",
+                    InvoiceLink = $"{Constants.RedirectURL}Home/SubscriptionAdmin/{users.SubscribeID}?link=Yes&userid={users.Id}&invoiceid={newInvoiceId}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice=false",
                     AddedBy = "System",
                     SubscriptionAmount = Convert.ToDouble(after_vat_totalamount.ToString("0.00")),
                     SubscriptionId = Convert.ToInt32(subscriptions.SubscriptionId),
@@ -3262,10 +3265,11 @@ namespace TapPaymentIntegration.Models.HangFire
                     ChargeId = null,
                     GymName = users.GYMName,
                     Country = subscriptions.Countries,
-                    IsFirstInvoice = true
+                    IsFirstInvoice = false
                 };
                 _context.invoices.Add(invoices);
                 _context.SaveChanges();
+
                 // Send Email
                 string body = string.Empty;
                 _environment.WebRootPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
@@ -3281,21 +3285,21 @@ namespace TapPaymentIntegration.Models.HangFire
                 body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
 
                 body = body.Replace("{InvocieStatus}", "Unpaid");
-                body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id);
+                body = body.Replace("{InvoiceID}", "Inv" + newInvoiceId);
 
                 body = body.Replace("{User_Name}", users.FullName);
                 body = body.Replace("{User_Email}", users.Email);
                 body = body.Replace("{User_GYM}", users.GYMName);
                 body = body.Replace("{User_Phone}", users.PhoneNumber);
 
-                var setupFree = Convert.ToDecimal(subscriptions.SetupFee).ToString("0.00");
+                var setupFree = Convert.ToDecimal(0).ToString("0.00");
                 var discount = Convert.ToDecimal(Discount).ToString("0.00");
 
                 body = body.Replace("{SubscriptionName}", subscriptions.Name);
                 body = body.Replace("{Discount}", discount + " " + subscriptions.Currency);
                 body = body.Replace("{SubscriptionPeriod}", users.Frequency);
                 body = body.Replace("{SetupFee}", setupFree + " " + subscriptions.Currency);
-                var amount = finalamount + Convert.ToDecimal(setupFree);
+                var amount = finalamount + Convert.ToDecimal(Vat);
                 body = body.Replace("{SubscriptionAmount}", finalamount.ToString("0.00") + " " + subscriptions.Currency);
                 //Calculate VAT
                 var linkamount = "";
@@ -3305,14 +3309,14 @@ namespace TapPaymentIntegration.Models.HangFire
                     Decimal finalTotal = 0;
                     if (Discount != 0)
                     {
-                        finalTotal = Decimal.Subtract(after_vat_totalamount, Discount);
+                        finalTotal = Decimal.Subtract(amount, Discount);
                         linkamount = finalTotal.ToString("0.00");
                         body = body.Replace("{Total}", finalTotal.ToString("0.00") + " " + subscriptions.Currency);
                     }
                     else
                     {
-                        linkamount = after_vat_totalamount.ToString("0.00");
-                        body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
+                        linkamount = amount.ToString("0.00");
+                        body = body.Replace("{Total}", amount.ToString("0.00") + " " + subscriptions.Currency);
                     }
                     body = body.Replace("{InvoiceAmount}", amount.ToString("0.00") + " " + subscriptions.Currency);
                     var without_vat = finalamount + Convert.ToDecimal(setupFree);
@@ -3334,17 +3338,17 @@ namespace TapPaymentIntegration.Models.HangFire
                     Decimal finalTotal = 0;
                     if (Discount != 0)
                     {
-                        finalTotal = Decimal.Subtract(after_vat_totalamount, Discount);
+                        finalTotal = Decimal.Subtract(amount, Discount);
                         linkamount = finalTotal.ToString("0.00");
                         body = body.Replace("{Total}", finalTotal.ToString("0.00") + " " + subscriptions.Currency);
                     }
                     else
                     {
-                        linkamount = after_vat_totalamount.ToString("0.00");
-                        body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
+                        linkamount = amount.ToString("0.00");
+                        body = body.Replace("{Total}", amount.ToString("0.00") + " " + subscriptions.Currency);
                     }
 
-                    body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
+                    body = body.Replace("{InvoiceAmount}", amount.ToString("0.00") + " " + subscriptions.Currency);
                     var without_vat = finalamount + Convert.ToDecimal(setupFree);
                     Decimal finalValueWithOutVAT = 0;
                     if (Discount != 0)
@@ -3358,11 +3362,11 @@ namespace TapPaymentIntegration.Models.HangFire
                     }
                 }
                 var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
-                var callbackUrl = $"/Home/SubscriptionAdmin/{users.SubscribeID}?link=Yes&userid={users.Id}&invoiceid={newInvoiceId}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice=true";
+                var callbackUrl = $"/Home/SubscriptionAdmin/{users.SubscribeID}?link=Yes&userid={users.Id}&invoiceid={newInvoiceId}&After_vat_totalamount={after_vat_totalamount}&isfirstinvoice=false";
                 var websiteurl = HtmlEncoder.Default.Encode(Constants.RedirectURL + callbackUrl);
 
 
-                var subject = "Tamarran – Payment Request - " + " Inv" + max_invoice_id.InvoiceId.ToString();
+                var subject = "Tamarran – Payment Request - " + " Inv" + newInvoiceId.ToString();
                 var bodyemail = EmailBodyFill.EmailBodyForPaymentRequest(users, websiteurl);
                 _ = _emailSender.SendEmailWithFIle(bytes, users.Email, subject, bodyemail);
             }
