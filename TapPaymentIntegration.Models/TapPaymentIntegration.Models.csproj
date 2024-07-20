@@ -127,6 +127,7 @@
     <Compile Include="Subscription\SubscriptionInfo.cs" />
     <Compile Include="Subscription\Subscriptions.cs" />
     <Compile Include="Subscription\UserSubscriptions.cs" />
+    <Compile Include="UserDTO\RecurringInvoiceInfo.cs" />
     <Compile Include="UserDTO\UserInfoDTO.cs" />
     <Compile Include="UserRole\ManageUserRolesViewModel.cs" />
     <Compile Include="UserRole\RoleAsignToUser.cs" />

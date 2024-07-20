@@ -2182,6 +2182,10 @@ namespace TapPaymentIntegration.Controllers
                 var email = applicationUser.UserName;
 
                 // save data to database
+                if (applicationUser.InvoiceSendDate.HasValue)
+                {
+                    applicationUser.IsNullLateInvoice = true;
+                }
                 applicationUser.Email = email;
                 applicationUser.Status = true;
                 applicationUser.UserType = "Customer";
@@ -2536,8 +2540,45 @@ namespace TapPaymentIntegration.Controllers
 
                     var subject = "Tamarran – Payment Request - " + " Inv" + max_invoice_id.ToString();
                     var bodyemail = EmailBodyFill.EmailBodyForPaymentRequest(applicationUser, websiteurl);
-                    _ = _emailSender.SendEmailWithFIle(bytes, applicationUser.Email, subject, bodyemail);
+                    if (applicationUser.InvoiceSendDate.HasValue)
+                    {
+                        RecurringInvoiceInfo invoiceDetails = new RecurringInvoiceInfo
+                        {
+                            InvoiceID = "Inv" + max_invoice_id,
+                            UserName = applicationUser.FullName,
+                            UserEmail = applicationUser.Email,
+                            UserGYM = applicationUser.GYMName,
+                            UserPhone = applicationUser.PhoneNumber,
+                            SubscriptionName = subscriptions.Name,
+                            Discount = Convert.ToDecimal(Discount).ToString("0.00") + " " + subscriptions.Currency,
+                            SubscriptionPeriod = applicationUser.Frequency,
+                            SetupFee = Convert.ToDecimal(subscriptions.SetupFee).ToString("0.00") + " " + subscriptions.Currency,
+                            SubscriptionAmount = finalamount.ToString("0.00") + " " + subscriptions.Currency,
+                            VAT = (subscriptions.VAT == null || subscriptions.VAT == "0") ? "0.00" + " " + subscriptions.Currency : Vat.ToString("0.00") + " " + subscriptions.Currency,
+                            Total = (subscriptions.VAT == null || subscriptions.VAT == "0") ?
+                            (Discount != 0 ? Decimal.Subtract(after_vat_totalamount, Discount).ToString("0.00") : after_vat_totalamount.ToString("0.00")) + " " + subscriptions.Currency :
+                            (Discount != 0 ? Decimal.Subtract(after_vat_totalamount, Discount).ToString("0.00") : after_vat_totalamount.ToString("0.00")) + " " + subscriptions.Currency,
+                            InvoiceAmount = (subscriptions.VAT == null || subscriptions.VAT == "0") ?
+                            amount.ToString("0.00") + " " + subscriptions.Currency :
+                            after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency,
+                            TotalInvoiceWithoutVAT = (subscriptions.VAT == null || subscriptions.VAT == "0") ?
+                            (Discount != 0 ? Decimal.Subtract(finalamount + Convert.ToDecimal(setupFree), Discount).ToString("0.00") : (finalamount + Convert.ToDecimal(setupFree)).ToString("0.00")) + " " + subscriptions.Currency :
+                            (Discount != 0 ? Decimal.Subtract(finalamount + Convert.ToDecimal(setupFree), Discount).ToString("0.00") : (finalamount + Convert.ToDecimal(setupFree)).ToString("0.00")) + " " + subscriptions.Currency,
+                            InvoiceLink = websiteurl,
+                            UserId = applicationUser.Id,
+                            Subject = subject,
+                            SubscriptionId = subscriptions.SubscriptionId,
+                            InvoiceIds = max_invoice_id,
+                            InvoiceSendDate = (DateTime)applicationUser.InvoiceSendDate
+                        };
+                        _context.RecurringInvoiceInfo.Add(invoiceDetails);
+                        _context.SaveChanges();
 
+                    }
+                    else
+                    {
+                        _ = _emailSender.SendEmailWithFIle(bytes, applicationUser.Email, subject, bodyemail);
+                    }
 
 
                     var adduser = _context.Users.Where(x => x.Email == applicationUser.Email).FirstOrDefault();

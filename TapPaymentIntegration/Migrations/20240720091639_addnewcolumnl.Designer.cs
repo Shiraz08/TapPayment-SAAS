@@ -12,8 +12,8 @@ using TapPaymentIntegration.Data;
 namespace TapPaymentIntegration.Migrations
 {
     [DbContext(typeof(TapPaymentIntegrationContext))]
-    [Migration("20231011074515_addinvoicename")]
-    partial class addinvoicename
+    [Migration("20240720091639_addnewcolumnl")]
+    partial class addnewcolumnl
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -169,6 +169,9 @@ namespace TapPaymentIntegration.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("Benefit_Invoice")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
 
@@ -189,6 +192,9 @@ namespace TapPaymentIntegration.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("First_Six")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Frequency")
                         .HasColumnType("nvarchar(max)");
 
@@ -196,6 +202,15 @@ namespace TapPaymentIntegration.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GYMName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("InvoiceSendDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool?>("IsNullLateInvoice")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Last_Four")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
@@ -270,6 +285,9 @@ namespace TapPaymentIntegration.Migrations
                     b.Property<string>("VAT")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("recaptchaToken")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -281,51 +299,6 @@ namespace TapPaymentIntegration.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("TapPaymentIntegration.Areas.Identity.Data.Subscriptions", b =>
-                {
-                    b.Property<int>("SubscriptionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubscriptionId"), 1L, 1);
-
-                    b.Property<string>("Amount")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Countries")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Frequency")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SetupFee")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("VAT")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("SubscriptionId");
-
-                    b.ToTable("subscriptions");
                 });
 
             modelBuilder.Entity("TapPaymentIntegration.Models.Card.ChangeCardInfo", b =>
@@ -379,6 +352,9 @@ namespace TapPaymentIntegration.Migrations
                     b.Property<int>("ChargeResponseId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Country")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Currency")
                         .HasColumnType("nvarchar(max)");
 
@@ -386,6 +362,9 @@ namespace TapPaymentIntegration.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Discount")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GymName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("InvoiceEndDate")
@@ -400,17 +379,26 @@ namespace TapPaymentIntegration.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool?>("IsFirstInvoice")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("PaidBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SubscriptionAmount")
-                        .HasColumnType("int");
+                    b.Property<double>("SubscriptionAmount")
+                        .HasColumnType("float");
 
                     b.Property<int>("SubscriptionId")
                         .HasColumnType("int");
@@ -474,6 +462,9 @@ namespace TapPaymentIntegration.Migrations
                     b.Property<string>("Invoice")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsFreeze")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsRun")
                         .HasColumnType("bit");
 
@@ -492,6 +483,158 @@ namespace TapPaymentIntegration.Migrations
                     b.HasKey("RecurringChargeId");
 
                     b.ToTable("recurringCharges");
+                });
+
+            modelBuilder.Entity("TapPaymentIntegration.Models.Subscription.Subscriptions", b =>
+                {
+                    b.Property<int>("SubscriptionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubscriptionId"), 1L, 1);
+
+                    b.Property<string>("Amount")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Countries")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Discount")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Frequency")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SetupFee")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("VAT")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SubscriptionId");
+
+                    b.ToTable("subscriptions");
+                });
+
+            modelBuilder.Entity("TapPaymentIntegration.Models.Subscription.UserSubscriptions", b =>
+                {
+                    b.Property<int>("UserSubscriptionsId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserSubscriptionsId"), 1L, 1);
+
+                    b.Property<int>("SubID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Userid")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserSubscriptionsId");
+
+                    b.ToTable("userSubscriptions");
+                });
+
+            modelBuilder.Entity("TapPaymentIntegration.Models.UserDTO.RecurringInvoiceInfo", b =>
+                {
+                    b.Property<int>("RecurringInvoiceInfoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecurringInvoiceInfoId"), 1L, 1);
+
+                    b.Property<string>("CurrentDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Discount")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InvoiceAmount")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InvoiceID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("InvoiceIds")
+                        .HasColumnType("int");
+
+                    b.Property<string>("InvoiceLink")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("InvoiceSendDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("InvoiceStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SetupFee")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubscriptionAmount")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SubscriptionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SubscriptionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubscriptionPeriod")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Total")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TotalInvoiceWithoutVAT")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserGYM")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserPhone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VAT")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("RecurringInvoiceInfoId");
+
+                    b.ToTable("RecurringInvoiceInfo");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

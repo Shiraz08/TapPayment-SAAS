@@ -6,6 +6,7 @@ using TapPaymentIntegration.Models.Card;
 using TapPaymentIntegration.Models.InvoiceDTO;
 using TapPaymentIntegration.Models.PaymentDTO;
 using TapPaymentIntegration.Models.Subscription;
+using TapPaymentIntegration.Models.UserDTO;
 
 namespace TapPaymentIntegration.Data;
 
@@ -27,6 +28,7 @@ public class TapPaymentIntegrationContext : IdentityDbContext<ApplicationUser>
     public DbSet<RecurringCharge>  recurringCharges { get; set; } 
     public DbSet<ChangeCardInfo> changeCardInfos { get; set; } 
     public DbSet<UserSubscriptions> userSubscriptions { get; set; } 
+    public DbSet<RecurringInvoiceInfo> RecurringInvoiceInfo { get; set; } 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

@@ -8,12 +8,12 @@ using System.Text.RegularExpressions;
 using TapPaymentIntegration.Areas.Identity.Data;
 using TapPaymentIntegration.Controllers;
 using TapPaymentIntegration.Data;
-using TapPaymentIntegration.Migrations;
 using TapPaymentIntegration.Models.Card;
 using TapPaymentIntegration.Models.Email;
 using TapPaymentIntegration.Models.InvoiceDTO;
 using TapPaymentIntegration.Models.PaymentDTO;
 using TapPaymentIntegration.Models.Subscription;
+using TapPaymentIntegration.Models.UserDTO;
 using TapPaymentIntegration.Utility;
 using ApplicationUser = TapPaymentIntegration.Areas.Identity.Data.ApplicationUser;
 using Order = TapPaymentIntegration.Models.InvoiceDTO.Order;
@@ -3370,6 +3370,79 @@ namespace TapPaymentIntegration.Models.HangFire
                 _ = _emailSender.SendEmailWithFIle(bytes, users.Email, subject, bodyemail);
             }
 
+        }
+        public async Task InvoiceSendByDate() 
+        {
+            var recurringCharges_list = _context.RecurringInvoiceInfo.Where(x => x.InvoiceSendDate.Date == DateTime.UtcNow.Date && x.Title != null).ToList();
+            foreach (var item in recurringCharges_list)
+            {
+                var applicationUser = _context.Users.Where(x => x.Id == item.UserId).FirstOrDefault();
+                var subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == item.SubscriptionId).FirstOrDefault();
+                RecurringInvoiceInfo invoiceDetails = new RecurringInvoiceInfo
+                {
+                    InvoiceID = item.InvoiceID,
+                    UserName = applicationUser.FullName,
+                    UserEmail = applicationUser.Email,
+                    UserGYM = applicationUser.GYMName,
+                    UserPhone = applicationUser.PhoneNumber,
+                    SubscriptionName = subscriptions.Name,
+                    Discount = item.Discount.ToString(),
+                    SubscriptionPeriod = applicationUser.Frequency,
+                    SetupFee =item.SetupFee,
+                    SubscriptionAmount =item.SubscriptionAmount,
+                    VAT = item.VAT,
+                    Total =item.Total,
+                    InvoiceAmount = item.InvoiceAmount,
+                    TotalInvoiceWithoutVAT = item.TotalInvoiceWithoutVAT,
+                    InvoiceLink = item.InvoiceLink,
+                    UserId = applicationUser.Id,
+                    Subject = item.Subject,
+                    SubscriptionId = subscriptions.SubscriptionId,
+                    InvoiceIds = item.InvoiceIds,
+                    InvoiceSendDate = (DateTime)applicationUser.InvoiceSendDate
+                };
+
+                // Send Email
+                string body = string.Empty;
+                _environment.WebRootPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                string contentRootPath = _environment.WebRootPath + "/htmltopdfP.html";
+                string contentRootPath1 = _environment.WebRootPath + "/css/bootstrap.min.css";
+                //Generate PDF
+                using (StreamReader reader = new StreamReader(contentRootPath))
+                {
+                    body = reader.ReadToEnd();
+                }
+                // Replace body values
+                body = body.Replace("{title}", invoiceDetails.Title);
+                body = body.Replace("{currentdate}", invoiceDetails.CurrentDate);
+                body = body.Replace("{InvocieStatus}", invoiceDetails.InvoiceStatus);
+                body = body.Replace("{InvoiceID}", invoiceDetails.InvoiceID);
+                body = body.Replace("{User_Name}", invoiceDetails.UserName);
+                body = body.Replace("{User_Email}", invoiceDetails.UserEmail);
+                body = body.Replace("{User_GYM}", invoiceDetails.UserGYM);
+                body = body.Replace("{User_Phone}", invoiceDetails.UserPhone);
+                body = body.Replace("{SubscriptionName}", invoiceDetails.SubscriptionName);
+                body = body.Replace("{Discount}", invoiceDetails.Discount);
+                body = body.Replace("{SubscriptionPeriod}", invoiceDetails.SubscriptionPeriod);
+                body = body.Replace("{SetupFee}", invoiceDetails.SetupFee);
+                body = body.Replace("{SubscriptionAmount}", invoiceDetails.SubscriptionAmount);
+                body = body.Replace("{VAT}", invoiceDetails.VAT);
+                body = body.Replace("{Total}", invoiceDetails.Total);
+                body = body.Replace("{InvoiceAmount}", invoiceDetails.InvoiceAmount);
+                body = body.Replace("{Totalinvoicewithoutvat}", invoiceDetails.TotalInvoiceWithoutVAT);
+
+
+                var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
+                var websiteurl = invoiceDetails.InvoiceLink;
+                var subject = item.Subject;
+                var bodyemail = EmailBodyFill.EmailBodyForPaymentRequest(applicationUser, websiteurl);
+                _ = _emailSender.SendEmailWithFIle(bytes, applicationUser.Email, subject, bodyemail);
+
+                item.Title = null;
+                _context.RecurringInvoiceInfo.Update(item);
+                _context.SaveChanges();
+
+            }
         }
         public static decimal CalculatePercentage(decimal num, decimal percent)
         {

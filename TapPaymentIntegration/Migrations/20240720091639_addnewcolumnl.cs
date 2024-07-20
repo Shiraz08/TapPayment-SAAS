@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TapPaymentIntegration.Migrations
 {
-    public partial class Initial : Migration
+    public partial class addnewcolumnl : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -34,8 +34,12 @@ namespace TapPaymentIntegration.Migrations
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Frequency = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InvoiceSendDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsNullLateInvoice = table.Column<bool>(type: "bit", nullable: true),
                     PublicKey = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VAT = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SecertKey = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MarchantID = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     SubscribeID = table.Column<int>(type: "int", nullable: false),
                     Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -45,6 +49,10 @@ namespace TapPaymentIntegration.Migrations
                     Tap_Subscription_ID = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Tap_Agreement_ID = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Tap_Card_ID = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    First_Six = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Last_Four = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Benefit_Invoice = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    recaptchaToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -110,12 +118,21 @@ namespace TapPaymentIntegration.Migrations
                     ChargeId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SubscriptionId = table.Column<int>(type: "int", nullable: false),
                     SubscriptionName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SubscriptionAmount = table.Column<int>(type: "int", nullable: false),
+                    SubscriptionAmount = table.Column<double>(type: "float", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Currency = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VAT = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Discount = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InvoiceLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsFirstInvoice = table.Column<bool>(type: "bit", nullable: true),
                     AddedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GymName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaidBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AddedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -137,7 +154,9 @@ namespace TapPaymentIntegration.Migrations
                     JobRunDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Tap_CustomerId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserID = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Invoice = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsRun = table.Column<bool>(type: "bit", nullable: false),
+                    IsFreeze = table.Column<bool>(type: "bit", nullable: false),
                     SubscriptionId = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
@@ -147,23 +166,75 @@ namespace TapPaymentIntegration.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RecurringInvoiceInfo",
+                columns: table => new
+                {
+                    RecurringInvoiceInfoId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CurrentDate = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InvoiceStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InvoiceID = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InvoiceSendDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserGYM = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserPhone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SubscriptionName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Discount = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SubscriptionPeriod = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SetupFee = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SubscriptionAmount = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VAT = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Total = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InvoiceAmount = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TotalInvoiceWithoutVAT = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InvoiceLink = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Subject = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InvoiceIds = table.Column<int>(type: "int", nullable: true),
+                    SubscriptionId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RecurringInvoiceInfo", x => x.RecurringInvoiceInfoId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "subscriptions",
                 columns: table => new
                 {
                     SubscriptionId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Currency = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Currency = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Frequency = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Countries = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SetupFee = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Amount = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Countries = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SetupFee = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Amount = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VAT = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Discount = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_subscriptions", x => x.SubscriptionId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "userSubscriptions",
+                columns: table => new
+                {
+                    UserSubscriptionsId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Userid = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SubID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_userSubscriptions", x => x.UserSubscriptionsId);
                 });
 
             migrationBuilder.CreateTable(
@@ -342,7 +413,13 @@ namespace TapPaymentIntegration.Migrations
                 name: "recurringCharges");
 
             migrationBuilder.DropTable(
+                name: "RecurringInvoiceInfo");
+
+            migrationBuilder.DropTable(
                 name: "subscriptions");
+
+            migrationBuilder.DropTable(
+                name: "userSubscriptions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

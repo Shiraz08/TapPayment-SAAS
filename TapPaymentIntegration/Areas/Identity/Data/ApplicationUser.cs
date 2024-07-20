@@ -20,6 +20,8 @@ namespace TapPaymentIntegration.Areas.Identity.Data
         public string FullName { get; set; }
         public string UserType { get; set; }
         public string Frequency { get; set; }
+        public DateTime? InvoiceSendDate { get; set; }
+        public bool? IsNullLateInvoice { get; set; }
         public string PublicKey { get; set; }
         public string VAT { get; set; }
         public string SecertKey { get; set; }

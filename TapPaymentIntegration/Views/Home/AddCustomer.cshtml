@@ -78,6 +78,14 @@
                     </div>
                 </div>
                 <div class="input-group mb-3">
+                    <input type="date" class="form-control" asp-for="InvoiceSendDate" placeholder="Select The Date">
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-calendar"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
                     <input id="password-field" type="password" class="form-control" asp-for="Password" placeholder="Enter The Password" required="required">
                     <div class="input-group-append">
                         <div class="input-group-text">
@@ -116,7 +124,7 @@
 
     <partial name="_ValidationScriptsPartial" />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+@* <script src="https://www.google.com/recaptcha/api.js" async defer></script> *@
     <script>
         $(".toggle-password").click(function () {
 
