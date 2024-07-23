@@ -204,7 +204,7 @@
 </style>
 @if (msg != null)
 {
-        <center><h4><span class="error" style="color:red!important">@msg</span></h4></center>
+    <center><h4><span class="error" style="color:red!important">@msg</span></h4></center>
 }
 @if (Model is null && Convert.ToString(errorMessage).Contains(subscriptionErrorMessage))
 {
@@ -233,7 +233,10 @@ else
                 <div class="card-header">
                     <ul class="nav nav-tabs" id="myTab" role="tablist" style="background-color:white!important;border:1px solid #efd41c!important">
                         <li class="nav-item">
-                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Card Information</a>
+                            <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">View Subscription</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Card Information</a>
                         </li>
                     </ul>
                 </div>
@@ -244,60 +247,125 @@ else
                     <input type="hidden" value="@ViewBag.Frequency" name="Frequency" id="Frequency" />
                     <input type="hidden" value="@ViewBag.After_vat_totalamount" name="After_vat_totalamount" id="After_vat_totalamount" />
                     <div class="tab-content" id="myTabContent">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label style="color:black!important">Payment Card:&nbsp;<span style="color:red!important"><b>*</b></span></label>
-                                    <select class="form-control" id="PaymentCard" name="PaymentCard" tabindex="1" required="required" onchange="CardSelect();">
-                                        <option value="0">Please Select Card</option>
-                                        <option value="Credit Card">Credit Card</option>
-                                        @{
-                                            if (Model.Currency == "BHD")
-                                            {
-                                                        <option value="Debit Card">Debit Card</option>
+                        <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr style="text-align:center!important">
+                                                <th>Subscription Name</th>
+                                                <th>Currency</th>
+                                                <th>Country</th>
+                                                <th>Frequency</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="text-align:center!important;color:black!important;text-transform:capitalize;">@Model.Name</td>
+                                                <td style="text-align:center!important;color:black!important;text-transform:capitalize;">@Model.Currency</td>
+                                                <td style="text-align:center!important;color:black!important;text-transform:capitalize;">@Model.Countries</td>
+                                                <td style="text-align:center!important;color:black!important;text-transform:capitalize;">@ViewBag.Frequency</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <table class="table table-bordered" style="margin-top:10px!important;border-collapse: collapse; border: none;">
+                                        <tbody>
+                                            <tr style="border: none;">
+                                                <td style="width:800px;border: none;"></td>
+                                                <td style="text-align:center!important;color:black!important;width:365px">Original Plan Amount</td>
+                                                <td style="text-align:center!important;color:black!important;width:153px"><input type="text" id="planamount" name="planamount" class="form-control" style="text-align:center" readonly="readonly" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width:800px;border: none;"></td>
+                                                <td style="text-align:center!important;color:black!important;width:365px">Frequency Plan Amount</td>
+                                                <td style="text-align:center!important;color:black!important;width:153px"><input type="text" id="subamount" name="subamount" class="form-control" style="text-align:center" readonly="readonly" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width:800px;border: none;"></td>
+                                                <td style="text-align:center!important;color:black!important;width:365px">Setup Fee</td>
+                                                <td style="text-align:center!important;color:black!important;width:153px"><input type="text" id="setupfee" name="setupfee" class="form-control" value="@Model.SetupFee" style="text-align:center" readonly="readonly" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width:800px;border: none;"></td>
+                                                <td style="text-align:center!important;color:black!important;width:365px">Discount</td>
+                                                <td style="text-align:center!important;color:black!important;width:153px"><input type="text" id="Discount" name="Discount" class="form-control" style="text-align:center" readonly="readonly" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width:800px;border: none;"></td>
+                                                <td style="text-align:center!important;color:black!important;width:365px">VAT</td>
+                                                <td style="text-align:center!important;color:black!important;width:153px"><input type="text" id="VAT" name="VAT" class="form-control" style="text-align:center" readonly="readonly" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width:800px;border: none;"></td>
+                                                <td style="text-align:center!important;color:black!important;width:365px">Total</td>
+                                                <td style="text-align:center!important;color:black!important;width:153px"><input type="text" id="TotalPlanfee" name="TotalPlanfee" class="form-control" style="text-align:center" readonly="readonly" /></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="input-group mb-3 group-end">
+                                <a class="btn btn-danger btnPrevious" id="Previous">Previous</a>
+                                <a class="btn btn-success btnNext">Next</a>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label style="color:black!important">Payment Card:&nbsp;<span style="color:red!important"><b>*</b></span></label>
+                                        <select class="form-control" id="PaymentCard" name="PaymentCard" tabindex="1" required="required" onchange="CardSelect();">
+                                            <option value="0">Please Select Card</option>
+                                            <option value="Credit Card">Credit Card</option>
+                                            @{
+                                                if (Model.Currency == "BHD")
+                                                {
+                                                    <option value="Debit Card">Debit Card</option>
+                                                }
                                             }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                <div class="d-none" id="creditcard">
+                                    <center><h5>Please Refresh your Page if Payment Screen did not load</h5></center>
+                                    <form id="form-container" method="post" action="/Home/CreateInvoice">
+                                        <!-- Tap element will be here -->
+                                        <div id="element-container"></div>
+                                        <div id="error-handler" role="alert"></div>
+                                        <div style=" display: none">
+                                            <div id="success" style=" display: none;;position: relative;float: left;">
+                                                Success! token <span id="token"></span>
+                                            </div>
+                                        </div>
+                                        <div class="input-group mb-3 group-end" style="margin-top:15px!important">
+                                            <a class="btn btn-danger btnPrevious">Previous</a>
+                                            <button class="btn btn-success" type="submit">Proceed</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="d-none" id="debitcard">
+                                    @{
+                                        if (Model.Currency == "BHD")
+                                        {
+                                            <br />
+                                            <h3><center>Pay with Benefit</center></h3>
+                                            <div class="input-group mb-3 group-end">
+                                                <a class="btn btn-danger btnPrevious">Previous</a>
+                                                <button class="btn btn-success" type="button" onclick="tapBanafit();" id="Proceed">Proceed</button>
+                                            </div>
                                         }
-                                    </select>
+                                    }
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                            <div class="d-none" id="creditcard">
-                                <center><h5>Please Refresh your Page if Payment Screen did not load</h5></center>
-                                <form id="form-container" method="post" action="/Home/CreateInvoice">
-                                    <!-- Tap element will be here -->
-                                    <div id="element-container"></div>
-                                    <div id="error-handler" role="alert"></div>
-                                    <div style=" display: none">
-                                        <div id="success" style=" display: none;;position: relative;float: left;">
-                                            Success! token <span id="token"></span>
-                                        </div>
-                                    </div>
-                                    <div class="input-group mb-3 group-end" style="margin-top:15px!important">
-                                        <a class="btn btn-danger btnPrevious">Previous</a>
-                                        <button class="btn btn-success" type="submit">Proceed</button>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="d-none" id="debitcard">
-                                @{
-                                    if (Model.Currency == "BHD")
-                                    {
-                                                <br />
-                                                <h3><center>Pay with Benefit</center></h3>
-                                                <div class="input-group mb-3 group-end">
-                                                    <a class="btn btn-danger btnPrevious">Previous</a>
-                                                    <button class="btn btn-success" type="button" onclick="tapBanafit();" id="Proceed">Proceed</button>
-                                                </div>
-                                    }
-                                }
-                            </div>
+                        <div>
+                            @*}*@
                         </div>
                     </div>
-                    @*}*@
                 </div>
-            </div>
-        </div>
     </section>
     <br />
 
@@ -510,54 +578,59 @@ else
             }
         }
     </script>
+
     <script>
+        $(document).ready(function () {
+            FillPaymentinfo();
+            $('.btnNext').click(function () {
+                if ($('#Frequency option:selected').val() != "0") {
+                    $("#frequencyspanvalue").text($('#Frequency option:selected').val());
+                    $('.nav-tabs .active').parent().next('li').find('a').trigger('click');
+                }
+                else {
+                    alert("Please Select Payment Frequency..!");
+                }
+            });
 
-        <script>
-            $(document).ready(function () {
-                $('.btnNext').click(function () {
-                    if ($('#Frequency option:selected').val() != "0") {
-                        $("#frequencyspanvalue").text($('#Frequency option:selected').val());
-                        $('.nav-tabs .active').parent().next('li').find('a').trigger('click');
-                    }
-                    else {
-                        alert("Please Select Payment Frequency..!");
-                    }
-                });
+            $('.btnPrevious').click(function () {
+                $('.nav-tabs .active').parent().prev('li').find('a').trigger('click');
+            });
 
-                $('.btnPrevious').click(function () {
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                var target = $(e.target).attr("href")
+                if ($('#Frequency option:selected').val() == "0") {
                     $('.nav-tabs .active').parent().prev('li').find('a').trigger('click');
-                });
-
-                $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                    var target = $(e.target).attr("href")
-                    if ($('#Frequency option:selected').val() == "0") {
-                        $('.nav-tabs .active').parent().prev('li').find('a').trigger('click');
-                    }
-
-                });
-
-
+                }
 
             });
-        $("#Frequency").change(function () {
+
+
+
+        });
+
+
+
+        function FillPaymentinfo() {
             $("#planamount").val('');
             $("#subamount").val('');
             $("#TotalPlanfee").val('');
             $("#Discount").val('');
             $("#subamount2").val('');
             $("#TotalPlanfee2").val('');
-            var selValue = $(this).val();
+            var selValue = $("#Frequency").val();
             var subscriptionamount = "";
             if (selValue == "YEARLY") {
+                debugger
                 var amountpercentage = (@Model.Amount / 100) * @Model.Discount;
-                var final_amount_percentage = @Model.Amount - amountpercentage;
-                subscriptionamount = final_amount_percentage * 12;
+                            var final_amount_percentage = @Model.Amount - amountpercentage;
+                subscriptionamount = @Model.Amount * 12;
                 var dis = amountpercentage * 12;
                 $("#Discount").val(dis.toFixed(2));
             }
             else if (selValue == "DAILY") {
                 $("#Discount").val('0');
-                subscriptionamount = @Model.Amount / 30;
+                var total_days = daysInThisMonth();
+                subscriptionamount = @Model.Amount / total_days;
             }
             else if (selValue == "WEEKLY") {
                 $("#Discount").val('0');
@@ -575,35 +648,38 @@ else
                 $("#Discount").val('0');
                 subscriptionamount = @Model.Amount;
             }
-            var totala = 0;
-            if (@IsFirstInvoice == "true") {
-                totala = parseFloat(subscriptionamount) + parseFloat(@Model.SetupFee);
-            }
-            else {
-                totala = parseFloat(subscriptionamount);
-            }
+            var totala = parseFloat(subscriptionamount) + parseFloat(@Model.SetupFee);
             var calculate_vat = "";
             if (@Model.VAT == "0") {
                 $("#VAT").val('0');
                 calculate_vat = "0";
             }
             else {
-                calculate_vat = (totala / 100.0m) * @Model.VAT;
+                if (dis && parseFloat(dis) != 0) {
+                    var abc = parseFloat(totala) - parseFloat(dis);
+                    calculate_vat = (abc / 100) * parseFloat(@Model.VAT);
+                }
+                else {
+                    calculate_vat = (totala / 100) * parseFloat(@Model.VAT);
+                }
                 $("#VAT").val(calculate_vat.toFixed(2));
             }
             $("#planamount").val(@Model.Amount);
             $("#subamount").val(subscriptionamount.toFixed(2));
             $("#subamount2").val(subscriptionamount.toFixed(2));
             var subscriptionSetupFee = @Model.SetupFee;
-        var totalamount = 0;
-        if (@IsFirstInvoice == "true") {
-            totalamount = parseFloat(subscriptionamount) + parseFloat(subscriptionSetupFee) + parseFloat(calculate_vat);
-        }
-        else {
-            totalamount = parseFloat(subscriptionamount) + parseFloat(calculate_vat);
-        }
+            var allamount = parseFloat(subscriptionamount) + parseFloat(subscriptionSetupFee) + parseFloat(calculate_vat);
+            var totalamount = "";
+            if (dis && parseFloat(dis) != 0) {
+                totalamount = parseFloat(allamount) - parseFloat(dis);
+            }
+            else {
+                totalamount = allamount;
+            }
+
             $("#TotalPlanfee").val(totalamount.toFixed(2));
             $("#TotalPlanfee2").val(totalamount.toFixed(2));
-        });
+        }
+
     </script>
 }
