@@ -608,7 +608,10 @@ else
 
         });
 
-
+        function daysInThisMonth() {
+            var now = new Date();
+            return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        }
 
         function FillPaymentinfo() {
             $("#planamount").val('');
