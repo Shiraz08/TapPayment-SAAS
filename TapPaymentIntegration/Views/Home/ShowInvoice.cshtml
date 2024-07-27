@@ -72,21 +72,33 @@
                                         {
                                             <td style="text-align:center!important;color:green!important">@invoice.Status</td>
                                         }
+                                        else if (invoice.Status == "Void")
+                                        {
+                                            <td style="text-align:center!important;color:red!important">@invoice.Status</td>
+                                        }
                                         else
                                         {
                                             <td style="text-align:center!important">@invoice.Status</td>
                                         }
                                         <td style="text-align:center!important">
-                                            @if (invoice.Status != "Payment Captured")
+                                            @if (invoice.Status == "Void")
                                             {
-                                                <a class="btn btn-primary" href="@invoice.InvoiceLink">Pay Invoice</a>
-                                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">
-                                                    Change Invoice Status
-                                                </button>
+                                                <span>-------</span>
                                             }
                                             else
                                             {
-                                                <a class="btn btn-success" href="@Url.Action("ViewInvoice","Home",new {id = invoice.ChargeId, sub_id = invoice.SubscriptionId, userid = invoice.UserId,invoiceid = invoice.InvoiceId})">View Invoice</a>
+                                                @if (invoice.Status != "Payment Captured")
+                                                {
+                                                    <a class="btn btn-primary" href="@invoice.InvoiceLink">Pay Invoice</a>
+                                                    <a class="btn btn-danger" href="@Url.Action("VoidInvoice","Home",new { invoiceid = invoice.InvoiceId})">Void Invoice</a>
+                                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">
+                                                        Change Invoice Status
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <a class="btn btn-success" href="@Url.Action("ViewInvoice","Home",new {id = invoice.ChargeId, sub_id = invoice.SubscriptionId, userid = invoice.UserId,invoiceid = invoice.InvoiceId})">View Invoice</a>
+                                                }
                                             }
                                         </td>
                                     </tr>

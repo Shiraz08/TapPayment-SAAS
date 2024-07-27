@@ -145,7 +145,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     //Fill EMail By Parameter
                                     body = body.Replace("{title}", "Tamarran Payment Invoice");
-                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                                     body = body.Replace("{InvocieStatus}", "Payment Captured");
                                     body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id);
@@ -337,7 +337,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     //Fill EMail By Parameter
                                     body = body.Replace("{title}", "Tamarran Payment Invoice");
-                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                                     body = body.Replace("{InvocieStatus}", "Payment Captured");
                                     body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id.ToString());
@@ -529,7 +529,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     //Fill EMail By Parameter
                                     body = body.Replace("{title}", "Tamarran Payment Invoice");
-                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                                     body = body.Replace("{InvocieStatus}", "Payment Captured");
                                     body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id.ToString());
@@ -719,7 +719,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     //Fill EMail By Parameter
                                     body = body.Replace("{title}", "Tamarran Payment Invoice");
-                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                                     body = body.Replace("{InvocieStatus}", "Payment Captured");
                                     body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id.ToString());
@@ -909,7 +909,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     //Fill EMail By Parameter
                                     body = body.Replace("{title}", "Tamarran Payment Invoice");
-                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                                     body = body.Replace("{InvocieStatus}", "Payment Captured");
                                     body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id.ToString());
@@ -1099,7 +1099,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     //Fill EMail By Parameter
                                     body = body.Replace("{title}", "Tamarran Payment Invoice");
-                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                                     body = body.Replace("{InvocieStatus}", "Payment Captured");
                                     body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id.ToString());
@@ -1516,7 +1516,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     //Fill EMail By Parameter
                                     body = body.Replace("{title}", "Tamarran Payment Invoice");
-                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                                     body = body.Replace("{InvocieStatus}", "Unpaid");
                                     body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id);
@@ -1826,7 +1826,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     //Fill EMail By Parameter
                                     body = body.Replace("{title}", "Tamarran Payment Invoice");
-                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                                     body = body.Replace("{InvocieStatus}", "Unpaid");
                                     body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id);
@@ -2137,7 +2137,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     //Fill EMail By Parameter
                                     body = body.Replace("{title}", "Tamarran Payment Invoice");
-                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                                     body = body.Replace("{InvocieStatus}", "Unpaid");
                                     body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id);
@@ -2447,7 +2447,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     //Fill EMail By Parameter
                                     body = body.Replace("{title}", "Tamarran Payment Invoice");
-                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                                     body = body.Replace("{InvocieStatus}", "Unpaid");
                                     body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id);
@@ -2758,7 +2758,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     //Fill EMail By Parameter
                                     body = body.Replace("{title}", "Tamarran Payment Invoice");
-                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                                     body = body.Replace("{InvocieStatus}", "Unpaid");
                                     body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id);
@@ -3070,7 +3070,7 @@ namespace TapPaymentIntegration.Models.HangFire
                                     }
                                     //Fill EMail By Parameter
                                     body = body.Replace("{title}", "Tamarran Payment Invoice");
-                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                                     body = body.Replace("{InvocieStatus}", "Unpaid");
                                     body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id);
@@ -3281,7 +3281,7 @@ namespace TapPaymentIntegration.Models.HangFire
                 }
                 //Fill EMail By Parameter
                 body = body.Replace("{title}", "Tamarran Payment Invoice");
-                body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                 body = body.Replace("{InvocieStatus}", "Unpaid");
                 body = body.Replace("{InvoiceID}", "Inv" + newInvoiceId);
@@ -3619,7 +3619,7 @@ namespace TapPaymentIntegration.Models.HangFire
         //        }
         //        //Fill EMail By Parameter
         //        body = body.Replace("{title}", "Tamarran Payment Invoice");
-        //        body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+        //        body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
         //        body = body.Replace("{InvocieStatus}", "Unpaid");
         //        body = body.Replace("{InvoiceID}", "Inv" + newInvoiceId);

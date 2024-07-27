@@ -215,8 +215,23 @@
         <div style="text-align: center;">
             <p style="color: red; font-size: 25px;">Please contact to Admin, your subscription is In-Active!!</p>
             <div class="invoice_button">
-                <a href="/Home/ShowInvoice?PaymentStatus=All">Bact to Invoice</a>
+                <a href="/Home/ShowInvoice?PaymentStatus=All">BacK to Invoice</a>
             </div>
+        </div>
+    </div>
+    <br />
+}
+else if (@ViewBag.Invoiceid == "Void")
+{
+    <br />
+    <br />
+    <div style="display: flex; align-items: center; justify-content: center; height: 60vh; margin: 0;">
+        <div style="text-align: center;">
+            <p style="color: red; font-size: 25px;">
+                This invoice is void and no more valid. Please contact Tamarran.
+                <br />
+                Thank  you
+            </p>
         </div>
     </div>
     <br />

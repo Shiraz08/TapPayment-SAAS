@@ -244,6 +244,12 @@
                                             <p>Unpaid Invoice</p>
                                         </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("ShowInvoice","Home", new {PaymentStatus = "Void"})" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Void Invoice</p>
+                                        </a>
+                                    </li>
                                 </ul>
                             </li>
                             <li class="nav-item">
@@ -297,6 +303,12 @@
                                         <a href="@Url.Action("ShowInvoice","Home", new {PaymentStatus = "Un-Paid"})" class="nav-link">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>Unpaid Invoice</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("ShowInvoice","Home", new {PaymentStatus = "Void"})" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Void Invoice</p>
                                         </a>
                                     </li>
                                 </ul>

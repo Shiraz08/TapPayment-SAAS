@@ -116,8 +116,10 @@ namespace TapPaymentIntegration.Controllers
                 {
                     subscriptions.VAT = "0";
                 }
+                var invoiceinfo = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(invoiceid)).FirstOrDefault();
                 ViewBag.Frequency = users.Frequency.ToString();
                 ViewBag.Invoiceid = invoiceid;
+                ViewBag.Invoiceid = invoiceinfo.Status;
                 ViewBag.After_vat_totalamount = After_vat_totalamount;
                 ViewBag.userid = userid;
                 ViewBag.PublicKey = users.PublicKey;
@@ -1060,7 +1062,7 @@ namespace TapPaymentIntegration.Controllers
                                 }
                                 //Fill EMail By Parameter
                                 body = body.Replace("{title}", "Tamarran Payment Invoice");
-                                body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                                body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                                 body = body.Replace("{InvocieStatus}", "Payment Captured");
                                 body = body.Replace("{InvoiceID}", "Inv" + invoice_info.InvoiceId);
@@ -1260,7 +1262,7 @@ namespace TapPaymentIntegration.Controllers
                                 }
                                 //Fill EMail By Parameter
                                 body = body.Replace("{title}", "Tamarran Payment Invoice");
-                                body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                                body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
                                 body = body.Replace("{InvocieStatus}", "Payment Captured");
                                 body = body.Replace("{InvoiceID}", "Inv" + invoice_info.InvoiceId.ToString());
 
@@ -1470,7 +1472,7 @@ namespace TapPaymentIntegration.Controllers
                         }
                         //Fill EMail By Parameter
                         body = body.Replace("{title}", "Tamarran Payment Invoice");
-                        body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                        body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                         body = body.Replace("{InvocieStatus}", "Payment Captured");
                         body = body.Replace("{InvoiceID}", "Inv" + invoice_info.InvoiceId.ToString());
@@ -1965,7 +1967,7 @@ namespace TapPaymentIntegration.Controllers
                 }
                 //Fill EMail By Parameter
                 body = body.Replace("{title}", "Tamarran Payment Invoice");
-                body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                 body = body.Replace("{InvocieStatus}", "Payment Captured");
                 body = body.Replace("{InvoiceID}", "Inv" + invoiceid);
@@ -2454,7 +2456,7 @@ namespace TapPaymentIntegration.Controllers
                     }
                     //Fill EMail By Parameter
                     body = body.Replace("{title}", "Tamarran Payment Invoice");
-                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                    body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                     body = body.Replace("{InvocieStatus}", "Unpaid");
                     body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id);
@@ -3160,7 +3162,7 @@ namespace TapPaymentIntegration.Controllers
                 }
                 //Fill EMail By Parameter
                 body = body.Replace("{title}", "Tamarran Payment Invoice");
-                body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("dd-MM-yyyy"));
+                body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
 
                 body = body.Replace("{InvocieStatus}", "Payment Captured");
                 body = body.Replace("{InvoiceID}", "Inv" + max_invoice_id.InvoiceId.ToString());
@@ -3279,6 +3281,34 @@ namespace TapPaymentIntegration.Controllers
             {
                 // If no match is found, return null or handle the case as needed
                 return null;
+            }
+        }
+        public async Task<IActionResult> VoidInvoice(string invoiceid)
+        {
+            try
+            {
+                var invoiceinfo = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(invoiceid)).FirstOrDefault();
+                var sub_info = _context.subscriptions.Where(x => x.SubscriptionId == invoiceinfo.SubscriptionId).FirstOrDefault();
+                var userinfo = _context.Users.Where(x => x.Id == invoiceinfo.UserId).FirstOrDefault();
+
+
+                invoiceinfo.Status = "Void";
+                _context.invoices.Update(invoiceinfo);
+                _context.SaveChanges();
+
+
+                var emailSubject = "Tamarran – Void Invoice - " + " Inv" + invoiceinfo.InvoiceId;
+                var bodyemail = EmailBodyFill.VoidInvoice(userinfo, sub_info);
+                _ = _emailSender.SendEmailAsync(userinfo.Email, emailSubject, bodyemail);
+
+                return RedirectToAction("ShowInvoice", "Home", new { PaymentStatus = "Void" });
+            }
+            catch (Exception ex)
+            {
+                ViewBag.PageName = "VoidInvoice";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
             }
         }
         public async Task<IActionResult> ViewInvoice(string id, int sub_id, string userid, string invoiceid)
