@@ -4,7 +4,15 @@
     ViewData["Title"] = "ShowInvoice";
     Layout = "~/Views/Shared/_DashboardLayout.cshtml";
 }
-
+<style>
+    @@media (min-width: 768px) {
+    .col-md-6 {
+        -ms-flex: 0 0 50%;
+        flex: 0 0 50%;
+        max-width: 101%;
+    }
+}
+</style>
 
 <br />
 <section class="content">
@@ -17,7 +25,7 @@
                         @{
                             if (!string.IsNullOrEmpty(ViewBag.Message))
                             {
-                                <h3 class="text-center mb-0" style="color:red!important">@ViewBag.MessageError</h3>
+                                    <h3 class="text-center mb-0" style="color:red!important">@ViewBag.MessageError</h3>
                             }
                         }
                     </div>
@@ -46,7 +54,7 @@
                                         <td style="text-align:center!important">
                                             @{
                                                 var valw = "Inv" + @invoice.InvoiceId;
-                                                <span>@valw</span>
+                                                    <span>@valw</span>
                                             }
                                         </td>
                                         <td style="text-align:center!important">@invoice.GymName</td>
@@ -56,13 +64,13 @@
                                         <td style="text-align:center!important">
                                             @{
                                                 DateTime sdateTime = Convert.ToDateTime(invoice.InvoiceStartDate);
-                                                <span>@sdateTime.ToString("dd/MM/yyyy")</span>
+                                                    <span>@sdateTime.ToString("dd/MM/yyyy")</span>
                                             }
                                         </td>
                                         <td style="text-align:center!important">
                                             @{
                                                 DateTime edateTime = Convert.ToDateTime(invoice.InvoiceEndDate);
-                                                <span>@edateTime.ToString("dd/MM/yyyy")</span>
+                                                    <span>@edateTime.ToString("dd/MM/yyyy")</span>
                                             }
                                         </td>
                                         <td style="text-align:center!important">@invoice.Currency</td>
@@ -90,7 +98,7 @@
                                                 @if (invoice.Status != "Payment Captured")
                                                 {
                                                     <a class="btn btn-primary" href="@invoice.InvoiceLink">Pay Invoice</a>
-                                                    <a class="btn btn-danger" href="@Url.Action("VoidInvoice","Home",new { invoiceid = invoice.InvoiceId})">Void Invoice</a>
+                                                    <a href="javascript:void(0)" class="btn bg-danger mr-1" onclick="return confirmAndHandle('@invoice.InvoiceId');">Void Invoice</a>
                                                     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">
                                                         Change Invoice Status
                                                     </button>
@@ -148,6 +156,41 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="RecurringModal" tabindex="-1" aria-labelledby="RecurringModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="RecurringModalLabel">Recurring</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    @using (Html.BeginForm("VoidInvoiceNo", "Home", FormMethod.Post))
+                    {
+
+                        <div class="col-md-6">
+                            <input type="hidden" id="invoiceid" name="invoiceid" />
+                            <button type="submit" class="btn btn-primary">Continuing Recurring</button>
+                        </div>
+
+                    }
+                    @using (Html.BeginForm("VoidInvoice", "Home", FormMethod.Post))
+                    {
+                        <div class="col-md-6">
+                            <input type="hidden" id="invoiceid" name="invoiceid" class="invoiceid" />
+                            <button type="submit" class="btn btn-danger">Stop Recurring</button>
+                        </div>
+                    }
+                </div>
+            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+        </div>
+    </div>
+</div>
 <br />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>
@@ -158,5 +201,32 @@
             "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
         }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
+    function confirmAndHandle(InvoiceId) {
+        if (confirm('Do you want void and cancel this invoice?')) 
+        {
+            $('#RecurringModal').modal('show');
+            $("#invoiceid").val(InvoiceId);
+            $(".invoiceid").val(InvoiceId);
+            return true; 
+        } else {
+            // handleNoAction(InvoiceId);
+            return false; 
+        }
+    }
+
+    function handleNoAction(InvoiceId) {
+        $.ajax({
+            url: '/Home/VoidInvoiceNo',
+            type: 'GET',
+            data: { invoiceid: InvoiceId },
+            success: function (response) {
+                alert("Server-side 'No' action completed");
+            },
+            error: function (error) {
+                lert("Error in 'No' action: ", error);
+            }
+        });
+    }
+
 </script>
 

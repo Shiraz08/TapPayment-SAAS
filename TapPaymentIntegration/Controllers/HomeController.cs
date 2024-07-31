@@ -3296,10 +3296,260 @@ namespace TapPaymentIntegration.Controllers
                 _context.invoices.Update(invoiceinfo);
                 _context.SaveChanges();
 
+                var subscriptions = _context.Users.Where(x => x.Id == userinfo.Id).FirstOrDefault();
+                await _userManager.UpdateSecurityStampAsync(subscriptions);
+                subscriptions.Status = false;
+                subscriptions.SubscribeID = 0;
+                _context.Users.Update(subscriptions);
+
+                var invoicesenddate = _context.RecurringInvoiceInfo.Where(x => x.UserId == userinfo.Id).ToList();
+                if(invoicesenddate.Count() > 0)
+                {
+                    foreach (var item in invoicesenddate)
+                    {
+                        item.Title = null;
+                        _context.RecurringInvoiceInfo.Update(item);
+                        _context.SaveChanges();
+                    }
+                }
+                
+                var recurringjob = _context.recurringCharges.Where(x => x.UserID == userinfo.Id).ToList();
+                if (recurringjob.Count() > 0)
+                {
+                    foreach (var item in recurringjob) 
+                    {
+                        item.IsFreeze = true;
+                        _context.recurringCharges.Update(item);
+                        _context.SaveChanges();
+                    }
+                }
 
                 var emailSubject = "Tamarran – Void Invoice - " + " Inv" + invoiceinfo.InvoiceId;
                 var bodyemail = EmailBodyFill.VoidInvoice(userinfo, sub_info);
                 _ = _emailSender.SendEmailAsync(userinfo.Email, emailSubject, bodyemail);
+
+                return RedirectToAction("ShowInvoice", "Home", new { PaymentStatus = "Void" });
+            }
+            catch (Exception ex)
+            {
+                ViewBag.PageName = "VoidInvoice";
+                ViewBag.Message = ex.Message;
+                ViewBag.Details = ex.StackTrace;
+                return View("DashboardError");
+            }
+        }
+        public async Task<IActionResult> VoidInvoiceNo(string invoiceid)
+        {
+            try
+            {
+                var invoiceinfo = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(invoiceid)).FirstOrDefault();
+                var subscriptions = _context.subscriptions.Where(x => x.SubscriptionId == invoiceinfo.SubscriptionId).FirstOrDefault();
+                var applicationUser = _context.Users.Where(x => x.Id == invoiceinfo.UserId).FirstOrDefault();
+
+
+                invoiceinfo.Status = "Void";
+                _context.invoices.Update(invoiceinfo);
+                _context.SaveChanges();
+
+
+                
+
+                //Create Invoice
+                int days = DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month);
+                decimal finalamount = 0;
+                decimal Discount = 0;
+                decimal Vat = 0;
+                decimal VatwithoutSetupFee = 0;
+                if (applicationUser.Frequency == "DAILY")
+                {
+                    Discount = 0;
+                    finalamount = (decimal)Convert.ToInt32(subscriptions.Amount) / (int)days;
+                }
+                else if (applicationUser.Frequency == "WEEKLY")
+                {
+                    Discount = 0;
+                    finalamount = (decimal)Convert.ToInt32(subscriptions.Amount) / 4;
+                }
+                else if (applicationUser.Frequency == "MONTHLY")
+                {
+                    Discount = 0;
+                    finalamount = (decimal)Convert.ToInt32(subscriptions.Amount);
+                }
+                else if (applicationUser.Frequency == "QUARTERLY")
+                {
+                    Discount = 0;
+                    finalamount = (decimal)(Convert.ToInt32(subscriptions.Amount) * 3) / 1;
+                }
+                else if (applicationUser.Frequency == "HALFYEARLY")
+                {
+                    Discount = 0;
+                    finalamount = (decimal)(Convert.ToInt32(subscriptions.Amount) * 6) / 1;
+                }
+                else if (applicationUser.Frequency == "YEARLY")
+                {
+                    decimal amountpercentage = (decimal.Parse(subscriptions.Amount) / 100) * decimal.Parse(subscriptions.Discount);
+                    var final_amount_percentage = Convert.ToInt32(subscriptions.Amount) - amountpercentage;
+                    finalamount = decimal.Parse(subscriptions.Amount) * 12;
+                    Discount = amountpercentage * 12;
+                }
+                if (subscriptions.VAT == null || subscriptions.VAT == "0")
+                {
+                    Vat = 0;
+                }
+                else
+                {
+                    decimal totala = finalamount + Convert.ToDecimal(subscriptions.SetupFee);
+                    Decimal finalTotal = 0;
+                    if (Discount != 0)
+                    {
+                        finalTotal = Decimal.Subtract(totala, Discount);
+                        Vat = CalculatePercentage(finalTotal, Convert.ToDecimal(subscriptions.VAT));
+                    }
+                    else
+                    {
+                        Vat = CalculatePercentage(totala, Convert.ToDecimal(subscriptions.VAT));
+                    }
+
+                    VatwithoutSetupFee = (decimal)((finalamount / 100) * Convert.ToInt32(subscriptions.VAT));
+                }
+                decimal after_vat_totalamount = finalamount + Convert.ToDecimal(subscriptions.SetupFee) + Vat;
+
+                // Send Email
+                string body = string.Empty;
+                _environment.WebRootPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                string contentRootPath = _environment.WebRootPath + "/htmltopdfP.html";
+                string contentRootPath1 = _environment.WebRootPath + "/css/bootstrap.min.css";
+                //Generate PDF
+                using (StreamReader reader = new StreamReader(contentRootPath))
+                {
+                    body = reader.ReadToEnd();
+                }
+                //Fill EMail By Parameter
+                body = body.Replace("{title}", "Tamarran Payment Invoice");
+                body = body.Replace("{currentdate}", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt"));
+
+                body = body.Replace("{InvocieStatus}", "Unpaid");
+                body = body.Replace("{InvoiceID}", "Inv" + invoiceinfo.InvoiceId);
+
+                body = body.Replace("{User_Name}", applicationUser.FullName);
+                body = body.Replace("{User_Email}", applicationUser.Email);
+                body = body.Replace("{User_GYM}", applicationUser.GYMName);
+                body = body.Replace("{User_Phone}", applicationUser.PhoneNumber);
+
+                var setupFree = Convert.ToDecimal(subscriptions.SetupFee).ToString("0.00");
+                var discount = Convert.ToDecimal(Discount).ToString("0.00");
+
+                body = body.Replace("{SubscriptionName}", subscriptions.Name);
+                body = body.Replace("{Discount}", discount + " " + subscriptions.Currency);
+                body = body.Replace("{SubscriptionPeriod}", applicationUser.Frequency);
+                body = body.Replace("{SetupFee}", setupFree + " " + subscriptions.Currency);
+                var amount = finalamount + Convert.ToDecimal(setupFree);
+                body = body.Replace("{SubscriptionAmount}", finalamount.ToString("0.00") + " " + subscriptions.Currency);
+                //Calculate VAT
+                var linkamount = "";
+                if (subscriptions.VAT == null || subscriptions.VAT == "0")
+                {
+                    body = body.Replace("{VAT}", "0.00" + " " + subscriptions.Currency);
+                    Decimal finalTotal = 0;
+                    if (Discount != 0)
+                    {
+                        finalTotal = Decimal.Subtract(after_vat_totalamount, Discount);
+                        linkamount = finalTotal.ToString("0.00");
+                        body = body.Replace("{Total}", finalTotal.ToString("0.00") + " " + subscriptions.Currency);
+                    }
+                    else
+                    {
+                        linkamount = after_vat_totalamount.ToString("0.00");
+                        body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
+                    }
+                    body = body.Replace("{InvoiceAmount}", amount.ToString("0.00") + " " + subscriptions.Currency);
+                    var without_vat = finalamount + Convert.ToDecimal(setupFree);
+                    Decimal finalValueWithOutVAT = 0;
+                    if (Discount != 0)
+                    {
+                        finalValueWithOutVAT = Decimal.Subtract(without_vat, Discount);
+                        body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + subscriptions.Currency);
+                    }
+                    else
+                    {
+                        body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
+                    }
+
+                }
+                else
+                {
+                    body = body.Replace("{VAT}", Vat.ToString("0.00") + " " + subscriptions.Currency);
+                    Decimal finalTotal = 0;
+                    if (Discount != 0)
+                    {
+                        finalTotal = Decimal.Subtract(after_vat_totalamount, Discount);
+                        linkamount = finalTotal.ToString("0.00");
+                        body = body.Replace("{Total}", finalTotal.ToString("0.00") + " " + subscriptions.Currency);
+                    }
+                    else
+                    {
+                        linkamount = after_vat_totalamount.ToString("0.00");
+                        body = body.Replace("{Total}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
+                    }
+
+                    body = body.Replace("{InvoiceAmount}", after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency);
+                    var without_vat = finalamount + Convert.ToDecimal(setupFree);
+                    Decimal finalValueWithOutVAT = 0;
+                    if (Discount != 0)
+                    {
+                        finalValueWithOutVAT = Decimal.Subtract(without_vat, Discount);
+                        body = body.Replace("{Totalinvoicewithoutvat}", finalValueWithOutVAT.ToString("0.00") + " " + subscriptions.Currency);
+                    }
+                    else
+                    {
+                        body = body.Replace("{Totalinvoicewithoutvat}", without_vat.ToString("0.00") + " " + subscriptions.Currency);
+                    }
+                }
+                var bytes = (new NReco.PdfGenerator.HtmlToPdfConverter()).GeneratePdf(body);
+                var callbackUrl = @Url.Action("SubscriptionAdmin", "Home", new { id = applicationUser.SubscribeID, link = "Yes", userid = applicationUser.Id, invoiceid = invoiceinfo.InvoiceId, After_vat_totalamount = linkamount, isfirstinvoice = "true" });
+                var websiteurl = HtmlEncoder.Default.Encode(Constants.RedirectURL + callbackUrl);
+
+
+                var subject = "Tamarran – Payment Request - " + " Inv" + invoiceinfo.InvoiceId.ToString();
+                RecurringInvoiceInfo invoiceDetails = new RecurringInvoiceInfo
+                {
+                    InvoiceID = "Inv" + invoiceinfo.InvoiceId.ToString(),
+                    UserName = applicationUser.FullName,
+                    UserEmail = applicationUser.Email,
+                    UserGYM = applicationUser.GYMName,
+                    UserPhone = applicationUser.PhoneNumber,
+                    SubscriptionName = subscriptions.Name,
+                    Discount = Convert.ToDecimal(Discount).ToString("0.00") + " " + subscriptions.Currency,
+                    SubscriptionPeriod = applicationUser.Frequency,
+                    SetupFee = Convert.ToDecimal(subscriptions.SetupFee).ToString("0.00") + " " + subscriptions.Currency,
+                    SubscriptionAmount = finalamount.ToString("0.00") + " " + subscriptions.Currency,
+                    VAT = (subscriptions.VAT == null || subscriptions.VAT == "0") ? "0.00" + " " + subscriptions.Currency : Vat.ToString("0.00") + " " + subscriptions.Currency,
+                    Total = (subscriptions.VAT == null || subscriptions.VAT == "0") ?
+                    (Discount != 0 ? Decimal.Subtract(after_vat_totalamount, Discount).ToString("0.00") : after_vat_totalamount.ToString("0.00")) + " " + subscriptions.Currency :
+                    (Discount != 0 ? Decimal.Subtract(after_vat_totalamount, Discount).ToString("0.00") : after_vat_totalamount.ToString("0.00")) + " " + subscriptions.Currency,
+                    InvoiceAmount = (subscriptions.VAT == null || subscriptions.VAT == "0") ?
+                    amount.ToString("0.00") + " " + subscriptions.Currency :
+                    after_vat_totalamount.ToString("0.00") + " " + subscriptions.Currency,
+                    TotalInvoiceWithoutVAT = (subscriptions.VAT == null || subscriptions.VAT == "0") ?
+                    (Discount != 0 ? Decimal.Subtract(finalamount + Convert.ToDecimal(setupFree), Discount).ToString("0.00") : (finalamount + Convert.ToDecimal(setupFree)).ToString("0.00")) + " " + subscriptions.Currency :
+                    (Discount != 0 ? Decimal.Subtract(finalamount + Convert.ToDecimal(setupFree), Discount).ToString("0.00") : (finalamount + Convert.ToDecimal(setupFree)).ToString("0.00")) + " " + subscriptions.Currency,
+                    InvoiceLink = websiteurl,
+                    UserId = applicationUser.Id,
+                    Subject = subject,
+                    SubscriptionId = subscriptions.SubscriptionId,
+                    InvoiceIds = invoiceinfo.InvoiceId,
+                    InvoiceSendDate = (DateTime)invoiceinfo.InvoiceEndDate.AddDays(1)
+                };
+                _context.RecurringInvoiceInfo.Add(invoiceDetails);
+                _context.SaveChanges();
+
+                applicationUser.InvoiceSendDate = invoiceDetails.InvoiceSendDate;
+                _context.Users.Update(applicationUser);
+                _context.SaveChanges();
+
+                var emailSubject = "Tamarran – Void Invoice - " + " Inv" + invoiceinfo.InvoiceId;
+                var bodyemail = EmailBodyFill.VoidInvoice(applicationUser, subscriptions);
+                _ = _emailSender.SendEmailAsync(applicationUser.Email, emailSubject, bodyemail);
 
                 return RedirectToAction("ShowInvoice", "Home", new { PaymentStatus = "Void" });
             }
