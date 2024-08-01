@@ -119,7 +119,7 @@ namespace TapPaymentIntegration.Controllers
                 var invoiceinfo = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(invoiceid)).FirstOrDefault();
                 ViewBag.Frequency = users.Frequency.ToString();
                 ViewBag.Invoiceid = invoiceid;
-                ViewBag.Invoiceid = invoiceinfo.Status;
+                ViewBag.InvoiceidBool = invoiceinfo.Status;
                 ViewBag.After_vat_totalamount = After_vat_totalamount;
                 ViewBag.userid = userid;
                 ViewBag.PublicKey = users.PublicKey;
@@ -1567,12 +1567,12 @@ namespace TapPaymentIntegration.Controllers
                     string[] arrs = _uri.Split('/');
                     if (arrs[4] == "Subscription")
                     {
-                        TempData["Message"] = Deserialized_savecard.status + " - (" + Deserialized_savecard.source.payment_method + ")";
+                        TempData["Message"] = Deserialized_savecard.response.code + "-" + Deserialized_savecard.response.message + " - (" + Deserialized_savecard.source.payment_method + ")";
                         return Redirect(_uri);
                     }
                     else
                     {
-                        TempData["Message"] = Deserialized_savecard.status + " - (" + Deserialized_savecard.source.payment_method + ")";
+                        TempData["Message"] = Deserialized_savecard.response.code + "-"+ Deserialized_savecard.response.message + " - (" + Deserialized_savecard.source.payment_method + ")";
                         return Redirect(_uri);
                     }
                 }
