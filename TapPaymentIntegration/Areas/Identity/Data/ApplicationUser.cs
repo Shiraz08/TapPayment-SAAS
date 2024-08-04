@@ -32,6 +32,7 @@ namespace TapPaymentIntegration.Areas.Identity.Data
         public string City { get; set; }
         public string Currency { get; set; }
         public string Tap_CustomerID { get; set; }
+        public DateTime? AddedDate { get; set; }
         public string Tap_Subscription_ID { get; set; }
         public string Tap_Agreement_ID { get; set; }
         public string Tap_Card_ID { get; set; }

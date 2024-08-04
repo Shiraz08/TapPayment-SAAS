@@ -30,6 +30,26 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row">
+                <div class="col-md-8">
+                    <div class="card card-primary">
+                        <div class="card-body">
+                            <div class="chart">
+                                <div id="cvchartContainer" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-primary">
+                        <div class="card-body">
+                            <div class="chart">
+                                <div id="chartContainer" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-lg-3 col-6">
                     <!-- small box -->
                     <div class="small-box bg-info">
@@ -125,6 +145,65 @@
         </div>
     </section>
 }
+
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+<script>
+    window.onload = function () {
+        // weekly Chart
+        var charts = new CanvasJS.Chart("cvchartContainer", {
+            theme1: "light2", // "light1", "light2", "dark1", "dark2"
+            animationEnabled: true,
+            exportEnabled: true,
+            toolTip: {
+                shared: true
+            },
+            title: {
+                text: "All Leads"
+            },
+            axisX: {
+                gridThickness: 2,
+                crosshair: {
+                    enabled: true,
+                    snapToDataPoint: true
+                }
+            },
+            axisY: {
+                title: "Leads Range",
+                gridThickness: 2
+            },
+            data: [{
+                type: "line",
+                name: "Month",
+                showInLegend: true,
+                dataPoints: @Html.Raw(ViewBag.DataPoints1)
+                                                }]
+        });
+        charts.render();
+
+
+
+        var chart = new CanvasJS.Chart("chartContainer", {
+            theme: "light2", // "light1", "light2", "dark1", "dark2"
+            exportEnabled: true,
+            animationEnabled: true,
+            title: {
+                text: "All Invoice Status"
+            },
+
+            data: [{
+                type: "pie",
+                startAngle: 180,
+                toolTipContent: "<b>{label}</b>: {y}%",
+                showInLegend: "true",
+                legendText: "{label}",
+                indexLabel: "{label} - {y}%",
+                dataPoints: @Html.Raw(ViewBag.DataPoints)
+                }]
+        });
+        chart.render();
+    }
+</script>
 
 
 

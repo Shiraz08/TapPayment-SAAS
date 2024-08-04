@@ -22,6 +22,8 @@ using System.Text.RegularExpressions;
 using System.Security.Policy;
 using Card = TapPaymentIntegration.Models.Card.Card;
 using SixLabors.ImageSharp;
+using System.Globalization;
+using TapPaymentIntegration.Shared.GraphModel;
 
 namespace TapPaymentIntegration.Controllers
 {
@@ -117,7 +119,7 @@ namespace TapPaymentIntegration.Controllers
                     subscriptions.VAT = "0";
                 }
                 var invoiceinfo = _context.invoices.Where(x => x.InvoiceId == Convert.ToInt32(invoiceid)).FirstOrDefault();
-                ViewBag.Frequency = users.Frequency.ToString();
+                ViewBag.Frequency = users.Frequency;
                 ViewBag.Invoiceid = invoiceid;
                 ViewBag.InvoiceidBool = invoiceinfo.Status;
                 ViewBag.After_vat_totalamount = After_vat_totalamount;
@@ -2071,6 +2073,34 @@ namespace TapPaymentIntegration.Controllers
                 ViewBag.UnPaid = _context.invoices.Where(x => x.Status == "Un-Paid").ToList().Count();
                 ViewBag.ChangeCardCount = _context.changeCardInfos.ToList().Count();
                 ViewBag.SubscriptionCount = _context.subscriptions.Where(x => x.Status == true).ToList().Count();
+
+
+                // Graph data
+                List<ApplicationUser> userList = _context.Users.Where(x => x.Status == true).ToList();
+                List<string> monthNames = new List<string>();
+
+                for (int month = 1; month <= 12; month++)
+                {
+                    string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month);
+                    monthNames.Add(monthName);
+                }
+                int i = 1;
+                List<DataPoint> dataPoints1 = new List<DataPoint>();
+                foreach (var monthName in monthNames)
+                {
+                    dataPoints1.Add(new DataPoint(monthName, userList.Where(x => x.AddedDate?.Month == i).Count()));
+                    i++;
+                }
+
+                ViewBag.DataPoints1 = JsonConvert.SerializeObject(dataPoints1);
+                //Graph for Invoice Status
+                List<PieChart> dataPoints = new List<PieChart>();
+                var incidentlist =_context.invoices.Where(x => x.IsDeleted == false).ToList();
+                dataPoints.Add(new PieChart("Void", Convert.ToDouble(incidentlist.Where(x => x.Status == "Void").Count())));
+                dataPoints.Add(new PieChart("Un-Paid", Convert.ToDouble(incidentlist.Where(x => x.Status == "Un-Paid").Count())));
+                dataPoints.Add(new PieChart("Paid", Convert.ToDouble(incidentlist.Where(x => x.Status == "Payment Captured").Count())));
+                dataPoints.Add(new PieChart("All", Convert.ToDouble(incidentlist.Count())));
+                ViewBag.DataPoints = JsonConvert.SerializeObject(dataPoints);
                 return View();
             }
             catch (Exception ex)
@@ -2191,6 +2221,7 @@ namespace TapPaymentIntegration.Controllers
                 applicationUser.Email = email;
                 applicationUser.Status = true;
                 applicationUser.UserType = "Customer";
+                applicationUser.AddedDate =DateTime.UtcNow;
                 applicationUser.EmailConfirmed = true;
                 applicationUser.PhoneNumberConfirmed = true;
                 applicationUser.PhoneNumber = applicationUser.PhoneNumber;
@@ -4177,6 +4208,7 @@ namespace TapPaymentIntegration.Controllers
                 applicationUser.Status = true;
                 applicationUser.UserType = "Customer";
                 applicationUser.EmailConfirmed = true;
+                applicationUser.AddedDate = DateTime.UtcNow;
                 applicationUser.PhoneNumberConfirmed = true;
                 applicationUser.PhoneNumber = applicationUser.PhoneNumber;
                 applicationUser.Password = applicationUser.Password;
