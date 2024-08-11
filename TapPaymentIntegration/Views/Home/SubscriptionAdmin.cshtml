@@ -298,7 +298,19 @@ else
                                             <tr>
                                                 <td style="width:800px;border: none;"></td>
                                                 <td style="text-align:center!important;color:black!important;width:365px">Setup Fee</td>
-                                                <td style="text-align:center!important;color:black!important;width:153px"><input type="text" id="setupfee" name="setupfee" class="form-control" value="@Model.SetupFee" style="text-align:center" readonly="readonly" /></td>
+                                                <td style="text-align:center!important;color:black!important;width:153px">
+                                                    @{
+                                                        if (ViewBag.IsFirstInvoice == "false")
+                                                        {
+                                                            <input type="text" id="setupfee" name="setupfee" class="form-control" value="0.00" style="text-align:center" readonly="readonly" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="text" id="setupfee" name="setupfee" class="form-control" value="@Model.SetupFee" style="text-align:center" readonly="readonly" />
+                                                        }
+                                                    }
+                                                
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td style="width:800px;border: none;"></td>
@@ -666,7 +678,14 @@ else
                 $("#Discount").val('0');
                 subscriptionamount = @Model.Amount;
             }
-            var totala = parseFloat(subscriptionamount) + parseFloat(@Model.SetupFee);
+            var totala = "";
+            if (@ViewBag.IsFirstInvoice == false) {
+                totala = parseFloat(subscriptionamount);
+            }
+            else {
+                totala = parseFloat(subscriptionamount) + parseFloat(@Model.SetupFee);
+            }
+            
             var calculate_vat = "";
             if (@Model.VAT == "0") {
                 $("#VAT").val('0');
@@ -686,7 +705,15 @@ else
             $("#subamount").val(subscriptionamount.toFixed(2));
             $("#subamount2").val(subscriptionamount.toFixed(2));
             var subscriptionSetupFee = @Model.SetupFee;
-            var allamount = parseFloat(subscriptionamount) + parseFloat(subscriptionSetupFee) + parseFloat(calculate_vat);
+            var allamount = "";
+            if (@ViewBag.IsFirstInvoice == false)
+            {
+                allamount = parseFloat(subscriptionamount) + parseFloat(calculate_vat);
+            }
+            else
+            {
+                allamount = parseFloat(subscriptionamount) + parseFloat(subscriptionSetupFee) + parseFloat(calculate_vat);
+            }
             var totalamount = "";
             if (dis && parseFloat(dis) != 0) {
                 totalamount = parseFloat(allamount) - parseFloat(dis);
